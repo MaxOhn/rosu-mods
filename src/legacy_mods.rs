@@ -445,7 +445,7 @@ const _: () = {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             let mods = GameModsIntermode::deserialize(d)?;
 
-            Ok(Self::from(mods.bits()))
+            Ok(mods.as_legacy())
         }
     }
 
