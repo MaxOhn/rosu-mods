@@ -1,9 +1,10 @@
 use std::fmt;
 
 /// Available game modes
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum GameMode {
     /// osu!standard
+    #[default]
     Osu = 0,
     /// osu!taiko
     Taiko = 1,
@@ -34,12 +35,6 @@ impl From<u8> for GameMode {
             3 => GameMode::Mania,
             _ => GameMode::Osu,
         }
-    }
-}
-
-impl Default for GameMode {
-    fn default() -> Self {
-        Self::Osu
     }
 }
 
