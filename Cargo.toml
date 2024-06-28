@@ -1,0 +1,19 @@
+[package]
+name = "rosu-mods"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["macros"]
+macros = ["paste"]
+
+[dependencies]
+paste = { version = "1.0.15", optional = true }
+serde = { version = "1.0.203", optional = true, features = ["derive"] }
+
+[dev-dependencies]
+serde_json = { version = "1.0.118" }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
