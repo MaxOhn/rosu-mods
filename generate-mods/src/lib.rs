@@ -855,8 +855,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                 Ok(GameMod::new(v, self.mode))\
             }\
             fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {\
-                let key = map.next_key::<&str>()?;\
-                let Some(r#\"acronym\"#) = key else {\
+                let Some(\"acronym\") = map.next_key::<&str>()? else {\
                     return Err(DeError::custom(\"expected `acronym` as first field\"));\
                 };\
                 let acronym: &'de str = map.next_value()?;\
