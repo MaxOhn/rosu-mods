@@ -18,6 +18,7 @@ use crate::{Acronym, GameMode};
 /// Larger circles, more forgiving HP drain, less accuracy required, and three lives!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EasyOsu {
+    /// Number of extra lives
     pub retries: Option<f32>,
 }
 impl EasyOsu {
@@ -89,7 +90,9 @@ impl NoFailOsu {
 /// Less zoom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HalfTimeOsu {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeOsu {
@@ -129,6 +132,7 @@ impl HalfTimeOsu {
 /// Whoaaaaa...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DaycoreOsu {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
 }
 impl DaycoreOsu {
@@ -196,6 +200,7 @@ impl HardRockOsu {
 /// Miss and fail.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SuddenDeathOsu {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl SuddenDeathOsu {
@@ -233,6 +238,7 @@ impl SuddenDeathOsu {
 /// SS or quit.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PerfectOsu {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl PerfectOsu {
@@ -270,7 +276,9 @@ impl PerfectOsu {
 /// Zoooooooooom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DoubleTimeOsu {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeOsu {
@@ -310,6 +318,7 @@ impl DoubleTimeOsu {
 /// Uguuuuuuuu...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NightcoreOsu {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
 }
 impl NightcoreOsu {
@@ -349,6 +358,7 @@ impl NightcoreOsu {
 /// Play with no approach circles and fading circles/sliders.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HiddenOsu {
+    /// The main object body will not fade when enabled.
     pub only_fade_approach_circles: Option<bool>,
 }
 impl HiddenOsu {
@@ -386,8 +396,11 @@ impl HiddenOsu {
 /// Restricted view area.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FlashlightOsu {
+    /// Milliseconds until the flashlight reaches the cursor
     pub follow_delay: Option<f32>,
+    /// Multiplier applied to the default flashlight size.
     pub size_multiplier: Option<f32>,
+    /// Decrease the flashlight size as combo increases.
     pub combo_based_size: Option<bool>,
 }
 impl FlashlightOsu {
@@ -465,8 +478,11 @@ impl StrictTrackingOsu {
 /// Fail if your accuracy drops too low!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AccuracyChallengeOsu {
+    /// Trigger a failure if your accuracy goes below this value.
     pub minimum_accuracy: Option<f32>,
+    /// The mode of accuracy that will trigger failure.
     pub accuracy_judge_mode: Option<String>,
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl AccuracyChallengeOsu {
@@ -498,7 +514,9 @@ impl AccuracyChallengeOsu {
 /// Practice keeping up with the beat of the song.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TargetPracticeOsu {
+    /// Use a custom seed instead of a random one
     pub seed: Option<f32>,
+    /// Whether a metronome beat should play in the background
     pub metronome: Option<bool>,
 }
 impl TargetPracticeOsu {
@@ -539,10 +557,15 @@ impl TargetPracticeOsu {
 /// Override a beatmap's difficulty settings.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DifficultyAdjustOsu {
+    /// Override a beatmap's set CS.
     pub circle_size: Option<f32>,
+    /// Override a beatmap's set AR.
     pub approach_rate: Option<f32>,
+    /// Override a beatmap's set HP.
     pub drain_rate: Option<f32>,
+    /// Override a beatmap's set OD.
     pub overall_difficulty: Option<f32>,
+    /// Adjust difficulty beyond sane limits.
     pub extended_limits: Option<bool>,
 }
 impl DifficultyAdjustOsu {
@@ -572,10 +595,15 @@ impl DifficultyAdjustOsu {
 /// Feeling nostalgic?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClassicOsu {
+    /// Scores sliders proportionally to the number of ticks hit.
     pub no_slider_head_accuracy: Option<bool>,
+    /// Applies note lock to the full hit window.
     pub classic_note_lock: Option<bool>,
+    /// Always plays a slider's tail sample regardless of whether it was hit or not.
     pub always_play_tail_sample: Option<bool>,
+    /// Make hit circles fade out into a miss, rather than after it.
     pub fade_hit_circle_early: Option<bool>,
+    /// More closely resembles the original HP drain mechanics.
     pub classic_health: Option<bool>,
 }
 impl ClassicOsu {
@@ -599,7 +627,9 @@ impl ClassicOsu {
 /// It never gets boring!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RandomOsu {
+    /// How sharp angles should be
     pub angle_sharpness: Option<f32>,
+    /// Use a custom seed instead of a random one
     pub seed: Option<f32>,
 }
 impl RandomOsu {
@@ -629,6 +659,7 @@ impl RandomOsu {
 /// Flip objects on the chosen axes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MirrorOsu {
+    /// Choose which axes objects are mirrored over.
     pub reflection: Option<String>,
 }
 impl MirrorOsu {
@@ -942,6 +973,7 @@ impl TransformOsu {
 /// They just won't stay still...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WiggleOsu {
+    /// Multiplier applied to the wiggling strength.
     pub strength: Option<f32>,
 }
 impl WiggleOsu {
@@ -1004,6 +1036,7 @@ impl SpinInOsu {
 /// Hit them at the right size!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GrowOsu {
+    /// The initial size multiplier applied to all objects.
     pub start_scale: Option<f32>,
 }
 impl GrowOsu {
@@ -1036,6 +1069,7 @@ impl GrowOsu {
 /// Hit them at the right size!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DeflateOsu {
+    /// The initial size multiplier applied to all objects.
     pub start_scale: Option<f32>,
 }
 impl DeflateOsu {
@@ -1068,8 +1102,11 @@ impl DeflateOsu {
 /// Can you keep up?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindUpOsu {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindUpOsu {
@@ -1103,8 +1140,11 @@ impl WindUpOsu {
 /// Sloooow doooown...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindDownOsu {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindDownOsu {
@@ -1169,7 +1209,9 @@ impl TraceableOsu {
 /// The whole playfield is on a wheel!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BarrelRollOsu {
+    /// Rotations per minute
     pub spin_speed: Option<f32>,
+    /// The direction of rotation
     pub direction: Option<String>,
 }
 impl BarrelRollOsu {
@@ -1193,7 +1235,9 @@ impl BarrelRollOsu {
 /// Never trust the approach circles...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ApproachDifferentOsu {
+    /// Change the initial size of the approach circle, relative to hit circles.
     pub scale: Option<f32>,
+    /// Change the animation style of the approach circles.
     pub style: Option<String>,
 }
 impl ApproachDifferentOsu {
@@ -1227,9 +1271,13 @@ impl ApproachDifferentOsu {
 /// Can you still feel the rhythm without music?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MutedOsu {
+    /// Increase volume as combo builds.
     pub inverse_muting: Option<bool>,
+    /// Add a metronome beat to help you keep track of the rhythm.
     pub enable_metronome: Option<bool>,
+    /// The combo count at which point the track reaches its final volume.
     pub mute_combo_count: Option<f32>,
+    /// Hit sounds are also muted alongside the track.
     pub affects_hit_sounds: Option<bool>,
 }
 impl MutedOsu {
@@ -1253,6 +1301,7 @@ impl MutedOsu {
 /// Where's the cursor?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NoScopeOsu {
+    /// The combo count at which the cursor becomes completely hidden
     pub hidden_combo_count: Option<f32>,
 }
 impl NoScopeOsu {
@@ -1276,6 +1325,7 @@ impl NoScopeOsu {
 /// No need to chase the circles – your cursor is a magnet!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MagnetisedOsu {
+    /// How strong the pull is.
     pub attraction_strength: Option<f32>,
 }
 impl MagnetisedOsu {
@@ -1312,6 +1362,7 @@ impl MagnetisedOsu {
 /// Hit objects run away!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RepelOsu {
+    /// How strong the repulsion is.
     pub repulsion_strength: Option<f32>,
 }
 impl RepelOsu {
@@ -1347,7 +1398,9 @@ impl RepelOsu {
 /// Let track speed adapt to you.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AdaptiveSpeedOsu {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl AdaptiveSpeedOsu {
@@ -1460,7 +1513,9 @@ impl SynesthesiaOsu {
 /// 3D. Almost.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DepthOsu {
+    /// How far away objects appear.
     pub max_depth: Option<f32>,
+    /// Whether approach circles should be visible.
     pub show_approach_circles: Option<bool>,
 }
 impl DepthOsu {
@@ -1628,7 +1683,9 @@ impl NoFailTaiko {
 /// Less zoom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HalfTimeTaiko {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeTaiko {
@@ -1668,6 +1725,7 @@ impl HalfTimeTaiko {
 /// Whoaaaaa...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DaycoreTaiko {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
 }
 impl DaycoreTaiko {
@@ -1734,6 +1792,7 @@ impl HardRockTaiko {
 /// Miss and fail.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SuddenDeathTaiko {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl SuddenDeathTaiko {
@@ -1770,6 +1829,7 @@ impl SuddenDeathTaiko {
 /// SS or quit.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PerfectTaiko {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl PerfectTaiko {
@@ -1807,7 +1867,9 @@ impl PerfectTaiko {
 /// Zoooooooooom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DoubleTimeTaiko {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeTaiko {
@@ -1847,6 +1909,7 @@ impl DoubleTimeTaiko {
 /// Uguuuuuuuu...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NightcoreTaiko {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
 }
 impl NightcoreTaiko {
@@ -1913,7 +1976,9 @@ impl HiddenTaiko {
 /// Restricted view area.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FlashlightTaiko {
+    /// Multiplier applied to the default flashlight size.
     pub size_multiplier: Option<f32>,
+    /// Decrease the flashlight size as combo increases.
     pub combo_based_size: Option<bool>,
 }
 impl FlashlightTaiko {
@@ -1943,8 +2008,11 @@ impl FlashlightTaiko {
 /// Fail if your accuracy drops too low!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AccuracyChallengeTaiko {
+    /// Trigger a failure if your accuracy goes below this value.
     pub minimum_accuracy: Option<f32>,
+    /// The mode of accuracy that will trigger failure.
     pub accuracy_judge_mode: Option<String>,
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl AccuracyChallengeTaiko {
@@ -1975,6 +2043,7 @@ impl AccuracyChallengeTaiko {
 /// Shuffle around the colours!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RandomTaiko {
+    /// Use a custom seed instead of a random one
     pub seed: Option<f32>,
 }
 impl RandomTaiko {
@@ -2004,9 +2073,13 @@ impl RandomTaiko {
 /// Override a beatmap's difficulty settings.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DifficultyAdjustTaiko {
+    /// Adjust a beatmap's set scroll speed
     pub scroll_speed: Option<f32>,
+    /// Override a beatmap's set HP.
     pub drain_rate: Option<f32>,
+    /// Override a beatmap's set OD.
     pub overall_difficulty: Option<f32>,
+    /// Adjust difficulty beyond sane limits.
     pub extended_limits: Option<bool>,
 }
 impl DifficultyAdjustTaiko {
@@ -2235,8 +2308,11 @@ impl RelaxTaiko {
 /// Can you keep up?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindUpTaiko {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindUpTaiko {
@@ -2270,8 +2346,11 @@ impl WindUpTaiko {
 /// Sloooow doooown...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindDownTaiko {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindDownTaiko {
@@ -2305,9 +2384,13 @@ impl WindDownTaiko {
 /// Can you still feel the rhythm without music?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MutedTaiko {
+    /// Increase volume as combo builds.
     pub inverse_muting: Option<bool>,
+    /// Add a metronome beat to help you keep track of the rhythm.
     pub enable_metronome: Option<bool>,
+    /// The combo count at which point the track reaches its final volume.
     pub mute_combo_count: Option<f32>,
+    /// Hit sounds are also muted alongside the track.
     pub affects_hit_sounds: Option<bool>,
 }
 impl MutedTaiko {
@@ -2331,7 +2414,9 @@ impl MutedTaiko {
 /// Let track speed adapt to you.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AdaptiveSpeedTaiko {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl AdaptiveSpeedTaiko {
@@ -2394,6 +2479,7 @@ impl ScoreV2Taiko {
 /// Larger fruits, more forgiving HP drain, less accuracy required, and three lives!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EasyCatch {
+    /// Number of extra lives
     pub retries: Option<f32>,
 }
 impl EasyCatch {
@@ -2465,7 +2551,9 @@ impl NoFailCatch {
 /// Less zoom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HalfTimeCatch {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeCatch {
@@ -2504,6 +2592,7 @@ impl HalfTimeCatch {
 /// Whoaaaaa...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DaycoreCatch {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
 }
 impl DaycoreCatch {
@@ -2569,6 +2658,7 @@ impl HardRockCatch {
 /// Miss and fail.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SuddenDeathCatch {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl SuddenDeathCatch {
@@ -2605,6 +2695,7 @@ impl SuddenDeathCatch {
 /// SS or quit.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PerfectCatch {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl PerfectCatch {
@@ -2642,7 +2733,9 @@ impl PerfectCatch {
 /// Zoooooooooom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DoubleTimeCatch {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeCatch {
@@ -2681,6 +2774,7 @@ impl DoubleTimeCatch {
 /// Uguuuuuuuu...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NightcoreCatch {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
 }
 impl NightcoreCatch {
@@ -2746,7 +2840,9 @@ impl HiddenCatch {
 /// Restricted view area.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FlashlightCatch {
+    /// Multiplier applied to the default flashlight size.
     pub size_multiplier: Option<f32>,
+    /// Decrease the flashlight size as combo increases.
     pub combo_based_size: Option<bool>,
 }
 impl FlashlightCatch {
@@ -2776,8 +2872,11 @@ impl FlashlightCatch {
 /// Fail if your accuracy drops too low!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AccuracyChallengeCatch {
+    /// Trigger a failure if your accuracy goes below this value.
     pub minimum_accuracy: Option<f32>,
+    /// The mode of accuracy that will trigger failure.
     pub accuracy_judge_mode: Option<String>,
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl AccuracyChallengeCatch {
@@ -2809,11 +2908,17 @@ impl AccuracyChallengeCatch {
 /// Override a beatmap's difficulty settings.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DifficultyAdjustCatch {
+    /// Override a beatmap's set CS.
     pub circle_size: Option<f32>,
+    /// Override a beatmap's set AR.
     pub approach_rate: Option<f32>,
+    /// Adjust the patterns as if Hard Rock is enabled.
     pub hard_rock_offsets: Option<bool>,
+    /// Override a beatmap's set HP.
     pub drain_rate: Option<f32>,
+    /// Override a beatmap's set OD.
     pub overall_difficulty: Option<f32>,
+    /// Adjust difficulty beyond sane limits.
     pub extended_limits: Option<bool>,
 }
 impl DifficultyAdjustCatch {
@@ -2994,8 +3099,11 @@ impl RelaxCatch {
 /// Can you keep up?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindUpCatch {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindUpCatch {
@@ -3028,8 +3136,11 @@ impl WindUpCatch {
 /// Sloooow doooown...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindDownCatch {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindDownCatch {
@@ -3083,9 +3194,13 @@ impl FloatingFruitsCatch {
 /// Can you still feel the rhythm without music?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MutedCatch {
+    /// Increase volume as combo builds.
     pub inverse_muting: Option<bool>,
+    /// Add a metronome beat to help you keep track of the rhythm.
     pub enable_metronome: Option<bool>,
+    /// The combo count at which point the track reaches its final volume.
     pub mute_combo_count: Option<f32>,
+    /// Hit sounds are also muted alongside the track.
     pub affects_hit_sounds: Option<bool>,
 }
 impl MutedCatch {
@@ -3109,6 +3224,7 @@ impl MutedCatch {
 /// Where's the catcher?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NoScopeCatch {
+    /// The combo count at which the cursor becomes completely hidden
     pub hidden_combo_count: Option<f32>,
 }
 impl NoScopeCatch {
@@ -3159,6 +3275,7 @@ impl ScoreV2Catch {
 /// More forgiving HP drain, less accuracy required, and three lives!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EasyMania {
+    /// Number of extra lives
     pub retries: Option<f32>,
 }
 impl EasyMania {
@@ -3230,7 +3347,9 @@ impl NoFailMania {
 /// Less zoom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HalfTimeMania {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeMania {
@@ -3270,6 +3389,7 @@ impl HalfTimeMania {
 /// Whoaaaaa...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DaycoreMania {
+    /// The actual decrease to apply
     pub speed_change: Option<f32>,
 }
 impl DaycoreMania {
@@ -3336,6 +3456,7 @@ impl HardRockMania {
 /// Miss and fail.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SuddenDeathMania {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl SuddenDeathMania {
@@ -3372,6 +3493,7 @@ impl SuddenDeathMania {
 /// SS or quit.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PerfectMania {
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl PerfectMania {
@@ -3409,7 +3531,9 @@ impl PerfectMania {
 /// Zoooooooooom...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DoubleTimeMania {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeMania {
@@ -3449,6 +3573,7 @@ impl DoubleTimeMania {
 /// Uguuuuuuuu...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NightcoreMania {
+    /// The actual increase to apply
     pub speed_change: Option<f32>,
 }
 impl NightcoreMania {
@@ -3556,7 +3681,9 @@ impl HiddenMania {
 /// Decrease the playfield's viewing area.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CoverMania {
+    /// The proportion of playfield height that notes will be hidden for.
     pub coverage: Option<f32>,
+    /// The direction on which the cover is applied
     pub direction: Option<String>,
 }
 impl CoverMania {
@@ -3587,7 +3714,9 @@ impl CoverMania {
 /// Restricted view area.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FlashlightMania {
+    /// Multiplier applied to the default flashlight size.
     pub size_multiplier: Option<f32>,
+    /// Decrease the flashlight size as combo increases.
     pub combo_based_size: Option<bool>,
 }
 impl FlashlightMania {
@@ -3624,8 +3753,11 @@ impl FlashlightMania {
 /// Fail if your accuracy drops too low!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AccuracyChallengeMania {
+    /// Trigger a failure if your accuracy goes below this value.
     pub minimum_accuracy: Option<f32>,
+    /// The mode of accuracy that will trigger failure.
     pub accuracy_judge_mode: Option<String>,
+    /// Automatically restarts when failed.
     pub restart: Option<bool>,
 }
 impl AccuracyChallengeMania {
@@ -3657,6 +3789,7 @@ impl AccuracyChallengeMania {
 /// Shuffle around the keys!
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RandomMania {
+    /// Use a custom seed instead of a random one
     pub seed: Option<f32>,
 }
 impl RandomMania {
@@ -3740,8 +3873,11 @@ impl MirrorMania {
 /// Override a beatmap's difficulty settings.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DifficultyAdjustMania {
+    /// Override a beatmap's set HP.
     pub drain_rate: Option<f32>,
+    /// Override a beatmap's set OD.
     pub overall_difficulty: Option<f32>,
+    /// Adjust difficulty beyond sane limits.
     pub extended_limits: Option<bool>,
 }
 impl DifficultyAdjustMania {
@@ -4319,8 +4455,11 @@ impl CinemaMania {
 /// Can you keep up?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindUpMania {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindUpMania {
@@ -4354,8 +4493,11 @@ impl WindUpMania {
 /// Sloooow doooown...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WindDownMania {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// The final speed to ramp to
     pub final_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl WindDownMania {
@@ -4389,9 +4531,13 @@ impl WindDownMania {
 /// Can you still feel the rhythm without music?
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MutedMania {
+    /// Increase volume as combo builds.
     pub inverse_muting: Option<bool>,
+    /// Add a metronome beat to help you keep track of the rhythm.
     pub enable_metronome: Option<bool>,
+    /// The combo count at which point the track reaches its final volume.
     pub mute_combo_count: Option<f32>,
+    /// Hit sounds are also muted alongside the track.
     pub affects_hit_sounds: Option<bool>,
 }
 impl MutedMania {
@@ -4415,7 +4561,9 @@ impl MutedMania {
 /// Let track speed adapt to you.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AdaptiveSpeedMania {
+    /// The starting speed of the track
     pub initial_rate: Option<f32>,
+    /// Should pitch be adjusted with speed
     pub adjust_pitch: Option<bool>,
 }
 impl AdaptiveSpeedMania {

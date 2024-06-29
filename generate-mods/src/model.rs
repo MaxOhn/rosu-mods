@@ -491,11 +491,15 @@ pub struct Setting {
     pub name: Box<str>,
     #[serde(rename = "Type")]
     kind: SettingType,
+    #[serde(rename = "Description")]
+    description: Box<str>,
 }
 
 impl Setting {
     pub fn write(&self, writer: &mut Writer) -> GenResult {
-        writer.write("pub ")?;
+        writer.write("/// ")?;
+        writer.write(&self.description)?;
+        writer.write("\npub ")?;
         writer.write(&self.name)?;
         writer.write(": Option<")?;
         self.kind.write(writer)?;
