@@ -11457,7 +11457,7 @@ const _: () = {
     impl<'de> DeserializeSeed<'de> for GameModSettings<'de> {
         type Value = <Self as Visitor<'de>>::Value;
         fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<Self::Value, D::Error> {
-            d.deserialize_any(self)
+            d.deserialize_map(self)
         }
     }
     impl<'de> Visitor<'de> for GameModSettings<'de> {
