@@ -379,7 +379,6 @@ impl GameModsIntermode {
 
         // We currently don't allow a gamemod to have an acronym of length 1
         let mut remaining = if s.len() == 1 {
-            #[allow(clippy::default_trait_access)]
             mods.insert(GameModIntermode::Unknown(Default::default()));
 
             ""
@@ -533,9 +532,9 @@ impl GameModsIntermode {
     /// // The FadeIn mod doesn't exist in Taiko
     /// assert!(mods!(DT FI).try_with_mode(GameMode::Taiko).is_none());
     /// ```
-    pub fn try_with_mode(self, mode: GameMode) -> Option<GameMods> {
+    pub fn try_with_mode(&self, mode: GameMode) -> Option<GameMods> {
         self.inner
-            .into_iter()
+            .iter()
             .map(|gamemod| GameMod::new(gamemod.acronym().as_str(), mode))
             .try_fold(GameMods::default(), |mut mods, next| {
                 if matches!(
@@ -569,9 +568,9 @@ impl GameModsIntermode {
     /// let dt_unknown: GameMods = mods!(DT FI).with_mode(GameMode::Taiko);
     /// assert_eq!(dt_unknown.to_string(), "DTFI");
     /// ```
-    pub fn with_mode(self, mode: GameMode) -> GameMods {
+    pub fn with_mode(&self, mode: GameMode) -> GameMods {
         self.inner
-            .into_iter()
+            .iter()
             .map(|gamemod| GameMod::new(gamemod.acronym().as_str(), mode))
             .collect()
     }
@@ -899,7 +898,7 @@ mod tests {
 
         #[test]
         fn deser_bits() {
-            let json = r#"1096"#;
+            let json = "1096";
             let mods = serde_json::from_str::<GameModsIntermode>(json).unwrap();
 
             let mut expected = GameModsIntermode::default();

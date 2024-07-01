@@ -1,8 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use itoa::Buffer;
 
-pub use self::{error::GenResult, model::RulesetMods, writer::Writer};
+pub use self::{
+    error::GenResult,
+    model::{Acronym, RulesetMods},
+    writer::Writer,
+};
 
 mod error;
 mod model;
@@ -737,10 +741,10 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
         "use serde::{\
             Deserialize,\
-            de::{value::MapAccessDeserializer, Deserializer, DeserializeSeed, Error as DeError, IgnoredAny, MapAccess, Visitor},\
+            de::{value::MapAccessDeserializer, Deserializer, Error as DeError, IgnoredAny, MapAccess, Visitor},\
             ser::{Serialize, Serializer, SerializeMap},\
         };\n\n\
-        use crate::serde::ModeAsSeed;\n\n",
+        use crate::serde::{GameModSettings, GameModSettingsSeed};\n\n",
     )?;
 
     for ruleset in rulesets.iter() {
@@ -776,20 +780,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     )?;
 
     writer.write(
-        "struct GameModSettings<'a> {\
-            acronym: &'a str,\
-            mode: GameMode,\
-        }\
-        impl<'de> DeserializeSeed<'de> for GameModSettings<'de> {\
-            type Value = <Self as Visitor<'de>>::Value;\
-            fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<Self::Value, D::Error> {\
-                d.deserialize_map(self)\
-            }\
-        }",
-    )?;
-
-    writer.write(
-        "impl<'de> Visitor<'de> for GameModSettings<'de> {\
+        "impl<'de> Visitor<'de> for GameModSettingsSeed<'de> {\
             type Value = GameMod;\
             fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {\
                 f.write_str(\"GameMod settings\")\
@@ -841,33 +832,6 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                     }\
                 };\
                 Ok(res)\
-            }\
-        }",
-    )?;
-
-    writer.write(
-        "impl<'de> Visitor<'de> for ModeAsSeed<GameMod> {\
-            type Value = GameMod;\
-            fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {\
-                f.write_str(\"a GameMod\")\
-            }\
-            fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {\
-                Ok(GameMod::new(v, self.mode))\
-            }\
-            fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {\
-                let Some(\"acronym\") = map.next_key::<&str>()? else {\
-                    return Err(DeError::custom(\"expected `acronym` as first field\"));\
-                };\
-                let acronym: &'de str = map.next_value()?;\
-                let mut gamemod = None;\
-                while let Some(key) = map.next_key::<&str>()? {\
-                    if key == \"settings\" {\
-                        gamemod = Some(map.next_value_seed(GameModSettings { acronym, mode: self.mode })?);\
-                    } else {\
-                        let _: IgnoredAny = map.next_value()?;\
-                    }\
-                }\
-                Ok(gamemod.unwrap_or_else(|| GameMod::new(acronym, self.mode)))\
             }\
         }",
     )?;
@@ -956,9 +920,71 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                 fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {\
                     s.serialize_str(self.acronym().as_str())\
                 }\
+            }",
+    )?;
+
+    writer.write(
+        "\
+    impl GameModSettings<'_> {\
+        pub(crate) fn try_deserialize(&self, acronym: &str) -> Option<GameMod> {",
+    )?;
+
+    writer.write_raw(
+        b"\
+            macro_rules! try_deser {
+                ( $osu_mod:ident, $taiko_mod:ident, $catch_mod:ident, $mania_mod:ident, ) => {{
+                    try_deser!(@ $osu_mod Osu);
+                    try_deser!(@ $taiko_mod Taiko);
+                    try_deser!(@ $catch_mod Catch);
+                    try_deser!(@ $mania_mod Mania);
+                }};
+                ( @ Skip_ $mode:ident ) => {};
+                ( @ $name:ident $mode:ident ) => {
+                    if let Ok(m) = $name::deserialize(self) {
+                        return Some(GameMod::$name(m));
+                    }
+                };
+            }",
+    )?;
+    writer.write("match acronym {")?;
+
+    let mut acronyms_map = BTreeMap::<Acronym, [Option<&str>; 4]>::new();
+
+    for ruleset in rulesets.iter() {
+        for gamemod in ruleset.mods.iter() {
+            let entry = acronyms_map.entry(gamemod.acronym).or_default();
+            entry[ruleset.name as usize] = Some(&gamemod.name);
+        }
+    }
+
+    for (acronym, mods) in acronyms_map {
+        writer.write_raw(b"\"")?;
+        writer.write(acronym.as_str())?;
+        writer.write("\" => try_deser!(")?;
+
+        for gamemod in mods {
+            match gamemod {
+                Some(name) => {
+                    writer.write(name)?;
+                    writer.write_raw(b",")?;
+                }
+                None => writer.write_raw(b"Skip_,")?,
+            }
+        }
+
+        writer.write_raw(b"),")?;
+    }
+
+    writer.write(
+        "\
+                _ => {}\
             }\
-        };",
-    )
+            None\
+        }\
+    }",
+    )?;
+
+    writer.write_raw(b"};")
 }
 
 pub fn impl_macro(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {

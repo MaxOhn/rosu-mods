@@ -6605,14 +6605,14 @@ impl PartialOrd for GameMod {
 const _: () = {
     use serde::{
         de::{
-            value::MapAccessDeserializer, DeserializeSeed, Deserializer, Error as DeError,
-            IgnoredAny, MapAccess, Visitor,
+            value::MapAccessDeserializer, Deserializer, Error as DeError, IgnoredAny, MapAccess,
+            Visitor,
         },
         ser::{Serialize, SerializeMap, Serializer},
         Deserialize,
     };
 
-    use crate::serde::ModeAsSeed;
+    use crate::serde::{GameModSettings, GameModSettingsSeed};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyOsu {
@@ -6624,13 +6624,12 @@ const _: () = {
                     f.write_str("EasyOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["retries"];
                     let mut retries = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "retries" => retries = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6686,15 +6685,14 @@ const _: () = {
                     f.write_str("HalfTimeOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6731,13 +6729,12 @@ const _: () = {
                     f.write_str("DaycoreOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6793,13 +6790,12 @@ const _: () = {
                     f.write_str("SuddenDeathOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6831,13 +6827,12 @@ const _: () = {
                     f.write_str("PerfectOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6869,15 +6864,14 @@ const _: () = {
                     f.write_str("DoubleTimeOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6914,13 +6908,12 @@ const _: () = {
                     f.write_str("NightcoreOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6952,15 +6945,14 @@ const _: () = {
                     f.write_str("HiddenOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["only_fade_approach_circles"];
                     let mut only_fade_approach_circles = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "only_fade_approach_circles" => {
                                 only_fade_approach_circles = Some(map.next_value()?)
                             }
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6992,6 +6984,8 @@ const _: () = {
                     f.write_str("FlashlightOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["follow_delay", "size_multiplier", "combo_based_size"];
                     let mut follow_delay = None;
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
@@ -7000,9 +6994,7 @@ const _: () = {
                             "follow_delay" => follow_delay = Some(map.next_value()?),
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7092,6 +7084,8 @@ const _: () = {
                     f.write_str("AccuracyChallengeOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
@@ -7100,9 +7094,7 @@ const _: () = {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7144,15 +7136,14 @@ const _: () = {
                     f.write_str("TargetPracticeOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["seed", "metronome"];
                     let mut seed = None;
                     let mut metronome = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "seed" => seed = Some(map.next_value()?),
                             "metronome" => metronome = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7188,6 +7179,13 @@ const _: () = {
                     f.write_str("DifficultyAdjustOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "circle_size",
+                        "approach_rate",
+                        "drain_rate",
+                        "overall_difficulty",
+                        "extended_limits",
+                    ];
                     let mut circle_size = None;
                     let mut approach_rate = None;
                     let mut drain_rate = None;
@@ -7200,9 +7198,7 @@ const _: () = {
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7254,6 +7250,13 @@ const _: () = {
                     f.write_str("ClassicOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "no_slider_head_accuracy",
+                        "classic_note_lock",
+                        "always_play_tail_sample",
+                        "fade_hit_circle_early",
+                        "classic_health",
+                    ];
                     let mut no_slider_head_accuracy = None;
                     let mut classic_note_lock = None;
                     let mut always_play_tail_sample = None;
@@ -7272,9 +7275,7 @@ const _: () = {
                                 fade_hit_circle_early = Some(map.next_value()?)
                             }
                             "classic_health" => classic_health = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7326,15 +7327,14 @@ const _: () = {
                     f.write_str("RandomOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["angle_sharpness", "seed"];
                     let mut angle_sharpness = None;
                     let mut seed = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "angle_sharpness" => angle_sharpness = Some(map.next_value()?),
                             "seed" => seed = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7371,13 +7371,12 @@ const _: () = {
                     f.write_str("MirrorOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["reflection"];
                     let mut reflection = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "reflection" => reflection = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7601,13 +7600,12 @@ const _: () = {
                     f.write_str("WiggleOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["strength"];
                     let mut strength = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "strength" => strength = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7663,13 +7661,12 @@ const _: () = {
                     f.write_str("GrowOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["start_scale"];
                     let mut start_scale = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "start_scale" => start_scale = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7701,13 +7698,12 @@ const _: () = {
                     f.write_str("DeflateOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["start_scale"];
                     let mut start_scale = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "start_scale" => start_scale = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7739,6 +7735,8 @@ const _: () = {
                     f.write_str("WindUpOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -7747,9 +7745,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7791,6 +7787,8 @@ const _: () = {
                     f.write_str("WindDownOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -7799,9 +7797,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7867,15 +7863,14 @@ const _: () = {
                     f.write_str("BarrelRollOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["spin_speed", "direction"];
                     let mut spin_speed = None;
                     let mut direction = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "spin_speed" => spin_speed = Some(map.next_value()?),
                             "direction" => direction = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7912,15 +7907,14 @@ const _: () = {
                     f.write_str("ApproachDifferentOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["scale", "style"];
                     let mut scale = None;
                     let mut style = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "scale" => scale = Some(map.next_value()?),
                             "style" => style = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7956,6 +7950,12 @@ const _: () = {
                     f.write_str("MutedOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "inverse_muting",
+                        "enable_metronome",
+                        "mute_combo_count",
+                        "affects_hit_sounds",
+                    ];
                     let mut inverse_muting = None;
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
@@ -7966,9 +7966,7 @@ const _: () = {
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8015,13 +8013,12 @@ const _: () = {
                     f.write_str("NoScopeOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
                     let mut hidden_combo_count = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8053,13 +8050,12 @@ const _: () = {
                     f.write_str("MagnetisedOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["attraction_strength"];
                     let mut attraction_strength = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "attraction_strength" => attraction_strength = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8091,13 +8087,12 @@ const _: () = {
                     f.write_str("RepelOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["repulsion_strength"];
                     let mut repulsion_strength = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "repulsion_strength" => repulsion_strength = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8129,15 +8124,14 @@ const _: () = {
                     f.write_str("AdaptiveSpeedOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8246,6 +8240,7 @@ const _: () = {
                     f.write_str("DepthOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["max_depth", "show_approach_circles"];
                     let mut max_depth = None;
                     let mut show_approach_circles = None;
                     while let Some(key) = map.next_key()? {
@@ -8254,9 +8249,7 @@ const _: () = {
                             "show_approach_circles" => {
                                 show_approach_circles = Some(map.next_value()?)
                             }
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8389,15 +8382,14 @@ const _: () = {
                     f.write_str("HalfTimeTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8434,13 +8426,12 @@ const _: () = {
                     f.write_str("DaycoreTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8496,13 +8487,12 @@ const _: () = {
                     f.write_str("SuddenDeathTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8534,13 +8524,12 @@ const _: () = {
                     f.write_str("PerfectTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8572,15 +8561,14 @@ const _: () = {
                     f.write_str("DoubleTimeTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8617,13 +8605,12 @@ const _: () = {
                     f.write_str("NightcoreTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8679,15 +8666,15 @@ const _: () = {
                     f.write_str("FlashlightTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["size_multiplier", "combo_based_size"];
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8724,6 +8711,8 @@ const _: () = {
                     f.write_str("AccuracyChallengeTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
@@ -8732,9 +8721,7 @@ const _: () = {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8776,13 +8763,12 @@ const _: () = {
                     f.write_str("RandomTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["seed"];
                     let mut seed = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "seed" => seed = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8814,6 +8800,12 @@ const _: () = {
                     f.write_str("DifficultyAdjustTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "scroll_speed",
+                        "drain_rate",
+                        "overall_difficulty",
+                        "extended_limits",
+                    ];
                     let mut scroll_speed = None;
                     let mut drain_rate = None;
                     let mut overall_difficulty = None;
@@ -8824,9 +8816,7 @@ const _: () = {
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9041,6 +9031,8 @@ const _: () = {
                     f.write_str("WindUpTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -9049,9 +9041,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9093,6 +9083,8 @@ const _: () = {
                     f.write_str("WindDownTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -9101,9 +9093,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9145,6 +9135,12 @@ const _: () = {
                     f.write_str("MutedTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "inverse_muting",
+                        "enable_metronome",
+                        "mute_combo_count",
+                        "affects_hit_sounds",
+                    ];
                     let mut inverse_muting = None;
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
@@ -9155,9 +9151,7 @@ const _: () = {
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9204,15 +9198,14 @@ const _: () = {
                     f.write_str("AdaptiveSpeedTaiko")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9273,13 +9266,12 @@ const _: () = {
                     f.write_str("EasyCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["retries"];
                     let mut retries = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "retries" => retries = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9335,15 +9327,14 @@ const _: () = {
                     f.write_str("HalfTimeCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9380,13 +9371,12 @@ const _: () = {
                     f.write_str("DaycoreCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9442,13 +9432,12 @@ const _: () = {
                     f.write_str("SuddenDeathCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9480,13 +9469,12 @@ const _: () = {
                     f.write_str("PerfectCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9518,15 +9506,14 @@ const _: () = {
                     f.write_str("DoubleTimeCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9563,13 +9550,12 @@ const _: () = {
                     f.write_str("NightcoreCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9625,15 +9611,15 @@ const _: () = {
                     f.write_str("FlashlightCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["size_multiplier", "combo_based_size"];
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9670,6 +9656,8 @@ const _: () = {
                     f.write_str("AccuracyChallengeCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
@@ -9678,9 +9666,7 @@ const _: () = {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9722,6 +9708,14 @@ const _: () = {
                     f.write_str("DifficultyAdjustCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "circle_size",
+                        "approach_rate",
+                        "hard_rock_offsets",
+                        "drain_rate",
+                        "overall_difficulty",
+                        "extended_limits",
+                    ];
                     let mut circle_size = None;
                     let mut approach_rate = None;
                     let mut hard_rock_offsets = None;
@@ -9736,9 +9730,7 @@ const _: () = {
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9915,6 +9907,8 @@ const _: () = {
                     f.write_str("WindUpCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -9923,9 +9917,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9967,6 +9959,8 @@ const _: () = {
                     f.write_str("WindDownCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -9975,9 +9969,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10043,6 +10035,12 @@ const _: () = {
                     f.write_str("MutedCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "inverse_muting",
+                        "enable_metronome",
+                        "mute_combo_count",
+                        "affects_hit_sounds",
+                    ];
                     let mut inverse_muting = None;
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
@@ -10053,9 +10051,7 @@ const _: () = {
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10102,13 +10098,12 @@ const _: () = {
                     f.write_str("NoScopeCatch")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
                     let mut hidden_combo_count = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10164,13 +10159,12 @@ const _: () = {
                     f.write_str("EasyMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["retries"];
                     let mut retries = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "retries" => retries = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10226,15 +10220,14 @@ const _: () = {
                     f.write_str("HalfTimeMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10271,13 +10264,12 @@ const _: () = {
                     f.write_str("DaycoreMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10333,13 +10325,12 @@ const _: () = {
                     f.write_str("SuddenDeathMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10371,13 +10362,12 @@ const _: () = {
                     f.write_str("PerfectMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10409,15 +10399,14 @@ const _: () = {
                     f.write_str("DoubleTimeMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10454,13 +10443,12 @@ const _: () = {
                     f.write_str("NightcoreMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10540,15 +10528,14 @@ const _: () = {
                     f.write_str("CoverMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["coverage", "direction"];
                     let mut coverage = None;
                     let mut direction = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "coverage" => coverage = Some(map.next_value()?),
                             "direction" => direction = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10584,15 +10571,15 @@ const _: () = {
                     f.write_str("FlashlightMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["size_multiplier", "combo_based_size"];
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10629,6 +10616,8 @@ const _: () = {
                     f.write_str("AccuracyChallengeMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
@@ -10637,9 +10626,7 @@ const _: () = {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10681,13 +10668,12 @@ const _: () = {
                     f.write_str("RandomMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["seed"];
                     let mut seed = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "seed" => seed = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10767,6 +10753,8 @@ const _: () = {
                     f.write_str("DifficultyAdjustMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["drain_rate", "overall_difficulty", "extended_limits"];
                     let mut drain_rate = None;
                     let mut overall_difficulty = None;
                     let mut extended_limits = None;
@@ -10775,9 +10763,7 @@ const _: () = {
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11203,6 +11189,8 @@ const _: () = {
                     f.write_str("WindUpMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -11211,9 +11199,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11255,6 +11241,8 @@ const _: () = {
                     f.write_str("WindDownMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["initial_rate", "final_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
@@ -11263,9 +11251,7 @@ const _: () = {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11307,6 +11293,12 @@ const _: () = {
                     f.write_str("MutedMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[
+                        "inverse_muting",
+                        "enable_metronome",
+                        "mute_combo_count",
+                        "affects_hit_sounds",
+                    ];
                     let mut inverse_muting = None;
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
@@ -11317,9 +11309,7 @@ const _: () = {
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11366,15 +11356,14 @@ const _: () = {
                     f.write_str("AdaptiveSpeedMania")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut adjust_pitch = None;
                     while let Some(key) = map.next_key()? {
                         match key {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => {
-                                let _: IgnoredAny = map.next_value()?;
-                            }
+                            _ => return Err(DeError::unknown_field(key, FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11450,17 +11439,7 @@ const _: () = {
             s.serialize_map(Some(0)).and_then(SerializeMap::end)
         }
     }
-    struct GameModSettings<'a> {
-        acronym: &'a str,
-        mode: GameMode,
-    }
-    impl<'de> DeserializeSeed<'de> for GameModSettings<'de> {
-        type Value = <Self as Visitor<'de>>::Value;
-        fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<Self::Value, D::Error> {
-            d.deserialize_map(self)
-        }
-    }
-    impl<'de> Visitor<'de> for GameModSettings<'de> {
+    impl<'de> Visitor<'de> for GameModSettingsSeed<'de> {
         type Value = GameMod;
         fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
             f.write_str("GameMod settings")
@@ -11649,33 +11628,6 @@ const _: () = {
                 }
             };
             Ok(res)
-        }
-    }
-    impl<'de> Visitor<'de> for ModeAsSeed<GameMod> {
-        type Value = GameMod;
-        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-            f.write_str("a GameMod")
-        }
-        fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
-            Ok(GameMod::new(v, self.mode))
-        }
-        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-            let Some("acronym") = map.next_key::<&str>()? else {
-                return Err(DeError::custom("expected `acronym` as first field"));
-            };
-            let acronym: &'de str = map.next_value()?;
-            let mut gamemod = None;
-            while let Some(key) = map.next_key::<&str>()? {
-                if key == "settings" {
-                    gamemod = Some(map.next_value_seed(GameModSettings {
-                        acronym,
-                        mode: self.mode,
-                    })?);
-                } else {
-                    let _: IgnoredAny = map.next_value()?;
-                }
-            }
-            Ok(gamemod.unwrap_or_else(|| GameMod::new(acronym, self.mode)))
         }
     }
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
@@ -12205,6 +12157,123 @@ const _: () = {
     impl serde::Serialize for GameModIntermode {
         fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_str(self.acronym().as_str())
+        }
+    }
+    impl GameModSettings<'_> {
+        pub(crate) fn try_deserialize(&self, acronym: &str) -> Option<GameMod> {
+            macro_rules! try_deser {
+                ( $osu_mod:ident, $taiko_mod:ident, $catch_mod:ident, $mania_mod:ident, ) => {{
+                    try_deser!(@ $osu_mod Osu);
+                    try_deser!(@ $taiko_mod Taiko);
+                    try_deser!(@ $catch_mod Catch);
+                    try_deser!(@ $mania_mod Mania);
+                }};
+                ( @ Skip_ $mode:ident ) => {};
+                ( @ $name:ident $mode:ident ) => {
+                    if let Ok(m) = $name::deserialize(self) {
+                        return Some(GameMod::$name(m));
+                    }
+                };
+            }
+            match acronym {
+                "10K" => try_deser!(Skip_, Skip_, Skip_, TenKeysMania,),
+                "1K" => try_deser!(Skip_, Skip_, Skip_, OneKeyMania,),
+                "2K" => try_deser!(Skip_, Skip_, Skip_, TwoKeysMania,),
+                "3K" => try_deser!(Skip_, Skip_, Skip_, ThreeKeysMania,),
+                "4K" => try_deser!(Skip_, Skip_, Skip_, FourKeysMania,),
+                "5K" => try_deser!(Skip_, Skip_, Skip_, FiveKeysMania,),
+                "6K" => try_deser!(Skip_, Skip_, Skip_, SixKeysMania,),
+                "7K" => try_deser!(Skip_, Skip_, Skip_, SevenKeysMania,),
+                "8K" => try_deser!(Skip_, Skip_, Skip_, EightKeysMania,),
+                "9K" => try_deser!(Skip_, Skip_, Skip_, NineKeysMania,),
+                "AC" => try_deser!(
+                    AccuracyChallengeOsu,
+                    AccuracyChallengeTaiko,
+                    AccuracyChallengeCatch,
+                    AccuracyChallengeMania,
+                ),
+                "AD" => try_deser!(ApproachDifferentOsu, Skip_, Skip_, Skip_,),
+                "AL" => try_deser!(AlternateOsu, Skip_, Skip_, Skip_,),
+                "AP" => try_deser!(AutopilotOsu, Skip_, Skip_, Skip_,),
+                "AS" => try_deser!(
+                    AdaptiveSpeedOsu,
+                    AdaptiveSpeedTaiko,
+                    Skip_,
+                    AdaptiveSpeedMania,
+                ),
+                "AT" => try_deser!(AutoplayOsu, AutoplayTaiko, AutoplayCatch, AutoplayMania,),
+                "BL" => try_deser!(BlindsOsu, Skip_, Skip_, Skip_,),
+                "BR" => try_deser!(BarrelRollOsu, Skip_, Skip_, Skip_,),
+                "BU" => try_deser!(BubblesOsu, Skip_, Skip_, Skip_,),
+                "CL" => try_deser!(ClassicOsu, ClassicTaiko, ClassicCatch, ClassicMania,),
+                "CN" => try_deser!(CinemaOsu, CinemaTaiko, CinemaCatch, CinemaMania,),
+                "CO" => try_deser!(Skip_, Skip_, Skip_, CoverMania,),
+                "CS" => try_deser!(Skip_, ConstantSpeedTaiko, Skip_, ConstantSpeedMania,),
+                "DA" => try_deser!(
+                    DifficultyAdjustOsu,
+                    DifficultyAdjustTaiko,
+                    DifficultyAdjustCatch,
+                    DifficultyAdjustMania,
+                ),
+                "DC" => try_deser!(DaycoreOsu, DaycoreTaiko, DaycoreCatch, DaycoreMania,),
+                "DF" => try_deser!(DeflateOsu, Skip_, Skip_, Skip_,),
+                "DP" => try_deser!(DepthOsu, Skip_, Skip_, Skip_,),
+                "DS" => try_deser!(Skip_, Skip_, Skip_, DualStagesMania,),
+                "DT" => try_deser!(
+                    DoubleTimeOsu,
+                    DoubleTimeTaiko,
+                    DoubleTimeCatch,
+                    DoubleTimeMania,
+                ),
+                "EZ" => try_deser!(EasyOsu, EasyTaiko, EasyCatch, EasyMania,),
+                "FF" => try_deser!(Skip_, Skip_, FloatingFruitsCatch, Skip_,),
+                "FI" => try_deser!(Skip_, Skip_, Skip_, FadeInMania,),
+                "FL" => try_deser!(
+                    FlashlightOsu,
+                    FlashlightTaiko,
+                    FlashlightCatch,
+                    FlashlightMania,
+                ),
+                "FR" => try_deser!(FreezeFrameOsu, Skip_, Skip_, Skip_,),
+                "GR" => try_deser!(GrowOsu, Skip_, Skip_, Skip_,),
+                "HD" => try_deser!(HiddenOsu, HiddenTaiko, HiddenCatch, HiddenMania,),
+                "HO" => try_deser!(Skip_, Skip_, Skip_, HoldOffMania,),
+                "HR" => try_deser!(HardRockOsu, HardRockTaiko, HardRockCatch, HardRockMania,),
+                "HT" => try_deser!(HalfTimeOsu, HalfTimeTaiko, HalfTimeCatch, HalfTimeMania,),
+                "IN" => try_deser!(Skip_, Skip_, Skip_, InvertMania,),
+                "MG" => try_deser!(MagnetisedOsu, Skip_, Skip_, Skip_,),
+                "MR" => try_deser!(MirrorOsu, Skip_, MirrorCatch, MirrorMania,),
+                "MU" => try_deser!(MutedOsu, MutedTaiko, MutedCatch, MutedMania,),
+                "NC" => try_deser!(NightcoreOsu, NightcoreTaiko, NightcoreCatch, NightcoreMania,),
+                "NF" => try_deser!(NoFailOsu, NoFailTaiko, NoFailCatch, NoFailMania,),
+                "NS" => try_deser!(NoScopeOsu, Skip_, NoScopeCatch, Skip_,),
+                "PF" => try_deser!(PerfectOsu, PerfectTaiko, PerfectCatch, PerfectMania,),
+                "RD" => try_deser!(RandomOsu, RandomTaiko, Skip_, RandomMania,),
+                "RP" => try_deser!(RepelOsu, Skip_, Skip_, Skip_,),
+                "RX" => try_deser!(RelaxOsu, RelaxTaiko, RelaxCatch, Skip_,),
+                "SD" => try_deser!(
+                    SuddenDeathOsu,
+                    SuddenDeathTaiko,
+                    SuddenDeathCatch,
+                    SuddenDeathMania,
+                ),
+                "SG" => try_deser!(SingleTapOsu, SingleTapTaiko, Skip_, Skip_,),
+                "SI" => try_deser!(SpinInOsu, Skip_, Skip_, Skip_,),
+                "SO" => try_deser!(SpunOutOsu, Skip_, Skip_, Skip_,),
+                "ST" => try_deser!(StrictTrackingOsu, Skip_, Skip_, Skip_,),
+                "SV2" => try_deser!(ScoreV2Osu, ScoreV2Taiko, ScoreV2Catch, ScoreV2Mania,),
+                "SW" => try_deser!(Skip_, SwapTaiko, Skip_, Skip_,),
+                "SY" => try_deser!(SynesthesiaOsu, Skip_, Skip_, Skip_,),
+                "TC" => try_deser!(TraceableOsu, Skip_, Skip_, Skip_,),
+                "TD" => try_deser!(TouchDeviceOsu, Skip_, Skip_, Skip_,),
+                "TP" => try_deser!(TargetPracticeOsu, Skip_, Skip_, Skip_,),
+                "TR" => try_deser!(TransformOsu, Skip_, Skip_, Skip_,),
+                "WD" => try_deser!(WindDownOsu, WindDownTaiko, WindDownCatch, WindDownMania,),
+                "WG" => try_deser!(WiggleOsu, Skip_, Skip_, Skip_,),
+                "WU" => try_deser!(WindUpOsu, WindUpTaiko, WindUpCatch, WindUpMania,),
+                _ => {}
+            }
+            None
         }
     }
 };

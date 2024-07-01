@@ -66,13 +66,13 @@ impl Acronym {
 
 impl Debug for Acronym {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        f.write_str(self.as_str())
+        Debug::fmt(self.as_str(), f)
     }
 }
 
 impl Display for Acronym {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        Debug::fmt(self, f)
+        f.write_str(self.as_str())
     }
 }
 

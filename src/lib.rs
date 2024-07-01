@@ -14,7 +14,8 @@
     clippy::cast_sign_loss,
     clippy::explicit_iter_loop,
     clippy::similar_names,
-    clippy::cast_possible_wrap
+    clippy::cast_possible_wrap,
+    clippy::default_trait_access
 )]
 
 #[cfg(feature = "macros")]
@@ -29,7 +30,6 @@ mod intermode;
 mod legacy_mods;
 mod mod_manual;
 mod mode;
-mod mode_as_seed;
 mod mods;
 mod util;
 
@@ -44,6 +44,10 @@ pub mod intersection;
 /// Iterator types for mods.
 pub mod iter;
 
+/// Types for (de)serialization.
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+pub mod serde;
+
 pub use self::{mode::GameMode, mods::GameMods};
 
 #[doc(inline)]
@@ -53,10 +57,3 @@ pub use self::{
     intermode::GameModsIntermode,
     legacy_mods::GameModsLegacy,
 };
-
-#[cfg(feature = "serde")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
-/// Types for (de)serialization.
-pub mod serde {
-    pub use super::mode_as_seed::ModeAsSeed;
-}

@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    cmp::Ordering,
     fmt::{Debug, Formatter, Result as FmtResult},
 };
 
@@ -82,7 +83,7 @@ impl RulesetMods {
 pub struct Acronym([u8; 3]);
 
 impl Acronym {
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn try_from_str(s: &str) -> Option<Self> {
         match <[u8; 2]>::try_from(s.as_bytes()) {
             Ok([a, b]) => Some(Self([0, a, b])),
             Err(_) => s.as_bytes().try_into().map(Self).ok(),
@@ -121,7 +122,7 @@ impl<'de> Deserialize<'de> for Acronym {
             }
 
             fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
-                Acronym::from_str(v)
+                Acronym::try_from_str(v)
                     .ok_or_else(|| DeError::custom(format!("invalid length for acronym `{v}`")))
             }
         }
@@ -130,6 +131,17 @@ impl<'de> Deserialize<'de> for Acronym {
     }
 }
 
+impl Ord for Acronym {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.as_str().cmp(other.as_str())
+    }
+}
+
+impl PartialOrd for Acronym {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct GameMod {
@@ -235,6 +247,16 @@ impl GameMod {
         writer.write(": A) -> Result<Self::Value, A::Error> {")?;
 
         if !self.settings.is_empty() {
+            writer.write("const FIELDS: &'static [&'static str] = &[")?;
+
+            for setting in self.settings.iter() {
+                writer.write_raw(b"\"")?;
+                writer.write(&setting.name)?;
+                writer.write_raw(b"\",")?;
+            }
+
+            writer.write("];")?;
+
             for setting in self.settings.iter() {
                 writer.write("let mut ")?;
                 writer.write(&setting.name)?;
@@ -257,9 +279,7 @@ impl GameMod {
 
             writer.write(
                 "\
-                                _ => {\
-                                    let _: IgnoredAny = map.next_value()?;\
-                                }\
+                                _ => return Err(DeError::unknown_field(key, FIELDS)),\
                             }\
                         }\
                         Ok(Self::Value {",

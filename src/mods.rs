@@ -480,12 +480,12 @@ impl GameMods {
     /// use rosu_mods::{mods, GameMods, GameModsIntermode, GameMode};
     ///
     /// let intermode: GameModsIntermode = mods!(DT FI);
-    /// let mods = GameMods::try_from_intermode(intermode.clone(), GameMode::Mania).unwrap();
+    /// let mods = GameMods::try_from_intermode(&intermode, GameMode::Mania).unwrap();
     ///
     /// // The FadeIn mod doesn't exist in Taiko
-    /// assert!(GameMods::try_from_intermode(intermode, GameMode::Taiko).is_none());
+    /// assert!(GameMods::try_from_intermode(&intermode, GameMode::Taiko).is_none());
     /// ```
-    pub fn try_from_intermode(mods: GameModsIntermode, mode: GameMode) -> Option<Self> {
+    pub fn try_from_intermode(mods: &GameModsIntermode, mode: GameMode) -> Option<Self> {
         mods.try_with_mode(mode)
     }
 
@@ -499,12 +499,12 @@ impl GameMods {
     /// use rosu_mods::{mods, GameMods, GameModsIntermode, GameMode};
     ///
     /// let intermode: GameModsIntermode = mods!(DT FI);
-    /// let mods = GameMods::from_intermode(intermode.clone(), GameMode::Mania);
+    /// let mods = GameMods::from_intermode(&intermode, GameMode::Mania);
     ///
     /// // The FadeIn mod doesn't exist in Taiko
-    /// let dt = GameMods::from_intermode(intermode, GameMode::Taiko);
+    /// let dt = GameMods::from_intermode(&intermode, GameMode::Taiko);
     /// ```
-    pub fn from_intermode(mods: GameModsIntermode, mode: GameMode) -> Self {
+    pub fn from_intermode(mods: &GameModsIntermode, mode: GameMode) -> Self {
         mods.with_mode(mode)
     }
 

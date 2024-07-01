@@ -51,7 +51,7 @@ mod tests {
     #[test]
     fn empty_intermode() {
         let mods = mods!();
-        assert!(mods.is_empty())
+        assert!(mods.is_empty());
     }
 
     #[test]
