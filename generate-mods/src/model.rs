@@ -265,8 +265,8 @@ impl GameMod {
 
             writer.write(
                 "\
-                        while let Some(key) = map.next_key()? {\
-                            match key {",
+                        while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {\
+                            match key.as_str() {",
             )?;
 
             for setting in self.settings.iter() {
@@ -279,7 +279,7 @@ impl GameMod {
 
             writer.write(
                 "\
-                                _ => return Err(DeError::unknown_field(key, FIELDS)),\
+                                _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),\
                             }\
                         }\
                         Ok(Self::Value {",

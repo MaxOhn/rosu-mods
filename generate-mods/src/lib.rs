@@ -744,7 +744,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
             de::{value::MapAccessDeserializer, Deserializer, Error as DeError, IgnoredAny, MapAccess, Visitor},\
             ser::{Serialize, Serializer, SerializeMap},\
         };\n\n\
-        use crate::serde::{GameModSettings, GameModSettingsSeed};\n\n",
+        use crate::serde::{GameModSettings, GameModSettingsSeed, MaybeOwnedStr};\n\n",
     )?;
 
     for ruleset in rulesets.iter() {
@@ -780,7 +780,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     )?;
 
     writer.write(
-        "impl<'de> Visitor<'de> for GameModSettingsSeed<'de> {\
+        "impl<'a, 'de> Visitor<'de> for GameModSettingsSeed<'a> {\
             type Value = GameMod;\
             fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {\
                 f.write_str(\"GameMod settings\")\

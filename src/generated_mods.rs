@@ -6612,7 +6612,7 @@ const _: () = {
         Deserialize,
     };
 
-    use crate::serde::{GameModSettings, GameModSettingsSeed};
+    use crate::serde::{GameModSettings, GameModSettingsSeed, MaybeOwnedStr};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyOsu {
@@ -6626,10 +6626,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["retries"];
                     let mut retries = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "retries" => retries = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6688,11 +6688,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6731,10 +6731,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6792,10 +6792,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6829,10 +6829,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6867,11 +6867,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6910,10 +6910,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6947,12 +6947,12 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["only_fade_approach_circles"];
                     let mut only_fade_approach_circles = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "only_fade_approach_circles" => {
                                 only_fade_approach_circles = Some(map.next_value()?)
                             }
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -6989,12 +6989,12 @@ const _: () = {
                     let mut follow_delay = None;
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "follow_delay" => follow_delay = Some(map.next_value()?),
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7089,12 +7089,12 @@ const _: () = {
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7139,11 +7139,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["seed", "metronome"];
                     let mut seed = None;
                     let mut metronome = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "seed" => seed = Some(map.next_value()?),
                             "metronome" => metronome = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7191,14 +7191,14 @@ const _: () = {
                     let mut drain_rate = None;
                     let mut overall_difficulty = None;
                     let mut extended_limits = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "circle_size" => circle_size = Some(map.next_value()?),
                             "approach_rate" => approach_rate = Some(map.next_value()?),
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7262,8 +7262,8 @@ const _: () = {
                     let mut always_play_tail_sample = None;
                     let mut fade_hit_circle_early = None;
                     let mut classic_health = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "no_slider_head_accuracy" => {
                                 no_slider_head_accuracy = Some(map.next_value()?)
                             }
@@ -7275,7 +7275,7 @@ const _: () = {
                                 fade_hit_circle_early = Some(map.next_value()?)
                             }
                             "classic_health" => classic_health = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7330,11 +7330,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["angle_sharpness", "seed"];
                     let mut angle_sharpness = None;
                     let mut seed = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "angle_sharpness" => angle_sharpness = Some(map.next_value()?),
                             "seed" => seed = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7373,10 +7373,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["reflection"];
                     let mut reflection = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "reflection" => reflection = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7602,10 +7602,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["strength"];
                     let mut strength = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "strength" => strength = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7663,10 +7663,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["start_scale"];
                     let mut start_scale = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "start_scale" => start_scale = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7700,10 +7700,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["start_scale"];
                     let mut start_scale = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "start_scale" => start_scale = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7740,12 +7740,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7792,12 +7792,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7866,11 +7866,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["spin_speed", "direction"];
                     let mut spin_speed = None;
                     let mut direction = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "spin_speed" => spin_speed = Some(map.next_value()?),
                             "direction" => direction = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7910,11 +7910,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["scale", "style"];
                     let mut scale = None;
                     let mut style = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "scale" => scale = Some(map.next_value()?),
                             "style" => style = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -7960,13 +7960,13 @@ const _: () = {
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
                     let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "inverse_muting" => inverse_muting = Some(map.next_value()?),
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8015,10 +8015,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
                     let mut hidden_combo_count = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8052,10 +8052,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["attraction_strength"];
                     let mut attraction_strength = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "attraction_strength" => attraction_strength = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8089,10 +8089,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["repulsion_strength"];
                     let mut repulsion_strength = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "repulsion_strength" => repulsion_strength = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8127,11 +8127,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8243,13 +8243,13 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["max_depth", "show_approach_circles"];
                     let mut max_depth = None;
                     let mut show_approach_circles = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "max_depth" => max_depth = Some(map.next_value()?),
                             "show_approach_circles" => {
                                 show_approach_circles = Some(map.next_value()?)
                             }
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8385,11 +8385,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8428,10 +8428,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8489,10 +8489,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8526,10 +8526,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8564,11 +8564,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8607,10 +8607,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8670,11 +8670,11 @@ const _: () = {
                         &["size_multiplier", "combo_based_size"];
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8716,12 +8716,12 @@ const _: () = {
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8765,10 +8765,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["seed"];
                     let mut seed = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "seed" => seed = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -8810,13 +8810,13 @@ const _: () = {
                     let mut drain_rate = None;
                     let mut overall_difficulty = None;
                     let mut extended_limits = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "scroll_speed" => scroll_speed = Some(map.next_value()?),
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9036,12 +9036,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9088,12 +9088,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9145,13 +9145,13 @@ const _: () = {
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
                     let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "inverse_muting" => inverse_muting = Some(map.next_value()?),
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9201,11 +9201,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9268,10 +9268,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["retries"];
                     let mut retries = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "retries" => retries = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9330,11 +9330,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9373,10 +9373,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9434,10 +9434,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9471,10 +9471,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9509,11 +9509,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9552,10 +9552,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9615,11 +9615,11 @@ const _: () = {
                         &["size_multiplier", "combo_based_size"];
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9661,12 +9661,12 @@ const _: () = {
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9722,15 +9722,15 @@ const _: () = {
                     let mut drain_rate = None;
                     let mut overall_difficulty = None;
                     let mut extended_limits = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "circle_size" => circle_size = Some(map.next_value()?),
                             "approach_rate" => approach_rate = Some(map.next_value()?),
                             "hard_rock_offsets" => hard_rock_offsets = Some(map.next_value()?),
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9912,12 +9912,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -9964,12 +9964,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10045,13 +10045,13 @@ const _: () = {
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
                     let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "inverse_muting" => inverse_muting = Some(map.next_value()?),
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10100,10 +10100,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
                     let mut hidden_combo_count = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10161,10 +10161,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["retries"];
                     let mut retries = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "retries" => retries = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10223,11 +10223,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10266,10 +10266,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10327,10 +10327,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10364,10 +10364,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["restart"];
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10402,11 +10402,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
                     let mut speed_change = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10445,10 +10445,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["speed_change"];
                     let mut speed_change = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10531,11 +10531,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["coverage", "direction"];
                     let mut coverage = None;
                     let mut direction = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "coverage" => coverage = Some(map.next_value()?),
                             "direction" => direction = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10575,11 +10575,11 @@ const _: () = {
                         &["size_multiplier", "combo_based_size"];
                     let mut size_multiplier = None;
                     let mut combo_based_size = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "size_multiplier" => size_multiplier = Some(map.next_value()?),
                             "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10621,12 +10621,12 @@ const _: () = {
                     let mut minimum_accuracy = None;
                     let mut accuracy_judge_mode = None;
                     let mut restart = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
                             "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10670,10 +10670,10 @@ const _: () = {
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
                     const FIELDS: &'static [&'static str] = &["seed"];
                     let mut seed = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "seed" => seed = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -10758,12 +10758,12 @@ const _: () = {
                     let mut drain_rate = None;
                     let mut overall_difficulty = None;
                     let mut extended_limits = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "drain_rate" => drain_rate = Some(map.next_value()?),
                             "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
                             "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11194,12 +11194,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11246,12 +11246,12 @@ const _: () = {
                     let mut initial_rate = None;
                     let mut final_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "final_rate" => final_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11303,13 +11303,13 @@ const _: () = {
                     let mut enable_metronome = None;
                     let mut mute_combo_count = None;
                     let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "inverse_muting" => inverse_muting = Some(map.next_value()?),
                             "enable_metronome" => enable_metronome = Some(map.next_value()?),
                             "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
                             "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11359,11 +11359,11 @@ const _: () = {
                     const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
                     let mut initial_rate = None;
                     let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key()? {
-                        match key {
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
                             "initial_rate" => initial_rate = Some(map.next_value()?),
                             "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key, FIELDS)),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
@@ -11439,7 +11439,7 @@ const _: () = {
             s.serialize_map(Some(0)).and_then(SerializeMap::end)
         }
     }
-    impl<'de> Visitor<'de> for GameModSettingsSeed<'de> {
+    impl<'a, 'de> Visitor<'de> for GameModSettingsSeed<'a> {
         type Value = GameMod;
         fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
             f.write_str("GameMod settings")

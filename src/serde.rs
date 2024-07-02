@@ -18,7 +18,7 @@ use crate::{
     Acronym, GameModIntermode, GameMode, GameMods, GameModsIntermode,
 };
 
-const BITFLAGS_MUST_FIT: &str = "bitflags must fit in a u32";
+const BITFLAGS_U32: &str = "bitflags must be a u32";
 const EXPECTED_ACRONYM_FIRST: &str = "expected `acronym` as first field";
 
 const MODES: [GameMode; 4] = [
@@ -33,7 +33,7 @@ pub(crate) struct GameModSettingsSeed<'a> {
     pub(crate) mode: GameMode,
 }
 
-impl<'de> DeserializeSeed<'de> for GameModSettingsSeed<'de> {
+impl<'a, 'de> DeserializeSeed<'de> for GameModSettingsSeed<'a> {
     type Value = <Self as Visitor<'de>>::Value;
 
     fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<Self::Value, D::Error> {
@@ -213,32 +213,49 @@ impl<'de> Visitor<'de> for GameModSeed {
         f.write_str("GameMod")
     }
 
-    fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
+    fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+        Ok(self.convert_acronym(v))
+    }
+
+    fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+        self.visit_str(&v)
+    }
+
+    fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
         let Ok(bits) = u32::try_from(v) else {
-            return Err(DeError::custom(BITFLAGS_MUST_FIT));
+            return Err(DeError::custom(BITFLAGS_U32));
         };
 
-        let acronym = GameModIntermode::try_from_bits(bits)
-            .ok_or_else(|| DeError::custom(format!("invalid bits value `{bits}`")))?
+        self.visit_u32(bits)
+    }
+
+    fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
+        let acronym = GameModIntermode::try_from_bits(v)
+            .ok_or_else(|| DeError::custom(format!("invalid bits value `{v}`")))?
             .acronym();
 
         Ok(self.convert_acronym(acronym.as_str()))
     }
 
-    fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
-        Ok(self.convert_acronym(v))
+    fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
+        let Ok(bits) = u32::try_from(v) else {
+            return Err(DeError::custom(BITFLAGS_U32));
+        };
+
+        self.visit_u32(bits)
     }
 
     fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-        let Some("acronym") = map.next_key::<&str>()? else {
+        let Some(GameModField::Acronym) = map.next_key()? else {
             return Err(DeError::custom(EXPECTED_ACRONYM_FIRST));
         };
 
-        let acronym: &'de str = map.next_value()?;
+        let acronym_raw: MaybeOwnedStr<'de> = map.next_value()?;
+        let acronym = acronym_raw.as_str();
         let mut gamemod = None;
 
-        while let Some(key) = map.next_key::<&str>()? {
-            if key == "settings" {
+        while let Some(field) = map.next_key::<GameModField>()? {
+            if field == GameModField::Settings {
                 match self {
                     GameModSeed::Mode(mode) => {
                         let seed = GameModSettingsSeed { acronym, mode };
@@ -560,7 +577,7 @@ impl<'de> MapAccess<'de> for GameModSettingsMap<'de> {
         match self.fields.next() {
             Some(field) => {
                 self.value = Some(&field.value);
-                let key_de = BorrowedStrDeserializer::new(field.name);
+                let key_de = BorrowedStrDeserializer::new(field.name.as_str());
 
                 seed.deserialize(key_de).map(Some)
             }
@@ -583,13 +600,13 @@ impl<'de> MapAccess<'de> for GameModSettingsMap<'de> {
 }
 
 struct GameModSettingField<'a> {
-    name: &'a str,
+    name: MaybeOwnedStr<'a>,
     value: Value<'a>,
 }
 
 enum Value<'de> {
     Bool(bool),
-    Str(&'de str),
+    Str(MaybeOwnedStr<'de>),
     Number(f32),
 }
 
@@ -621,7 +638,15 @@ impl<'de> Deserialize<'de> for Value<'de> {
             }
 
             fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
-                Ok(Value::Str(v))
+                Ok(Value::Str(MaybeOwnedStr::Borrowed(v)))
+            }
+
+            fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+                self.visit_string(v.to_owned())
+            }
+
+            fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+                Ok(Value::Str(MaybeOwnedStr::Owned(v)))
             }
         }
 
@@ -639,7 +664,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
         match self {
             Value::Bool(v) => visitor.visit_bool(*v),
             Value::Number(v) => visitor.visit_f32(*v),
-            Value::Str(v) => visitor.visit_borrowed_str(v),
+            Value::Str(v) => visitor.visit_borrowed_str(v.as_str()),
         }
     }
 
@@ -653,7 +678,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
                 Unexpected::Float(f64::from(*v)),
                 &visitor,
             )),
-            Value::Str(v) => Err(DeError::invalid_type(Unexpected::Str(v), &visitor)),
+            Value::Str(v) => Err(DeError::invalid_type(Unexpected::Str(v.as_str()), &visitor)),
         }
     }
 
@@ -720,7 +745,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
         match self {
             Value::Bool(v) => Err(DeError::invalid_type(Unexpected::Bool(*v), &visitor)),
             Value::Number(v) => visitor.visit_f32(*v),
-            Value::Str(v) => Err(DeError::invalid_type(Unexpected::Str(v), &visitor)),
+            Value::Str(v) => Err(DeError::invalid_type(Unexpected::Str(v.as_str()), &visitor)),
         }
     }
 
@@ -755,7 +780,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
                 Unexpected::Float(f64::from(*v)),
                 &visitor,
             )),
-            Value::Str(v) => visitor.visit_borrowed_str(v),
+            Value::Str(v) => visitor.visit_borrowed_str(v.as_str()),
         }
     }
 
@@ -1056,11 +1081,30 @@ impl<'de> Visitor<'de> for GameModsSeed {
         Ok(self.convert_intermode(&intermode))
     }
 
-    fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-        let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_MUST_FIT))?;
-        let intermode = GameModsIntermode::from_bits(bits);
+    fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+        self.visit_str(&v)
+    }
+
+    fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
+        let Ok(bits) = u32::try_from(v) else {
+            return Err(DeError::custom(BITFLAGS_U32));
+        };
+
+        self.visit_u32(bits)
+    }
+
+    fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
+        let intermode = GameModsIntermode::from_bits(v);
 
         Ok(self.convert_intermode(&intermode))
+    }
+
+    fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
+        let Ok(bits) = u32::try_from(v) else {
+            return Err(DeError::custom(BITFLAGS_U32));
+        };
+
+        self.visit_u32(bits)
     }
 
     fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
@@ -1086,13 +1130,29 @@ impl<'de> Visitor<'de> for GameModsSeed {
 
         Ok(GameMods { inner })
     }
+
+    fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
+        let seed = match self {
+            GameModsSeed::Mode(mode) => GameModSeed::Mode(mode),
+            GameModsSeed::AllowMultipleModes | GameModsSeed::SameModeForEachMod => {
+                GameModSeed::GuessMode
+            }
+        };
+
+        let gamemod = seed.visit_map(map)?;
+
+        let mut mods = GameMods::new();
+        mods.insert(gamemod);
+
+        Ok(mods)
+    }
 }
 
 enum GameModRaw<'a> {
     Bits(u32),
-    Acronym(&'a str),
+    Acronym(MaybeOwnedStr<'a>),
     Full {
-        acronym: &'a str,
+        acronym: MaybeOwnedStr<'a>,
         settings: GameModSettings<'a>,
     },
 }
@@ -1125,11 +1185,6 @@ impl GameModRaw<'_> {
                 })
                 .count();
 
-            println!(
-                "{mode:?}: {known_count} => {:?}",
-                mods.values().collect::<Vec<_>>()
-            );
-
             if known_count == mods_raw.len() {
                 return Ok(GameMods { inner: mods });
             } else if known_count > best_known_count {
@@ -1146,10 +1201,13 @@ impl GameModRaw<'_> {
             GameModRaw::Bits(bits) => GameModIntermode::try_from_bits(*bits)
                 .ok_or_else(|| DeError::custom(format!("invalid bits value `{bits}`")))
                 .map(|intermode| GameMod::new(intermode.acronym().as_str(), mode)),
-            GameModRaw::Acronym(acronym) => Ok(GameMod::new(acronym, mode)),
-            GameModRaw::Full { acronym, settings } => GameModSettingsSeed { acronym, mode }
-                .deserialize(settings)
-                .map_err(DeError::custom),
+            GameModRaw::Acronym(acronym) => Ok(GameMod::new(acronym.as_str(), mode)),
+            GameModRaw::Full { acronym, settings } => GameModSettingsSeed {
+                acronym: acronym.as_str(),
+                mode,
+            }
+            .deserialize(settings)
+            .map_err(DeError::custom),
         }
     }
 }
@@ -1168,35 +1226,118 @@ impl<'de> Deserialize<'de> for GameModRaw<'de> {
             fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
                 u32::try_from(v)
                     .map(GameModRaw::Bits)
-                    .map_err(|_| DeError::custom(BITFLAGS_MUST_FIT))
+                    .map_err(|_| DeError::custom(BITFLAGS_U32))
             }
 
             fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
-                Ok(GameModRaw::Acronym(v))
+                Ok(GameModRaw::Acronym(MaybeOwnedStr::Borrowed(v)))
             }
 
             fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                let Some("acronym") = map.next_key::<&str>()? else {
+                let Some(GameModField::Acronym) = map.next_key()? else {
                     return Err(DeError::custom(EXPECTED_ACRONYM_FIRST));
                 };
 
-                let acronym: &'de str = map.next_value()?;
-                let mut gamemod = None;
+                let acronym: MaybeOwnedStr<'de> = map.next_value()?;
 
-                while let Some(key) = map.next_key::<&str>()? {
-                    if key == "settings" {
-                        let settings: GameModSettings<'de> = map.next_value()?;
-                        gamemod = Some(GameModRaw::Full { acronym, settings });
-                    } else {
-                        let _: IgnoredAny = map.next_value()?;
+                loop {
+                    match map.next_key::<GameModField>()? {
+                        Some(GameModField::Settings) => {
+                            let settings: GameModSettings<'de> = map.next_value()?;
+
+                            while map.next_entry::<GameModField, IgnoredAny>()?.is_some() {}
+
+                            return Ok(GameModRaw::Full { acronym, settings });
+                        }
+                        Some(_) => {
+                            let _: IgnoredAny = map.next_value()?;
+                        }
+                        None => return Ok(GameModRaw::Acronym(acronym)),
                     }
                 }
-
-                Ok(gamemod.unwrap_or(GameModRaw::Acronym(acronym)))
             }
         }
 
         d.deserialize_any(GameModRawVisitor)
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Eq)]
+enum GameModField {
+    Acronym,
+    Settings,
+    Other,
+}
+
+impl<'de> Deserialize<'de> for GameModField {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        struct GameModFieldVisitor;
+
+        impl<'de> Visitor<'de> for GameModFieldVisitor {
+            type Value = GameModField;
+
+            fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+                f.write_str("identifier")
+            }
+
+            fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+                let field = match v {
+                    "acronym" => GameModField::Acronym,
+                    "settings" => GameModField::Settings,
+                    _ => GameModField::Other,
+                };
+
+                Ok(field)
+            }
+
+            fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+                self.visit_str(&v)
+            }
+        }
+
+        d.deserialize_identifier(GameModFieldVisitor)
+    }
+}
+
+pub(crate) enum MaybeOwnedStr<'a> {
+    Borrowed(&'a str),
+    Owned(String),
+}
+
+impl MaybeOwnedStr<'_> {
+    pub(crate) fn as_str(&self) -> &str {
+        match self {
+            MaybeOwnedStr::Borrowed(a) => a,
+            MaybeOwnedStr::Owned(a) => a,
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for MaybeOwnedStr<'de> {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        struct AcronymRawVisitor;
+
+        impl<'de> Visitor<'de> for AcronymRawVisitor {
+            type Value = MaybeOwnedStr<'de>;
+
+            fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+                f.write_str("string")
+            }
+
+            fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
+                Ok(MaybeOwnedStr::Borrowed(v))
+            }
+
+            fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+                self.visit_string(v.to_owned())
+            }
+
+            fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+                Ok(MaybeOwnedStr::Owned(v))
+            }
+        }
+
+        d.deserialize_str(AcronymRawVisitor)
     }
 }
 
@@ -1491,6 +1632,31 @@ mod tests {
             minimum_accuracy: Some(12.34),
             accuracy_judge_mode: Some(String::from("my string")),
             restart: Some(false),
+        }));
+        assert_eq!(mods, expected);
+    }
+
+    #[test]
+    fn deser_mods_single_data() {
+        let json = r#"{
+            "acronym": "FI"
+        }"#;
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::AllowMultipleModes
+            .deserialize(&mut d)
+            .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::FadeInMania(Default::default()));
+        assert_eq!(mods, expected);
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::Mode(GameMode::Taiko)
+            .deserialize(&mut d)
+            .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::UnknownTaiko(UnknownMod {
+            acronym: "FI".parse().unwrap(),
         }));
         assert_eq!(mods, expected);
     }
