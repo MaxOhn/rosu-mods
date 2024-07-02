@@ -443,6 +443,7 @@ const _: () = {
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GameModsLegacy {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            // TODO: custom deserialization to avoid the allocation
             let mods = GameModsIntermode::deserialize(d)?;
 
             Ok(mods.as_legacy())

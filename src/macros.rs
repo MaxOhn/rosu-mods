@@ -1,19 +1,16 @@
 #![cfg(feature = "macros")]
 
-/// Short-hand macro to easily create [`GameMods`]
-/// or [`GameModsIntermode`].
+/// Short-hand macro to easily create [`GameMods`] or [`GameModsIntermode`].
 ///
-/// To create [`GameModsIntermode`],
-/// specify a space-separated list of acronyms.
+/// To create [`GameModsIntermode`], specify a space-separated list of
+/// acronyms.
 ///
-/// To create [`GameMods`],
-/// specify `Osu`, `Taiko`, `Catch`, or `Mania`, followed
-/// by a colon (`:`), followed by a space-separated list of acronyms.
-/// Note that creating [`GameMods`] requires the `macros` feature flag.
+/// To create [`GameMods`], specify `Osu`, `Taiko`, `Catch`, or `Mania`,
+/// followed by a colon (`:`), followed by a space-separated list of acronyms.
 ///
 /// # Example
 ///
-/// ```rust
+/// ```
 /// # use rosu_mods::{mods, GameMods, GameModsIntermode};
 /// let mods: GameMods = mods!(Taiko: NC HR);
 /// assert_eq!(mods.to_string(), "HRNC");
@@ -72,7 +69,6 @@ mod tests {
         assert!(mods.is_empty());
     }
 
-    #[cfg(feature = "macros")]
     #[test]
     fn full_taiko() {
         let mods = mods!(Taiko: HR PF);
