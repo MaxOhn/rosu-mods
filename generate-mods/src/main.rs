@@ -2,9 +2,6 @@ use std::{fs::File, process::Command};
 
 use generate_mods::*;
 
-const AUTOMATED_DISCLAIMER: &str = "//! Each individual [`GameMod`] as defined by osu!lazer.\n\
-    //!\n\
-    //! This file was generated automatically - do not modify.";
 const URL: &str = "https://raw.githubusercontent.com/ppy/osu-web/master/database/mods.json";
 const OUT_FILE: &str = "../src/generated_mods.rs";
 
@@ -17,7 +14,7 @@ fn main() -> GenResult {
     let mut itoa_buf = itoa::Buffer::new();
 
     println!("Specifying preamble...");
-    specify_preamble(&mut writer, URL, AUTOMATED_DISCLAIMER)?;
+    specify_preamble(&mut writer, URL)?;
     println!("Defining gamemod structs...");
     define_gamemod_structs(&rulesets, &mut writer, &mut itoa_buf)?;
     println!("Defining GameModKind...");

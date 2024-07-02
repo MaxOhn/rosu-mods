@@ -12,17 +12,18 @@ mod error;
 mod model;
 mod writer;
 
-pub fn specify_preamble(writer: &mut Writer, url: &str, disclaimer: &str) -> GenResult {
-    writer.write(disclaimer)?;
+pub fn specify_preamble(writer: &mut Writer, url: &str) -> GenResult {
     writer.write(
-        "\n\
+        "//! Each individual [`GameMod`] as defined by osu!lazer.\n\
         //!\n\
         //! See <",
     )?;
     writer.write(url)?;
 
     writer.write(
-        ">\n\n\
+        ">\n\
+        //!\n\
+        //! This file was generated automatically.\n\n\
         #![allow(clippy::all, clippy::pedantic)]\n\n\
         use std::{\
             borrow::Borrow,\

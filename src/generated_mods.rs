@@ -1,8 +1,8 @@
 //! Each individual [`GameMod`] as defined by osu!lazer.
 //!
-//! This file was generated automatically - do not modify.
-//!
 //! See <https://raw.githubusercontent.com/ppy/osu-web/master/database/mods.json>
+//!
+//! This file was generated automatically.
 
 #![allow(clippy::all, clippy::pedantic)]
 
