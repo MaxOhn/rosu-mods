@@ -12,7 +12,7 @@ Individual gamemod types are generated automatically through the [`generate-mods
 
 In total there are three different collections for mods.
 
-#### GameModsLegacy
+#### `GameModsLegacy`
 
 [`GameModsLegacy`] is a lightweight type that is essentially just bitflags for the [legacy mods].
 
@@ -24,7 +24,7 @@ assert_eq!(hdnc.to_string(), "HDNC");
 assert!(hdnc.contains(GameModsLegacy::DoubleTime));
 ```
 
-#### GameMods
+#### `GameMods`
 
 [`GameMods`] is a collection of the [`GameMod`] enum. [`GameMod`] distinguishes between each
 mode so if a mod is valid for multiple modes, each of those modes will have a variant for that
@@ -55,7 +55,7 @@ assert_eq!(iter.next(), Some(GameMod::AccuracyChallengeMania(AccuracyChallengeMa
 assert_eq!(iter.next(), None);
 ```
 
-#### GameModsIntermode
+#### `GameModsIntermode`
 
 [`GameModsIntermode`] is a collection of the [`GameModIntermode`] enum. Unlike [`GameMod`],
 this enum does not distinguish between modes. As such, variants do not carry further data
