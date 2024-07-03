@@ -7,7 +7,7 @@ use std::{
     iter::{Copied, FusedIterator},
 };
 
-use crate::legacy_mods::GameModsLegacy;
+use crate::legacy::GameModsLegacy;
 
 use super::{generated_mods::GameModOrder, GameMod, GameModIntermode};
 
