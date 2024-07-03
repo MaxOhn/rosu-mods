@@ -15,11 +15,1571 @@ use std::{
 
 use crate::{Acronym, GameMode};
 
-/// Larger circles, more forgiving HP drain, less accuracy required, and three lives!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct EasyOsu {
-    /// Number of extra lives
-    pub retries: Option<f32>,
+mod all_structs {
+    #[cfg(feature = "rkyv")]
+    use rkyv::bytecheck;
+    /// Larger circles, more forgiving HP drain, less accuracy required, and three lives!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct EasyOsu {
+        /// Number of extra lives
+        pub retries: Option<f32>,
+    }
+    /// You can't fail, no matter what.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct NoFailOsu {}
+    /// Less zoom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct HalfTimeOsu {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Whoaaaaa...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DaycoreOsu {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Everything just got a bit harder...
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HardRockOsu {}
+    /// Miss and fail.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct SuddenDeathOsu {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// SS or quit.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct PerfectOsu {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Zoooooooooom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DoubleTimeOsu {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Uguuuuuuuu...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct NightcoreOsu {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Play with no approach circles and fading circles/sliders.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct HiddenOsu {
+        /// The main object body will not fade when enabled.
+        pub only_fade_approach_circles: Option<bool>,
+    }
+    /// Restricted view area.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct FlashlightOsu {
+        /// Milliseconds until the flashlight reaches the cursor
+        pub follow_delay: Option<f32>,
+        /// Multiplier applied to the default flashlight size.
+        pub size_multiplier: Option<f32>,
+        /// Decrease the flashlight size as combo increases.
+        pub combo_based_size: Option<bool>,
+    }
+    /// Play with blinds on your screen.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct BlindsOsu {}
+    /// Once you start a slider, follow precisely or get a miss.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct StrictTrackingOsu {}
+    /// Fail if your accuracy drops too low!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AccuracyChallengeOsu {
+        /// Trigger a failure if your accuracy goes below this value.
+        pub minimum_accuracy: Option<f32>,
+        /// The mode of accuracy that will trigger failure.
+        pub accuracy_judge_mode: Option<String>,
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Practice keeping up with the beat of the song.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct TargetPracticeOsu {
+        /// Use a custom seed instead of a random one
+        pub seed: Option<f32>,
+        /// Whether a metronome beat should play in the background
+        pub metronome: Option<bool>,
+    }
+    /// Override a beatmap's difficulty settings.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DifficultyAdjustOsu {
+        /// Override a beatmap's set CS.
+        pub circle_size: Option<f32>,
+        /// Override a beatmap's set AR.
+        pub approach_rate: Option<f32>,
+        /// Override a beatmap's set HP.
+        pub drain_rate: Option<f32>,
+        /// Override a beatmap's set OD.
+        pub overall_difficulty: Option<f32>,
+        /// Adjust difficulty beyond sane limits.
+        pub extended_limits: Option<bool>,
+    }
+    /// Feeling nostalgic?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct ClassicOsu {
+        /// Scores sliders proportionally to the number of ticks hit.
+        pub no_slider_head_accuracy: Option<bool>,
+        /// Applies note lock to the full hit window.
+        pub classic_note_lock: Option<bool>,
+        /// Always plays a slider's tail sample regardless of whether it was hit or not.
+        pub always_play_tail_sample: Option<bool>,
+        /// Make hit circles fade out into a miss, rather than after it.
+        pub fade_hit_circle_early: Option<bool>,
+        /// More closely resembles the original HP drain mechanics.
+        pub classic_health: Option<bool>,
+    }
+    /// It never gets boring!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct RandomOsu {
+        /// How sharp angles should be
+        pub angle_sharpness: Option<f32>,
+        /// Use a custom seed instead of a random one
+        pub seed: Option<f32>,
+    }
+    /// Flip objects on the chosen axes.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct MirrorOsu {
+        /// Choose which axes objects are mirrored over.
+        pub reflection: Option<String>,
+    }
+    /// Don't use the same key twice in a row!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct AlternateOsu {}
+    /// You must only use one key!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SingleTapOsu {}
+    /// Watch a perfect automated play through the song.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct AutoplayOsu {}
+    /// Watch the video without visual distractions.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct CinemaOsu {}
+    /// You don't need to click. Give your clicking/tapping fingers a break from the heat of things.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct RelaxOsu {}
+    /// Automatic cursor movement - just follow the rhythm.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct AutopilotOsu {}
+    /// Spinners will be automatically completed.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SpunOutOsu {}
+    /// Everything rotates. EVERYTHING.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct TransformOsu {}
+    /// They just won't stay still...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WiggleOsu {
+        /// Multiplier applied to the wiggling strength.
+        pub strength: Option<f32>,
+    }
+    /// Circles spin in. No approach circles.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SpinInOsu {}
+    /// Hit them at the right size!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct GrowOsu {
+        /// The initial size multiplier applied to all objects.
+        pub start_scale: Option<f32>,
+    }
+    /// Hit them at the right size!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DeflateOsu {
+        /// The initial size multiplier applied to all objects.
+        pub start_scale: Option<f32>,
+    }
+    /// Can you keep up?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindUpOsu {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Sloooow doooown...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindDownOsu {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Put your faith in the approach circles...
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct TraceableOsu {}
+    /// The whole playfield is on a wheel!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct BarrelRollOsu {
+        /// Rotations per minute
+        pub spin_speed: Option<f32>,
+        /// The direction of rotation
+        pub direction: Option<String>,
+    }
+    /// Never trust the approach circles...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct ApproachDifferentOsu {
+        /// Change the initial size of the approach circle, relative to hit circles.
+        pub scale: Option<f32>,
+        /// Change the animation style of the approach circles.
+        pub style: Option<String>,
+    }
+    /// Can you still feel the rhythm without music?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct MutedOsu {
+        /// Increase volume as combo builds.
+        pub inverse_muting: Option<bool>,
+        /// Add a metronome beat to help you keep track of the rhythm.
+        pub enable_metronome: Option<bool>,
+        /// The combo count at which point the track reaches its final volume.
+        pub mute_combo_count: Option<f32>,
+        /// Hit sounds are also muted alongside the track.
+        pub affects_hit_sounds: Option<bool>,
+    }
+    /// Where's the cursor?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct NoScopeOsu {
+        /// The combo count at which the cursor becomes completely hidden
+        pub hidden_combo_count: Option<f32>,
+    }
+    /// No need to chase the circles – your cursor is a magnet!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct MagnetisedOsu {
+        /// How strong the pull is.
+        pub attraction_strength: Option<f32>,
+    }
+    /// Hit objects run away!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct RepelOsu {
+        /// How strong the repulsion is.
+        pub repulsion_strength: Option<f32>,
+    }
+    /// Let track speed adapt to you.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AdaptiveSpeedOsu {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Burn the notes into your memory.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct FreezeFrameOsu {}
+    /// Don't let their popping distract you!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct BubblesOsu {}
+    /// Colours hit objects based on the rhythm.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SynesthesiaOsu {}
+    /// 3D. Almost.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DepthOsu {
+        /// How far away objects appear.
+        pub max_depth: Option<f32>,
+        /// Whether approach circles should be visible.
+        pub show_approach_circles: Option<bool>,
+    }
+    /// Automatically applied to plays on devices with a touchscreen.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct TouchDeviceOsu {}
+    /// Score set on earlier osu! versions with the V2 scoring algorithm active.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ScoreV2Osu {}
+    /// Beats move slower, and less accuracy required!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct EasyTaiko {}
+    /// You can't fail, no matter what.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct NoFailTaiko {}
+    /// Less zoom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct HalfTimeTaiko {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Whoaaaaa...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DaycoreTaiko {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Everything just got a bit harder...
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HardRockTaiko {}
+    /// Miss and fail.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct SuddenDeathTaiko {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// SS or quit.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct PerfectTaiko {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Zoooooooooom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DoubleTimeTaiko {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Uguuuuuuuu...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct NightcoreTaiko {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Beats fade out before you hit them!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HiddenTaiko {}
+    /// Restricted view area.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct FlashlightTaiko {
+        /// Multiplier applied to the default flashlight size.
+        pub size_multiplier: Option<f32>,
+        /// Decrease the flashlight size as combo increases.
+        pub combo_based_size: Option<bool>,
+    }
+    /// Fail if your accuracy drops too low!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AccuracyChallengeTaiko {
+        /// Trigger a failure if your accuracy goes below this value.
+        pub minimum_accuracy: Option<f32>,
+        /// The mode of accuracy that will trigger failure.
+        pub accuracy_judge_mode: Option<String>,
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Shuffle around the colours!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct RandomTaiko {
+        /// Use a custom seed instead of a random one
+        pub seed: Option<f32>,
+    }
+    /// Override a beatmap's difficulty settings.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DifficultyAdjustTaiko {
+        /// Adjust a beatmap's set scroll speed
+        pub scroll_speed: Option<f32>,
+        /// Override a beatmap's set HP.
+        pub drain_rate: Option<f32>,
+        /// Override a beatmap's set OD.
+        pub overall_difficulty: Option<f32>,
+        /// Adjust difficulty beyond sane limits.
+        pub extended_limits: Option<bool>,
+    }
+    /// Feeling nostalgic?
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ClassicTaiko {}
+    /// Dons become kats, kats become dons
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SwapTaiko {}
+    /// One key for dons, one key for kats.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SingleTapTaiko {}
+    /// No more tricky speed changes!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ConstantSpeedTaiko {}
+    /// Watch a perfect automated play through the song.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct AutoplayTaiko {}
+    /// Watch the video without visual distractions.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct CinemaTaiko {}
+    /// No need to remember which key is correct anymore!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct RelaxTaiko {}
+    /// Can you keep up?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindUpTaiko {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Sloooow doooown...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindDownTaiko {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Can you still feel the rhythm without music?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct MutedTaiko {
+        /// Increase volume as combo builds.
+        pub inverse_muting: Option<bool>,
+        /// Add a metronome beat to help you keep track of the rhythm.
+        pub enable_metronome: Option<bool>,
+        /// The combo count at which point the track reaches its final volume.
+        pub mute_combo_count: Option<f32>,
+        /// Hit sounds are also muted alongside the track.
+        pub affects_hit_sounds: Option<bool>,
+    }
+    /// Let track speed adapt to you.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AdaptiveSpeedTaiko {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Score set on earlier osu! versions with the V2 scoring algorithm active.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ScoreV2Taiko {}
+    /// Larger fruits, more forgiving HP drain, less accuracy required, and three lives!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct EasyCatch {
+        /// Number of extra lives
+        pub retries: Option<f32>,
+    }
+    /// You can't fail, no matter what.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct NoFailCatch {}
+    /// Less zoom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct HalfTimeCatch {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Whoaaaaa...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DaycoreCatch {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Everything just got a bit harder...
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HardRockCatch {}
+    /// Miss and fail.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct SuddenDeathCatch {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// SS or quit.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct PerfectCatch {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Zoooooooooom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DoubleTimeCatch {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Uguuuuuuuu...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct NightcoreCatch {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Play with fading fruits.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HiddenCatch {}
+    /// Restricted view area.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct FlashlightCatch {
+        /// Multiplier applied to the default flashlight size.
+        pub size_multiplier: Option<f32>,
+        /// Decrease the flashlight size as combo increases.
+        pub combo_based_size: Option<bool>,
+    }
+    /// Fail if your accuracy drops too low!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AccuracyChallengeCatch {
+        /// Trigger a failure if your accuracy goes below this value.
+        pub minimum_accuracy: Option<f32>,
+        /// The mode of accuracy that will trigger failure.
+        pub accuracy_judge_mode: Option<String>,
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Override a beatmap's difficulty settings.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DifficultyAdjustCatch {
+        /// Override a beatmap's set CS.
+        pub circle_size: Option<f32>,
+        /// Override a beatmap's set AR.
+        pub approach_rate: Option<f32>,
+        /// Adjust the patterns as if Hard Rock is enabled.
+        pub hard_rock_offsets: Option<bool>,
+        /// Override a beatmap's set HP.
+        pub drain_rate: Option<f32>,
+        /// Override a beatmap's set OD.
+        pub overall_difficulty: Option<f32>,
+        /// Adjust difficulty beyond sane limits.
+        pub extended_limits: Option<bool>,
+    }
+    /// Feeling nostalgic?
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ClassicCatch {}
+    /// Fruits are flipped horizontally.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct MirrorCatch {}
+    /// Watch a perfect automated play through the song.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct AutoplayCatch {}
+    /// Watch the video without visual distractions.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct CinemaCatch {}
+    /// Use the mouse to control the catcher.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct RelaxCatch {}
+    /// Can you keep up?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindUpCatch {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Sloooow doooown...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindDownCatch {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// The fruits are... floating?
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct FloatingFruitsCatch {}
+    /// Can you still feel the rhythm without music?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct MutedCatch {
+        /// Increase volume as combo builds.
+        pub inverse_muting: Option<bool>,
+        /// Add a metronome beat to help you keep track of the rhythm.
+        pub enable_metronome: Option<bool>,
+        /// The combo count at which point the track reaches its final volume.
+        pub mute_combo_count: Option<f32>,
+        /// Hit sounds are also muted alongside the track.
+        pub affects_hit_sounds: Option<bool>,
+    }
+    /// Where's the catcher?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct NoScopeCatch {
+        /// The combo count at which the cursor becomes completely hidden
+        pub hidden_combo_count: Option<f32>,
+    }
+    /// Score set on earlier osu! versions with the V2 scoring algorithm active.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ScoreV2Catch {}
+    /// More forgiving HP drain, less accuracy required, and three lives!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct EasyMania {
+        /// Number of extra lives
+        pub retries: Option<f32>,
+    }
+    /// You can't fail, no matter what.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct NoFailMania {}
+    /// Less zoom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct HalfTimeMania {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Whoaaaaa...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DaycoreMania {
+        /// The actual decrease to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Everything just got a bit harder...
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HardRockMania {}
+    /// Miss and fail.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct SuddenDeathMania {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// SS or quit.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct PerfectMania {
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Zoooooooooom...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DoubleTimeMania {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Uguuuuuuuu...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct NightcoreMania {
+        /// The actual increase to apply
+        pub speed_change: Option<f32>,
+    }
+    /// Keys appear out of nowhere!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct FadeInMania {}
+    /// Keys fade out before you hit them!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HiddenMania {}
+    /// Decrease the playfield's viewing area.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct CoverMania {
+        /// The proportion of playfield height that notes will be hidden for.
+        pub coverage: Option<f32>,
+        /// The direction on which the cover is applied
+        pub direction: Option<String>,
+    }
+    /// Restricted view area.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct FlashlightMania {
+        /// Multiplier applied to the default flashlight size.
+        pub size_multiplier: Option<f32>,
+        /// Decrease the flashlight size as combo increases.
+        pub combo_based_size: Option<bool>,
+    }
+    /// Fail if your accuracy drops too low!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AccuracyChallengeMania {
+        /// Trigger a failure if your accuracy goes below this value.
+        pub minimum_accuracy: Option<f32>,
+        /// The mode of accuracy that will trigger failure.
+        pub accuracy_judge_mode: Option<String>,
+        /// Automatically restarts when failed.
+        pub restart: Option<bool>,
+    }
+    /// Shuffle around the keys!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct RandomMania {
+        /// Use a custom seed instead of a random one
+        pub seed: Option<f32>,
+    }
+    /// Double the stages, double the fun!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct DualStagesMania {}
+    /// Notes are flipped horizontally.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct MirrorMania {}
+    /// Override a beatmap's difficulty settings.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct DifficultyAdjustMania {
+        /// Override a beatmap's set HP.
+        pub drain_rate: Option<f32>,
+        /// Override a beatmap's set OD.
+        pub overall_difficulty: Option<f32>,
+        /// Adjust difficulty beyond sane limits.
+        pub extended_limits: Option<bool>,
+    }
+    /// Feeling nostalgic?
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ClassicMania {}
+    /// Hold the keys. To the beat.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct InvertMania {}
+    /// No more tricky speed changes!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ConstantSpeedMania {}
+    /// Replaces all hold notes with normal notes.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct HoldOffMania {}
+    /// Play with one key.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct OneKeyMania {}
+    /// Play with two keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct TwoKeysMania {}
+    /// Play with three keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ThreeKeysMania {}
+    /// Play with four keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct FourKeysMania {}
+    /// Play with five keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct FiveKeysMania {}
+    /// Play with six keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SixKeysMania {}
+    /// Play with seven keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct SevenKeysMania {}
+    /// Play with eight keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct EightKeysMania {}
+    /// Play with nine keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct NineKeysMania {}
+    /// Play with ten keys.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct TenKeysMania {}
+    /// Watch a perfect automated play through the song.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct AutoplayMania {}
+    /// Watch the video without visual distractions.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct CinemaMania {}
+    /// Can you keep up?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindUpMania {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Sloooow doooown...
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct WindDownMania {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// The final speed to ramp to
+        pub final_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Can you still feel the rhythm without music?
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct MutedMania {
+        /// Increase volume as combo builds.
+        pub inverse_muting: Option<bool>,
+        /// Add a metronome beat to help you keep track of the rhythm.
+        pub enable_metronome: Option<bool>,
+        /// The combo count at which point the track reaches its final volume.
+        pub mute_combo_count: Option<f32>,
+        /// Hit sounds are also muted alongside the track.
+        pub affects_hit_sounds: Option<bool>,
+    }
+    /// Let track speed adapt to you.
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    pub struct AdaptiveSpeedMania {
+        /// The starting speed of the track
+        pub initial_rate: Option<f32>,
+        /// Should pitch be adjusted with speed
+        pub adjust_pitch: Option<bool>,
+    }
+    /// Score set on earlier osu! versions with the V2 scoring algorithm active.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct ScoreV2Mania {}
+    /// Any unknown mod.
+    #[derive(Copy, Eq, Clone, Debug, PartialEq, PartialOrd, Ord, Hash)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct UnknownMod {
+        pub acronym: crate::Acronym,
+    }
+}
+pub use all_structs::{
+    AccuracyChallengeCatch, AccuracyChallengeMania, AccuracyChallengeOsu, AccuracyChallengeTaiko,
+    AdaptiveSpeedMania, AdaptiveSpeedOsu, AdaptiveSpeedTaiko, AlternateOsu, ApproachDifferentOsu,
+    AutopilotOsu, AutoplayCatch, AutoplayMania, AutoplayOsu, AutoplayTaiko, BarrelRollOsu,
+    BlindsOsu, BubblesOsu, CinemaCatch, CinemaMania, CinemaOsu, CinemaTaiko, ClassicCatch,
+    ClassicMania, ClassicOsu, ClassicTaiko, ConstantSpeedMania, ConstantSpeedTaiko, CoverMania,
+    DaycoreCatch, DaycoreMania, DaycoreOsu, DaycoreTaiko, DeflateOsu, DepthOsu,
+    DifficultyAdjustCatch, DifficultyAdjustMania, DifficultyAdjustOsu, DifficultyAdjustTaiko,
+    DoubleTimeCatch, DoubleTimeMania, DoubleTimeOsu, DoubleTimeTaiko, DualStagesMania, EasyCatch,
+    EasyMania, EasyOsu, EasyTaiko, EightKeysMania, FadeInMania, FiveKeysMania, FlashlightCatch,
+    FlashlightMania, FlashlightOsu, FlashlightTaiko, FloatingFruitsCatch, FourKeysMania,
+    FreezeFrameOsu, GrowOsu, HalfTimeCatch, HalfTimeMania, HalfTimeOsu, HalfTimeTaiko,
+    HardRockCatch, HardRockMania, HardRockOsu, HardRockTaiko, HiddenCatch, HiddenMania, HiddenOsu,
+    HiddenTaiko, HoldOffMania, InvertMania, MagnetisedOsu, MirrorCatch, MirrorMania, MirrorOsu,
+    MutedCatch, MutedMania, MutedOsu, MutedTaiko, NightcoreCatch, NightcoreMania, NightcoreOsu,
+    NightcoreTaiko, NineKeysMania, NoFailCatch, NoFailMania, NoFailOsu, NoFailTaiko, NoScopeCatch,
+    NoScopeOsu, OneKeyMania, PerfectCatch, PerfectMania, PerfectOsu, PerfectTaiko, RandomMania,
+    RandomOsu, RandomTaiko, RelaxCatch, RelaxOsu, RelaxTaiko, RepelOsu, ScoreV2Catch, ScoreV2Mania,
+    ScoreV2Osu, ScoreV2Taiko, SevenKeysMania, SingleTapOsu, SingleTapTaiko, SixKeysMania,
+    SpinInOsu, SpunOutOsu, StrictTrackingOsu, SuddenDeathCatch, SuddenDeathMania, SuddenDeathOsu,
+    SuddenDeathTaiko, SwapTaiko, SynesthesiaOsu, TargetPracticeOsu, TenKeysMania, ThreeKeysMania,
+    TouchDeviceOsu, TraceableOsu, TransformOsu, TwoKeysMania, UnknownMod, WiggleOsu, WindDownCatch,
+    WindDownMania, WindDownOsu, WindDownTaiko, WindUpCatch, WindUpMania, WindUpOsu, WindUpTaiko,
+};
+pub use gamemod::GameMod;
+pub use intermode::GameModIntermode;
+pub use kind::GameModKind;
+/// Types for (de)serialization through `rkyv`.
+#[cfg(feature = "rkyv")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+#[doc(hidden)]
+pub mod rkyv {
+    pub use super::all_structs::{
+        AccuracyChallengeCatchResolver, AccuracyChallengeManiaResolver,
+        AccuracyChallengeOsuResolver, AccuracyChallengeTaikoResolver, AdaptiveSpeedManiaResolver,
+        AdaptiveSpeedOsuResolver, AdaptiveSpeedTaikoResolver, AlternateOsuResolver,
+        ApproachDifferentOsuResolver, ArchivedAccuracyChallengeCatch,
+        ArchivedAccuracyChallengeMania, ArchivedAccuracyChallengeOsu,
+        ArchivedAccuracyChallengeTaiko, ArchivedAdaptiveSpeedMania, ArchivedAdaptiveSpeedOsu,
+        ArchivedAdaptiveSpeedTaiko, ArchivedApproachDifferentOsu, ArchivedBarrelRollOsu,
+        ArchivedClassicOsu, ArchivedCoverMania, ArchivedDaycoreCatch, ArchivedDaycoreMania,
+        ArchivedDaycoreOsu, ArchivedDaycoreTaiko, ArchivedDeflateOsu, ArchivedDepthOsu,
+        ArchivedDifficultyAdjustCatch, ArchivedDifficultyAdjustMania, ArchivedDifficultyAdjustOsu,
+        ArchivedDifficultyAdjustTaiko, ArchivedDoubleTimeCatch, ArchivedDoubleTimeMania,
+        ArchivedDoubleTimeOsu, ArchivedDoubleTimeTaiko, ArchivedEasyCatch, ArchivedEasyMania,
+        ArchivedEasyOsu, ArchivedFlashlightCatch, ArchivedFlashlightMania, ArchivedFlashlightOsu,
+        ArchivedFlashlightTaiko, ArchivedGrowOsu, ArchivedHalfTimeCatch, ArchivedHalfTimeMania,
+        ArchivedHalfTimeOsu, ArchivedHalfTimeTaiko, ArchivedHiddenOsu, ArchivedMagnetisedOsu,
+        ArchivedMirrorOsu, ArchivedMutedCatch, ArchivedMutedMania, ArchivedMutedOsu,
+        ArchivedMutedTaiko, ArchivedNightcoreCatch, ArchivedNightcoreMania, ArchivedNightcoreOsu,
+        ArchivedNightcoreTaiko, ArchivedNoScopeCatch, ArchivedNoScopeOsu, ArchivedPerfectCatch,
+        ArchivedPerfectMania, ArchivedPerfectOsu, ArchivedPerfectTaiko, ArchivedRandomMania,
+        ArchivedRandomOsu, ArchivedRandomTaiko, ArchivedRepelOsu, ArchivedSuddenDeathCatch,
+        ArchivedSuddenDeathMania, ArchivedSuddenDeathOsu, ArchivedSuddenDeathTaiko,
+        ArchivedTargetPracticeOsu, ArchivedWiggleOsu, ArchivedWindDownCatch, ArchivedWindDownMania,
+        ArchivedWindDownOsu, ArchivedWindDownTaiko, ArchivedWindUpCatch, ArchivedWindUpMania,
+        ArchivedWindUpOsu, ArchivedWindUpTaiko, AutopilotOsuResolver, AutoplayCatchResolver,
+        AutoplayManiaResolver, AutoplayOsuResolver, AutoplayTaikoResolver, BarrelRollOsuResolver,
+        BlindsOsuResolver, BubblesOsuResolver, CinemaCatchResolver, CinemaManiaResolver,
+        CinemaOsuResolver, CinemaTaikoResolver, ClassicCatchResolver, ClassicManiaResolver,
+        ClassicOsuResolver, ClassicTaikoResolver, ConstantSpeedManiaResolver,
+        ConstantSpeedTaikoResolver, CoverManiaResolver, DaycoreCatchResolver, DaycoreManiaResolver,
+        DaycoreOsuResolver, DaycoreTaikoResolver, DeflateOsuResolver, DepthOsuResolver,
+        DifficultyAdjustCatchResolver, DifficultyAdjustManiaResolver, DifficultyAdjustOsuResolver,
+        DifficultyAdjustTaikoResolver, DoubleTimeCatchResolver, DoubleTimeManiaResolver,
+        DoubleTimeOsuResolver, DoubleTimeTaikoResolver, DualStagesManiaResolver, EasyCatchResolver,
+        EasyManiaResolver, EasyOsuResolver, EasyTaikoResolver, EightKeysManiaResolver,
+        FadeInManiaResolver, FiveKeysManiaResolver, FlashlightCatchResolver,
+        FlashlightManiaResolver, FlashlightOsuResolver, FlashlightTaikoResolver,
+        FloatingFruitsCatchResolver, FourKeysManiaResolver, FreezeFrameOsuResolver,
+        GrowOsuResolver, HalfTimeCatchResolver, HalfTimeManiaResolver, HalfTimeOsuResolver,
+        HalfTimeTaikoResolver, HardRockCatchResolver, HardRockManiaResolver, HardRockOsuResolver,
+        HardRockTaikoResolver, HiddenCatchResolver, HiddenManiaResolver, HiddenOsuResolver,
+        HiddenTaikoResolver, HoldOffManiaResolver, InvertManiaResolver, MagnetisedOsuResolver,
+        MirrorCatchResolver, MirrorManiaResolver, MirrorOsuResolver, MutedCatchResolver,
+        MutedManiaResolver, MutedOsuResolver, MutedTaikoResolver, NightcoreCatchResolver,
+        NightcoreManiaResolver, NightcoreOsuResolver, NightcoreTaikoResolver,
+        NineKeysManiaResolver, NoFailCatchResolver, NoFailManiaResolver, NoFailOsuResolver,
+        NoFailTaikoResolver, NoScopeCatchResolver, NoScopeOsuResolver, OneKeyManiaResolver,
+        PerfectCatchResolver, PerfectManiaResolver, PerfectOsuResolver, PerfectTaikoResolver,
+        RandomManiaResolver, RandomOsuResolver, RandomTaikoResolver, RelaxCatchResolver,
+        RelaxOsuResolver, RelaxTaikoResolver, RepelOsuResolver, ScoreV2CatchResolver,
+        ScoreV2ManiaResolver, ScoreV2OsuResolver, ScoreV2TaikoResolver, SevenKeysManiaResolver,
+        SingleTapOsuResolver, SingleTapTaikoResolver, SixKeysManiaResolver, SpinInOsuResolver,
+        SpunOutOsuResolver, StrictTrackingOsuResolver, SuddenDeathCatchResolver,
+        SuddenDeathManiaResolver, SuddenDeathOsuResolver, SuddenDeathTaikoResolver,
+        SwapTaikoResolver, SynesthesiaOsuResolver, TargetPracticeOsuResolver, TenKeysManiaResolver,
+        ThreeKeysManiaResolver, TouchDeviceOsuResolver, TraceableOsuResolver, TransformOsuResolver,
+        TwoKeysManiaResolver, UnknownModResolver, WiggleOsuResolver, WindDownCatchResolver,
+        WindDownManiaResolver, WindDownOsuResolver, WindDownTaikoResolver, WindUpCatchResolver,
+        WindUpManiaResolver, WindUpOsuResolver, WindUpTaikoResolver,
+    };
+    pub use super::gamemod::{ArchivedGameMod, GameModResolver};
+    pub use super::intermode::GameModIntermodeResolver;
+    pub use super::kind::GameModKindResolver;
 }
 impl EasyOsu {
     /// The acronym of [`EasyOsu`]
@@ -52,9 +1612,6 @@ impl EasyOsu {
         2
     }
 }
-/// You can't fail, no matter what.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct NoFailOsu {}
 impl NoFailOsu {
     /// The acronym of [`NoFailOsu`]
     pub const fn acronym() -> Acronym {
@@ -86,14 +1643,6 @@ impl NoFailOsu {
     pub const fn bits() -> u32 {
         1
     }
-}
-/// Less zoom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct HalfTimeOsu {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeOsu {
     /// The acronym of [`HalfTimeOsu`]
@@ -129,12 +1678,6 @@ impl HalfTimeOsu {
         256
     }
 }
-/// Whoaaaaa...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DaycoreOsu {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-}
 impl DaycoreOsu {
     /// The acronym of [`DaycoreOsu`]
     pub const fn acronym() -> Acronym {
@@ -163,9 +1706,6 @@ impl DaycoreOsu {
         GameModKind::DifficultyReduction
     }
 }
-/// Everything just got a bit harder...
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HardRockOsu {}
 impl HardRockOsu {
     /// The acronym of [`HardRockOsu`]
     pub const fn acronym() -> Acronym {
@@ -196,12 +1736,6 @@ impl HardRockOsu {
     pub const fn bits() -> u32 {
         16
     }
-}
-/// Miss and fail.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct SuddenDeathOsu {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl SuddenDeathOsu {
     /// The acronym of [`SuddenDeathOsu`]
@@ -235,12 +1769,6 @@ impl SuddenDeathOsu {
         32
     }
 }
-/// SS or quit.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct PerfectOsu {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
-}
 impl PerfectOsu {
     /// The acronym of [`PerfectOsu`]
     pub const fn acronym() -> Acronym {
@@ -272,14 +1800,6 @@ impl PerfectOsu {
     pub const fn bits() -> u32 {
         16416
     }
-}
-/// Zoooooooooom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DoubleTimeOsu {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeOsu {
     /// The acronym of [`DoubleTimeOsu`]
@@ -315,12 +1835,6 @@ impl DoubleTimeOsu {
         64
     }
 }
-/// Uguuuuuuuu...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NightcoreOsu {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-}
 impl NightcoreOsu {
     /// The acronym of [`NightcoreOsu`]
     pub const fn acronym() -> Acronym {
@@ -355,12 +1869,6 @@ impl NightcoreOsu {
         576
     }
 }
-/// Play with no approach circles and fading circles/sliders.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct HiddenOsu {
-    /// The main object body will not fade when enabled.
-    pub only_fade_approach_circles: Option<bool>,
-}
 impl HiddenOsu {
     /// The acronym of [`HiddenOsu`]
     pub const fn acronym() -> Acronym {
@@ -393,16 +1901,6 @@ impl HiddenOsu {
         8
     }
 }
-/// Restricted view area.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct FlashlightOsu {
-    /// Milliseconds until the flashlight reaches the cursor
-    pub follow_delay: Option<f32>,
-    /// Multiplier applied to the default flashlight size.
-    pub size_multiplier: Option<f32>,
-    /// Decrease the flashlight size as combo increases.
-    pub combo_based_size: Option<bool>,
-}
 impl FlashlightOsu {
     /// The acronym of [`FlashlightOsu`]
     pub const fn acronym() -> Acronym {
@@ -427,9 +1925,6 @@ impl FlashlightOsu {
         1024
     }
 }
-/// Play with blinds on your screen.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct BlindsOsu {}
 impl BlindsOsu {
     /// The acronym of [`BlindsOsu`]
     pub const fn acronym() -> Acronym {
@@ -448,9 +1943,6 @@ impl BlindsOsu {
         GameModKind::DifficultyIncrease
     }
 }
-/// Once you start a slider, follow precisely or get a miss.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct StrictTrackingOsu {}
 impl StrictTrackingOsu {
     /// The acronym of [`StrictTrackingOsu`]
     pub const fn acronym() -> Acronym {
@@ -474,16 +1966,6 @@ impl StrictTrackingOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::DifficultyIncrease
     }
-}
-/// Fail if your accuracy drops too low!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AccuracyChallengeOsu {
-    /// Trigger a failure if your accuracy goes below this value.
-    pub minimum_accuracy: Option<f32>,
-    /// The mode of accuracy that will trigger failure.
-    pub accuracy_judge_mode: Option<String>,
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl AccuracyChallengeOsu {
     /// The acronym of [`AccuracyChallengeOsu`]
@@ -510,14 +1992,6 @@ impl AccuracyChallengeOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::DifficultyIncrease
     }
-}
-/// Practice keeping up with the beat of the song.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct TargetPracticeOsu {
-    /// Use a custom seed instead of a random one
-    pub seed: Option<f32>,
-    /// Whether a metronome beat should play in the background
-    pub metronome: Option<bool>,
 }
 impl TargetPracticeOsu {
     /// The acronym of [`TargetPracticeOsu`]
@@ -554,20 +2028,6 @@ impl TargetPracticeOsu {
         8388608
     }
 }
-/// Override a beatmap's difficulty settings.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DifficultyAdjustOsu {
-    /// Override a beatmap's set CS.
-    pub circle_size: Option<f32>,
-    /// Override a beatmap's set AR.
-    pub approach_rate: Option<f32>,
-    /// Override a beatmap's set HP.
-    pub drain_rate: Option<f32>,
-    /// Override a beatmap's set OD.
-    pub overall_difficulty: Option<f32>,
-    /// Adjust difficulty beyond sane limits.
-    pub extended_limits: Option<bool>,
-}
 impl DifficultyAdjustOsu {
     /// The acronym of [`DifficultyAdjustOsu`]
     pub const fn acronym() -> Acronym {
@@ -592,20 +2052,6 @@ impl DifficultyAdjustOsu {
         GameModKind::Conversion
     }
 }
-/// Feeling nostalgic?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct ClassicOsu {
-    /// Scores sliders proportionally to the number of ticks hit.
-    pub no_slider_head_accuracy: Option<bool>,
-    /// Applies note lock to the full hit window.
-    pub classic_note_lock: Option<bool>,
-    /// Always plays a slider's tail sample regardless of whether it was hit or not.
-    pub always_play_tail_sample: Option<bool>,
-    /// Make hit circles fade out into a miss, rather than after it.
-    pub fade_hit_circle_early: Option<bool>,
-    /// More closely resembles the original HP drain mechanics.
-    pub classic_health: Option<bool>,
-}
 impl ClassicOsu {
     /// The acronym of [`ClassicOsu`]
     pub const fn acronym() -> Acronym {
@@ -623,14 +2069,6 @@ impl ClassicOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::Conversion
     }
-}
-/// It never gets boring!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct RandomOsu {
-    /// How sharp angles should be
-    pub angle_sharpness: Option<f32>,
-    /// Use a custom seed instead of a random one
-    pub seed: Option<f32>,
 }
 impl RandomOsu {
     /// The acronym of [`RandomOsu`]
@@ -656,12 +2094,6 @@ impl RandomOsu {
         2097152
     }
 }
-/// Flip objects on the chosen axes.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct MirrorOsu {
-    /// Choose which axes objects are mirrored over.
-    pub reflection: Option<String>,
-}
 impl MirrorOsu {
     /// The acronym of [`MirrorOsu`]
     pub const fn acronym() -> Acronym {
@@ -686,9 +2118,6 @@ impl MirrorOsu {
         1073741824
     }
 }
-/// Don't use the same key twice in a row!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct AlternateOsu {}
 impl AlternateOsu {
     /// The acronym of [`AlternateOsu`]
     pub const fn acronym() -> Acronym {
@@ -715,9 +2144,6 @@ impl AlternateOsu {
         GameModKind::Conversion
     }
 }
-/// You must only use one key!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SingleTapOsu {}
 impl SingleTapOsu {
     /// The acronym of [`SingleTapOsu`]
     pub const fn acronym() -> Acronym {
@@ -744,9 +2170,6 @@ impl SingleTapOsu {
         GameModKind::Conversion
     }
 }
-/// Watch a perfect automated play through the song.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct AutoplayOsu {}
 impl AutoplayOsu {
     /// The acronym of [`AutoplayOsu`]
     pub const fn acronym() -> Acronym {
@@ -785,9 +2208,6 @@ impl AutoplayOsu {
         2048
     }
 }
-/// Watch the video without visual distractions.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct CinemaOsu {}
 impl CinemaOsu {
     /// The acronym of [`CinemaOsu`]
     pub const fn acronym() -> Acronym {
@@ -830,9 +2250,6 @@ impl CinemaOsu {
         4194304
     }
 }
-/// You don't need to click. Give your clicking/tapping fingers a break from the heat of things.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct RelaxOsu {}
 impl RelaxOsu {
     /// The acronym of [`RelaxOsu`]
     pub const fn acronym() -> Acronym {
@@ -867,9 +2284,6 @@ impl RelaxOsu {
         128
     }
 }
-/// Automatic cursor movement - just follow the rhythm.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct AutopilotOsu {}
 impl AutopilotOsu {
     /// The acronym of [`AutopilotOsu`]
     pub const fn acronym() -> Acronym {
@@ -905,9 +2319,6 @@ impl AutopilotOsu {
         8192
     }
 }
-/// Spinners will be automatically completed.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SpunOutOsu {}
 impl SpunOutOsu {
     /// The acronym of [`SpunOutOsu`]
     pub const fn acronym() -> Acronym {
@@ -940,9 +2351,6 @@ impl SpunOutOsu {
         4096
     }
 }
-/// Everything rotates. EVERYTHING.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct TransformOsu {}
 impl TransformOsu {
     /// The acronym of [`TransformOsu`]
     pub const fn acronym() -> Acronym {
@@ -970,12 +2378,6 @@ impl TransformOsu {
         GameModKind::Fun
     }
 }
-/// They just won't stay still...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WiggleOsu {
-    /// Multiplier applied to the wiggling strength.
-    pub strength: Option<f32>,
-}
 impl WiggleOsu {
     /// The acronym of [`WiggleOsu`]
     pub const fn acronym() -> Acronym {
@@ -1002,9 +2404,6 @@ impl WiggleOsu {
         GameModKind::Fun
     }
 }
-/// Circles spin in. No approach circles.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SpinInOsu {}
 impl SpinInOsu {
     /// The acronym of [`SpinInOsu`]
     pub const fn acronym() -> Acronym {
@@ -1033,12 +2432,6 @@ impl SpinInOsu {
         GameModKind::Fun
     }
 }
-/// Hit them at the right size!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct GrowOsu {
-    /// The initial size multiplier applied to all objects.
-    pub start_scale: Option<f32>,
-}
 impl GrowOsu {
     /// The acronym of [`GrowOsu`]
     pub const fn acronym() -> Acronym {
@@ -1066,12 +2459,6 @@ impl GrowOsu {
         GameModKind::Fun
     }
 }
-/// Hit them at the right size!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DeflateOsu {
-    /// The initial size multiplier applied to all objects.
-    pub start_scale: Option<f32>,
-}
 impl DeflateOsu {
     /// The acronym of [`DeflateOsu`]
     pub const fn acronym() -> Acronym {
@@ -1098,16 +2485,6 @@ impl DeflateOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Can you keep up?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindUpOsu {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl WindUpOsu {
     /// The acronym of [`WindUpOsu`]
@@ -1137,16 +2514,6 @@ impl WindUpOsu {
         GameModKind::Fun
     }
 }
-/// Sloooow doooown...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindDownOsu {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
-}
 impl WindDownOsu {
     /// The acronym of [`WindDownOsu`]
     pub const fn acronym() -> Acronym {
@@ -1175,9 +2542,6 @@ impl WindDownOsu {
         GameModKind::Fun
     }
 }
-/// Put your faith in the approach circles...
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct TraceableOsu {}
 impl TraceableOsu {
     /// The acronym of [`TraceableOsu`]
     pub const fn acronym() -> Acronym {
@@ -1206,14 +2570,6 @@ impl TraceableOsu {
         GameModKind::Fun
     }
 }
-/// The whole playfield is on a wheel!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct BarrelRollOsu {
-    /// Rotations per minute
-    pub spin_speed: Option<f32>,
-    /// The direction of rotation
-    pub direction: Option<String>,
-}
 impl BarrelRollOsu {
     /// The acronym of [`BarrelRollOsu`]
     pub const fn acronym() -> Acronym {
@@ -1231,14 +2587,6 @@ impl BarrelRollOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Never trust the approach circles...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct ApproachDifferentOsu {
-    /// Change the initial size of the approach circle, relative to hit circles.
-    pub scale: Option<f32>,
-    /// Change the animation style of the approach circles.
-    pub style: Option<String>,
 }
 impl ApproachDifferentOsu {
     /// The acronym of [`ApproachDifferentOsu`]
@@ -1268,18 +2616,6 @@ impl ApproachDifferentOsu {
         GameModKind::Fun
     }
 }
-/// Can you still feel the rhythm without music?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct MutedOsu {
-    /// Increase volume as combo builds.
-    pub inverse_muting: Option<bool>,
-    /// Add a metronome beat to help you keep track of the rhythm.
-    pub enable_metronome: Option<bool>,
-    /// The combo count at which point the track reaches its final volume.
-    pub mute_combo_count: Option<f32>,
-    /// Hit sounds are also muted alongside the track.
-    pub affects_hit_sounds: Option<bool>,
-}
 impl MutedOsu {
     /// The acronym of [`MutedOsu`]
     pub const fn acronym() -> Acronym {
@@ -1298,12 +2634,6 @@ impl MutedOsu {
         GameModKind::Fun
     }
 }
-/// Where's the cursor?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NoScopeOsu {
-    /// The combo count at which the cursor becomes completely hidden
-    pub hidden_combo_count: Option<f32>,
-}
 impl NoScopeOsu {
     /// The acronym of [`NoScopeOsu`]
     pub const fn acronym() -> Acronym {
@@ -1321,12 +2651,6 @@ impl NoScopeOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// No need to chase the circles – your cursor is a magnet!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct MagnetisedOsu {
-    /// How strong the pull is.
-    pub attraction_strength: Option<f32>,
 }
 impl MagnetisedOsu {
     /// The acronym of [`MagnetisedOsu`]
@@ -1359,12 +2683,6 @@ impl MagnetisedOsu {
         GameModKind::Fun
     }
 }
-/// Hit objects run away!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct RepelOsu {
-    /// How strong the repulsion is.
-    pub repulsion_strength: Option<f32>,
-}
 impl RepelOsu {
     /// The acronym of [`RepelOsu`]
     pub const fn acronym() -> Acronym {
@@ -1394,14 +2712,6 @@ impl RepelOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Let track speed adapt to you.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AdaptiveSpeedOsu {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl AdaptiveSpeedOsu {
     /// The acronym of [`AdaptiveSpeedOsu`]
@@ -1433,9 +2743,6 @@ impl AdaptiveSpeedOsu {
         GameModKind::Fun
     }
 }
-/// Burn the notes into your memory.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct FreezeFrameOsu {}
 impl FreezeFrameOsu {
     /// The acronym of [`FreezeFrameOsu`]
     pub const fn acronym() -> Acronym {
@@ -1461,9 +2768,6 @@ impl FreezeFrameOsu {
         GameModKind::Fun
     }
 }
-/// Don't let their popping distract you!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct BubblesOsu {}
 impl BubblesOsu {
     /// The acronym of [`BubblesOsu`]
     pub const fn acronym() -> Acronym {
@@ -1489,9 +2793,6 @@ impl BubblesOsu {
         GameModKind::Fun
     }
 }
-/// Colours hit objects based on the rhythm.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SynesthesiaOsu {}
 impl SynesthesiaOsu {
     /// The acronym of [`SynesthesiaOsu`]
     pub const fn acronym() -> Acronym {
@@ -1509,14 +2810,6 @@ impl SynesthesiaOsu {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// 3D. Almost.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DepthOsu {
-    /// How far away objects appear.
-    pub max_depth: Option<f32>,
-    /// Whether approach circles should be visible.
-    pub show_approach_circles: Option<bool>,
 }
 impl DepthOsu {
     /// The acronym of [`DepthOsu`]
@@ -1551,9 +2844,6 @@ impl DepthOsu {
         GameModKind::Fun
     }
 }
-/// Automatically applied to plays on devices with a touchscreen.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct TouchDeviceOsu {}
 impl TouchDeviceOsu {
     /// The acronym of [`TouchDeviceOsu`]
     pub const fn acronym() -> Acronym {
@@ -1585,9 +2875,6 @@ impl TouchDeviceOsu {
         4
     }
 }
-/// Score set on earlier osu! versions with the V2 scoring algorithm active.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ScoreV2Osu {}
 impl ScoreV2Osu {
     /// The acronym of [`ScoreV2Osu`]
     pub const fn acronym() -> Acronym {
@@ -1612,9 +2899,6 @@ impl ScoreV2Osu {
         536870912
     }
 }
-/// Beats move slower, and less accuracy required!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct EasyTaiko {}
 impl EasyTaiko {
     /// The acronym of [`EasyTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1645,9 +2929,6 @@ impl EasyTaiko {
         2
     }
 }
-/// You can't fail, no matter what.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct NoFailTaiko {}
 impl NoFailTaiko {
     /// The acronym of [`NoFailTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1679,14 +2960,6 @@ impl NoFailTaiko {
     pub const fn bits() -> u32 {
         1
     }
-}
-/// Less zoom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct HalfTimeTaiko {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeTaiko {
     /// The acronym of [`HalfTimeTaiko`]
@@ -1722,12 +2995,6 @@ impl HalfTimeTaiko {
         256
     }
 }
-/// Whoaaaaa...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DaycoreTaiko {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-}
 impl DaycoreTaiko {
     /// The acronym of [`DaycoreTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1756,9 +3023,6 @@ impl DaycoreTaiko {
         GameModKind::DifficultyReduction
     }
 }
-/// Everything just got a bit harder...
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HardRockTaiko {}
 impl HardRockTaiko {
     /// The acronym of [`HardRockTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1788,12 +3052,6 @@ impl HardRockTaiko {
     pub const fn bits() -> u32 {
         16
     }
-}
-/// Miss and fail.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct SuddenDeathTaiko {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl SuddenDeathTaiko {
     /// The acronym of [`SuddenDeathTaiko`]
@@ -1826,12 +3084,6 @@ impl SuddenDeathTaiko {
         32
     }
 }
-/// SS or quit.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct PerfectTaiko {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
-}
 impl PerfectTaiko {
     /// The acronym of [`PerfectTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1863,14 +3115,6 @@ impl PerfectTaiko {
     pub const fn bits() -> u32 {
         16416
     }
-}
-/// Zoooooooooom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DoubleTimeTaiko {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeTaiko {
     /// The acronym of [`DoubleTimeTaiko`]
@@ -1906,12 +3150,6 @@ impl DoubleTimeTaiko {
         64
     }
 }
-/// Uguuuuuuuu...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NightcoreTaiko {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-}
 impl NightcoreTaiko {
     /// The acronym of [`NightcoreTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1946,9 +3184,6 @@ impl NightcoreTaiko {
         576
     }
 }
-/// Beats fade out before you hit them!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HiddenTaiko {}
 impl HiddenTaiko {
     /// The acronym of [`HiddenTaiko`]
     pub const fn acronym() -> Acronym {
@@ -1973,14 +3208,6 @@ impl HiddenTaiko {
         8
     }
 }
-/// Restricted view area.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct FlashlightTaiko {
-    /// Multiplier applied to the default flashlight size.
-    pub size_multiplier: Option<f32>,
-    /// Decrease the flashlight size as combo increases.
-    pub combo_based_size: Option<bool>,
-}
 impl FlashlightTaiko {
     /// The acronym of [`FlashlightTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2004,16 +3231,6 @@ impl FlashlightTaiko {
     pub const fn bits() -> u32 {
         1024
     }
-}
-/// Fail if your accuracy drops too low!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AccuracyChallengeTaiko {
-    /// Trigger a failure if your accuracy goes below this value.
-    pub minimum_accuracy: Option<f32>,
-    /// The mode of accuracy that will trigger failure.
-    pub accuracy_judge_mode: Option<String>,
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl AccuracyChallengeTaiko {
     /// The acronym of [`AccuracyChallengeTaiko`]
@@ -2040,12 +3257,6 @@ impl AccuracyChallengeTaiko {
         GameModKind::DifficultyIncrease
     }
 }
-/// Shuffle around the colours!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct RandomTaiko {
-    /// Use a custom seed instead of a random one
-    pub seed: Option<f32>,
-}
 impl RandomTaiko {
     /// The acronym of [`RandomTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2069,18 +3280,6 @@ impl RandomTaiko {
     pub const fn bits() -> u32 {
         2097152
     }
-}
-/// Override a beatmap's difficulty settings.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DifficultyAdjustTaiko {
-    /// Adjust a beatmap's set scroll speed
-    pub scroll_speed: Option<f32>,
-    /// Override a beatmap's set HP.
-    pub drain_rate: Option<f32>,
-    /// Override a beatmap's set OD.
-    pub overall_difficulty: Option<f32>,
-    /// Adjust difficulty beyond sane limits.
-    pub extended_limits: Option<bool>,
 }
 impl DifficultyAdjustTaiko {
     /// The acronym of [`DifficultyAdjustTaiko`]
@@ -2106,9 +3305,6 @@ impl DifficultyAdjustTaiko {
         GameModKind::Conversion
     }
 }
-/// Feeling nostalgic?
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ClassicTaiko {}
 impl ClassicTaiko {
     /// The acronym of [`ClassicTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2127,9 +3323,6 @@ impl ClassicTaiko {
         GameModKind::Conversion
     }
 }
-/// Dons become kats, kats become dons
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SwapTaiko {}
 impl SwapTaiko {
     /// The acronym of [`SwapTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2148,9 +3341,6 @@ impl SwapTaiko {
         GameModKind::Conversion
     }
 }
-/// One key for dons, one key for kats.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SingleTapTaiko {}
 impl SingleTapTaiko {
     /// The acronym of [`SingleTapTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2176,9 +3366,6 @@ impl SingleTapTaiko {
         GameModKind::Conversion
     }
 }
-/// No more tricky speed changes!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ConstantSpeedTaiko {}
 impl ConstantSpeedTaiko {
     /// The acronym of [`ConstantSpeedTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2197,9 +3384,6 @@ impl ConstantSpeedTaiko {
         GameModKind::Conversion
     }
 }
-/// Watch a perfect automated play through the song.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct AutoplayTaiko {}
 impl AutoplayTaiko {
     /// The acronym of [`AutoplayTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2232,9 +3416,6 @@ impl AutoplayTaiko {
         2048
     }
 }
-/// Watch the video without visual distractions.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct CinemaTaiko {}
 impl CinemaTaiko {
     /// The acronym of [`CinemaTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2271,9 +3452,6 @@ impl CinemaTaiko {
         4194304
     }
 }
-/// No need to remember which key is correct anymore!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct RelaxTaiko {}
 impl RelaxTaiko {
     /// The acronym of [`RelaxTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2305,16 +3483,6 @@ impl RelaxTaiko {
         128
     }
 }
-/// Can you keep up?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindUpTaiko {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
-}
 impl WindUpTaiko {
     /// The acronym of [`WindUpTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2342,16 +3510,6 @@ impl WindUpTaiko {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Sloooow doooown...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindDownTaiko {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl WindDownTaiko {
     /// The acronym of [`WindDownTaiko`]
@@ -2381,18 +3539,6 @@ impl WindDownTaiko {
         GameModKind::Fun
     }
 }
-/// Can you still feel the rhythm without music?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct MutedTaiko {
-    /// Increase volume as combo builds.
-    pub inverse_muting: Option<bool>,
-    /// Add a metronome beat to help you keep track of the rhythm.
-    pub enable_metronome: Option<bool>,
-    /// The combo count at which point the track reaches its final volume.
-    pub mute_combo_count: Option<f32>,
-    /// Hit sounds are also muted alongside the track.
-    pub affects_hit_sounds: Option<bool>,
-}
 impl MutedTaiko {
     /// The acronym of [`MutedTaiko`]
     pub const fn acronym() -> Acronym {
@@ -2410,14 +3556,6 @@ impl MutedTaiko {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Let track speed adapt to you.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AdaptiveSpeedTaiko {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl AdaptiveSpeedTaiko {
     /// The acronym of [`AdaptiveSpeedTaiko`]
@@ -2449,9 +3587,6 @@ impl AdaptiveSpeedTaiko {
         GameModKind::Fun
     }
 }
-/// Score set on earlier osu! versions with the V2 scoring algorithm active.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ScoreV2Taiko {}
 impl ScoreV2Taiko {
     /// The acronym of [`ScoreV2Taiko`]
     pub const fn acronym() -> Acronym {
@@ -2475,12 +3610,6 @@ impl ScoreV2Taiko {
     pub const fn bits() -> u32 {
         536870912
     }
-}
-/// Larger fruits, more forgiving HP drain, less accuracy required, and three lives!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct EasyCatch {
-    /// Number of extra lives
-    pub retries: Option<f32>,
 }
 impl EasyCatch {
     /// The acronym of [`EasyCatch`]
@@ -2513,9 +3642,6 @@ impl EasyCatch {
         2
     }
 }
-/// You can't fail, no matter what.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct NoFailCatch {}
 impl NoFailCatch {
     /// The acronym of [`NoFailCatch`]
     pub const fn acronym() -> Acronym {
@@ -2547,14 +3673,6 @@ impl NoFailCatch {
     pub const fn bits() -> u32 {
         1
     }
-}
-/// Less zoom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct HalfTimeCatch {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeCatch {
     /// The acronym of [`HalfTimeCatch`]
@@ -2589,12 +3707,6 @@ impl HalfTimeCatch {
         256
     }
 }
-/// Whoaaaaa...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DaycoreCatch {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-}
 impl DaycoreCatch {
     /// The acronym of [`DaycoreCatch`]
     pub const fn acronym() -> Acronym {
@@ -2622,9 +3734,6 @@ impl DaycoreCatch {
         GameModKind::DifficultyReduction
     }
 }
-/// Everything just got a bit harder...
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HardRockCatch {}
 impl HardRockCatch {
     /// The acronym of [`HardRockCatch`]
     pub const fn acronym() -> Acronym {
@@ -2654,12 +3763,6 @@ impl HardRockCatch {
     pub const fn bits() -> u32 {
         16
     }
-}
-/// Miss and fail.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct SuddenDeathCatch {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl SuddenDeathCatch {
     /// The acronym of [`SuddenDeathCatch`]
@@ -2692,12 +3795,6 @@ impl SuddenDeathCatch {
         32
     }
 }
-/// SS or quit.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct PerfectCatch {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
-}
 impl PerfectCatch {
     /// The acronym of [`PerfectCatch`]
     pub const fn acronym() -> Acronym {
@@ -2729,14 +3826,6 @@ impl PerfectCatch {
     pub const fn bits() -> u32 {
         16416
     }
-}
-/// Zoooooooooom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DoubleTimeCatch {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeCatch {
     /// The acronym of [`DoubleTimeCatch`]
@@ -2771,12 +3860,6 @@ impl DoubleTimeCatch {
         64
     }
 }
-/// Uguuuuuuuu...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NightcoreCatch {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-}
 impl NightcoreCatch {
     /// The acronym of [`NightcoreCatch`]
     pub const fn acronym() -> Acronym {
@@ -2810,9 +3893,6 @@ impl NightcoreCatch {
         576
     }
 }
-/// Play with fading fruits.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HiddenCatch {}
 impl HiddenCatch {
     /// The acronym of [`HiddenCatch`]
     pub const fn acronym() -> Acronym {
@@ -2837,14 +3917,6 @@ impl HiddenCatch {
         8
     }
 }
-/// Restricted view area.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct FlashlightCatch {
-    /// Multiplier applied to the default flashlight size.
-    pub size_multiplier: Option<f32>,
-    /// Decrease the flashlight size as combo increases.
-    pub combo_based_size: Option<bool>,
-}
 impl FlashlightCatch {
     /// The acronym of [`FlashlightCatch`]
     pub const fn acronym() -> Acronym {
@@ -2868,16 +3940,6 @@ impl FlashlightCatch {
     pub const fn bits() -> u32 {
         1024
     }
-}
-/// Fail if your accuracy drops too low!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AccuracyChallengeCatch {
-    /// Trigger a failure if your accuracy goes below this value.
-    pub minimum_accuracy: Option<f32>,
-    /// The mode of accuracy that will trigger failure.
-    pub accuracy_judge_mode: Option<String>,
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl AccuracyChallengeCatch {
     /// The acronym of [`AccuracyChallengeCatch`]
@@ -2905,22 +3967,6 @@ impl AccuracyChallengeCatch {
         GameModKind::DifficultyIncrease
     }
 }
-/// Override a beatmap's difficulty settings.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DifficultyAdjustCatch {
-    /// Override a beatmap's set CS.
-    pub circle_size: Option<f32>,
-    /// Override a beatmap's set AR.
-    pub approach_rate: Option<f32>,
-    /// Adjust the patterns as if Hard Rock is enabled.
-    pub hard_rock_offsets: Option<bool>,
-    /// Override a beatmap's set HP.
-    pub drain_rate: Option<f32>,
-    /// Override a beatmap's set OD.
-    pub overall_difficulty: Option<f32>,
-    /// Adjust difficulty beyond sane limits.
-    pub extended_limits: Option<bool>,
-}
 impl DifficultyAdjustCatch {
     /// The acronym of [`DifficultyAdjustCatch`]
     pub const fn acronym() -> Acronym {
@@ -2945,9 +3991,6 @@ impl DifficultyAdjustCatch {
         GameModKind::Conversion
     }
 }
-/// Feeling nostalgic?
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ClassicCatch {}
 impl ClassicCatch {
     /// The acronym of [`ClassicCatch`]
     pub const fn acronym() -> Acronym {
@@ -2966,9 +4009,6 @@ impl ClassicCatch {
         GameModKind::Conversion
     }
 }
-/// Fruits are flipped horizontally.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct MirrorCatch {}
 impl MirrorCatch {
     /// The acronym of [`MirrorCatch`]
     pub const fn acronym() -> Acronym {
@@ -2993,9 +4033,6 @@ impl MirrorCatch {
         1073741824
     }
 }
-/// Watch a perfect automated play through the song.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct AutoplayCatch {}
 impl AutoplayCatch {
     /// The acronym of [`AutoplayCatch`]
     pub const fn acronym() -> Acronym {
@@ -3026,9 +4063,6 @@ impl AutoplayCatch {
         2048
     }
 }
-/// Watch the video without visual distractions.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct CinemaCatch {}
 impl CinemaCatch {
     /// The acronym of [`CinemaCatch`]
     pub const fn acronym() -> Acronym {
@@ -3063,9 +4097,6 @@ impl CinemaCatch {
         4194304
     }
 }
-/// Use the mouse to control the catcher.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct RelaxCatch {}
 impl RelaxCatch {
     /// The acronym of [`RelaxCatch`]
     pub const fn acronym() -> Acronym {
@@ -3096,16 +4127,6 @@ impl RelaxCatch {
         128
     }
 }
-/// Can you keep up?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindUpCatch {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
-}
 impl WindUpCatch {
     /// The acronym of [`WindUpCatch`]
     pub const fn acronym() -> Acronym {
@@ -3132,16 +4153,6 @@ impl WindUpCatch {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Sloooow doooown...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindDownCatch {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl WindDownCatch {
     /// The acronym of [`WindDownCatch`]
@@ -3170,9 +4181,6 @@ impl WindDownCatch {
         GameModKind::Fun
     }
 }
-/// The fruits are... floating?
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct FloatingFruitsCatch {}
 impl FloatingFruitsCatch {
     /// The acronym of [`FloatingFruitsCatch`]
     pub const fn acronym() -> Acronym {
@@ -3190,18 +4198,6 @@ impl FloatingFruitsCatch {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Can you still feel the rhythm without music?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct MutedCatch {
-    /// Increase volume as combo builds.
-    pub inverse_muting: Option<bool>,
-    /// Add a metronome beat to help you keep track of the rhythm.
-    pub enable_metronome: Option<bool>,
-    /// The combo count at which point the track reaches its final volume.
-    pub mute_combo_count: Option<f32>,
-    /// Hit sounds are also muted alongside the track.
-    pub affects_hit_sounds: Option<bool>,
 }
 impl MutedCatch {
     /// The acronym of [`MutedCatch`]
@@ -3221,12 +4217,6 @@ impl MutedCatch {
         GameModKind::Fun
     }
 }
-/// Where's the catcher?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NoScopeCatch {
-    /// The combo count at which the cursor becomes completely hidden
-    pub hidden_combo_count: Option<f32>,
-}
 impl NoScopeCatch {
     /// The acronym of [`NoScopeCatch`]
     pub const fn acronym() -> Acronym {
@@ -3245,9 +4235,6 @@ impl NoScopeCatch {
         GameModKind::Fun
     }
 }
-/// Score set on earlier osu! versions with the V2 scoring algorithm active.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ScoreV2Catch {}
 impl ScoreV2Catch {
     /// The acronym of [`ScoreV2Catch`]
     pub const fn acronym() -> Acronym {
@@ -3271,12 +4258,6 @@ impl ScoreV2Catch {
     pub const fn bits() -> u32 {
         536870912
     }
-}
-/// More forgiving HP drain, less accuracy required, and three lives!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct EasyMania {
-    /// Number of extra lives
-    pub retries: Option<f32>,
 }
 impl EasyMania {
     /// The acronym of [`EasyMania`]
@@ -3309,9 +4290,6 @@ impl EasyMania {
         2
     }
 }
-/// You can't fail, no matter what.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct NoFailMania {}
 impl NoFailMania {
     /// The acronym of [`NoFailMania`]
     pub const fn acronym() -> Acronym {
@@ -3343,14 +4321,6 @@ impl NoFailMania {
     pub const fn bits() -> u32 {
         1
     }
-}
-/// Less zoom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct HalfTimeMania {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl HalfTimeMania {
     /// The acronym of [`HalfTimeMania`]
@@ -3386,12 +4356,6 @@ impl HalfTimeMania {
         256
     }
 }
-/// Whoaaaaa...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DaycoreMania {
-    /// The actual decrease to apply
-    pub speed_change: Option<f32>,
-}
 impl DaycoreMania {
     /// The acronym of [`DaycoreMania`]
     pub const fn acronym() -> Acronym {
@@ -3420,9 +4384,6 @@ impl DaycoreMania {
         GameModKind::DifficultyReduction
     }
 }
-/// Everything just got a bit harder...
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HardRockMania {}
 impl HardRockMania {
     /// The acronym of [`HardRockMania`]
     pub const fn acronym() -> Acronym {
@@ -3452,12 +4413,6 @@ impl HardRockMania {
     pub const fn bits() -> u32 {
         16
     }
-}
-/// Miss and fail.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct SuddenDeathMania {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
 }
 impl SuddenDeathMania {
     /// The acronym of [`SuddenDeathMania`]
@@ -3490,12 +4445,6 @@ impl SuddenDeathMania {
         32
     }
 }
-/// SS or quit.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct PerfectMania {
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
-}
 impl PerfectMania {
     /// The acronym of [`PerfectMania`]
     pub const fn acronym() -> Acronym {
@@ -3527,14 +4476,6 @@ impl PerfectMania {
     pub const fn bits() -> u32 {
         16416
     }
-}
-/// Zoooooooooom...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DoubleTimeMania {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl DoubleTimeMania {
     /// The acronym of [`DoubleTimeMania`]
@@ -3570,12 +4511,6 @@ impl DoubleTimeMania {
         64
     }
 }
-/// Uguuuuuuuu...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NightcoreMania {
-    /// The actual increase to apply
-    pub speed_change: Option<f32>,
-}
 impl NightcoreMania {
     /// The acronym of [`NightcoreMania`]
     pub const fn acronym() -> Acronym {
@@ -3610,9 +4545,6 @@ impl NightcoreMania {
         576
     }
 }
-/// Keys appear out of nowhere!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct FadeInMania {}
 impl FadeInMania {
     /// The acronym of [`FadeInMania`]
     pub const fn acronym() -> Acronym {
@@ -3644,9 +4576,6 @@ impl FadeInMania {
         1048576
     }
 }
-/// Keys fade out before you hit them!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HiddenMania {}
 impl HiddenMania {
     /// The acronym of [`HiddenMania`]
     pub const fn acronym() -> Acronym {
@@ -3678,14 +4607,6 @@ impl HiddenMania {
         8
     }
 }
-/// Decrease the playfield's viewing area.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct CoverMania {
-    /// The proportion of playfield height that notes will be hidden for.
-    pub coverage: Option<f32>,
-    /// The direction on which the cover is applied
-    pub direction: Option<String>,
-}
 impl CoverMania {
     /// The acronym of [`CoverMania`]
     pub const fn acronym() -> Acronym {
@@ -3710,14 +4631,6 @@ impl CoverMania {
     pub const fn kind() -> GameModKind {
         GameModKind::DifficultyIncrease
     }
-}
-/// Restricted view area.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct FlashlightMania {
-    /// Multiplier applied to the default flashlight size.
-    pub size_multiplier: Option<f32>,
-    /// Decrease the flashlight size as combo increases.
-    pub combo_based_size: Option<bool>,
 }
 impl FlashlightMania {
     /// The acronym of [`FlashlightMania`]
@@ -3750,16 +4663,6 @@ impl FlashlightMania {
         1024
     }
 }
-/// Fail if your accuracy drops too low!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AccuracyChallengeMania {
-    /// Trigger a failure if your accuracy goes below this value.
-    pub minimum_accuracy: Option<f32>,
-    /// The mode of accuracy that will trigger failure.
-    pub accuracy_judge_mode: Option<String>,
-    /// Automatically restarts when failed.
-    pub restart: Option<bool>,
-}
 impl AccuracyChallengeMania {
     /// The acronym of [`AccuracyChallengeMania`]
     pub const fn acronym() -> Acronym {
@@ -3786,12 +4689,6 @@ impl AccuracyChallengeMania {
         GameModKind::DifficultyIncrease
     }
 }
-/// Shuffle around the keys!
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct RandomMania {
-    /// Use a custom seed instead of a random one
-    pub seed: Option<f32>,
-}
 impl RandomMania {
     /// The acronym of [`RandomMania`]
     pub const fn acronym() -> Acronym {
@@ -3816,9 +4713,6 @@ impl RandomMania {
         2097152
     }
 }
-/// Double the stages, double the fun!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct DualStagesMania {}
 impl DualStagesMania {
     /// The acronym of [`DualStagesMania`]
     pub const fn acronym() -> Acronym {
@@ -3843,9 +4737,6 @@ impl DualStagesMania {
         33554432
     }
 }
-/// Notes are flipped horizontally.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct MirrorMania {}
 impl MirrorMania {
     /// The acronym of [`MirrorMania`]
     pub const fn acronym() -> Acronym {
@@ -3869,16 +4760,6 @@ impl MirrorMania {
     pub const fn bits() -> u32 {
         1073741824
     }
-}
-/// Override a beatmap's difficulty settings.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct DifficultyAdjustMania {
-    /// Override a beatmap's set HP.
-    pub drain_rate: Option<f32>,
-    /// Override a beatmap's set OD.
-    pub overall_difficulty: Option<f32>,
-    /// Adjust difficulty beyond sane limits.
-    pub extended_limits: Option<bool>,
 }
 impl DifficultyAdjustMania {
     /// The acronym of [`DifficultyAdjustMania`]
@@ -3904,9 +4785,6 @@ impl DifficultyAdjustMania {
         GameModKind::Conversion
     }
 }
-/// Feeling nostalgic?
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ClassicMania {}
 impl ClassicMania {
     /// The acronym of [`ClassicMania`]
     pub const fn acronym() -> Acronym {
@@ -3925,9 +4803,6 @@ impl ClassicMania {
         GameModKind::Conversion
     }
 }
-/// Hold the keys. To the beat.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct InvertMania {}
 impl InvertMania {
     /// The acronym of [`InvertMania`]
     pub const fn acronym() -> Acronym {
@@ -3946,9 +4821,6 @@ impl InvertMania {
         GameModKind::Conversion
     }
 }
-/// No more tricky speed changes!
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ConstantSpeedMania {}
 impl ConstantSpeedMania {
     /// The acronym of [`ConstantSpeedMania`]
     pub const fn acronym() -> Acronym {
@@ -3967,9 +4839,6 @@ impl ConstantSpeedMania {
         GameModKind::Conversion
     }
 }
-/// Replaces all hold notes with normal notes.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct HoldOffMania {}
 impl HoldOffMania {
     /// The acronym of [`HoldOffMania`]
     pub const fn acronym() -> Acronym {
@@ -3988,9 +4857,6 @@ impl HoldOffMania {
         GameModKind::Conversion
     }
 }
-/// Play with one key.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct OneKeyMania {}
 impl OneKeyMania {
     /// The acronym of [`OneKeyMania`]
     pub const fn acronym() -> Acronym {
@@ -4028,9 +4894,6 @@ impl OneKeyMania {
         67108864
     }
 }
-/// Play with two keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct TwoKeysMania {}
 impl TwoKeysMania {
     /// The acronym of [`TwoKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4068,9 +4931,6 @@ impl TwoKeysMania {
         268435456
     }
 }
-/// Play with three keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ThreeKeysMania {}
 impl ThreeKeysMania {
     /// The acronym of [`ThreeKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4108,9 +4968,6 @@ impl ThreeKeysMania {
         134217728
     }
 }
-/// Play with four keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct FourKeysMania {}
 impl FourKeysMania {
     /// The acronym of [`FourKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4148,9 +5005,6 @@ impl FourKeysMania {
         32768
     }
 }
-/// Play with five keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct FiveKeysMania {}
 impl FiveKeysMania {
     /// The acronym of [`FiveKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4188,9 +5042,6 @@ impl FiveKeysMania {
         65536
     }
 }
-/// Play with six keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SixKeysMania {}
 impl SixKeysMania {
     /// The acronym of [`SixKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4228,9 +5079,6 @@ impl SixKeysMania {
         131072
     }
 }
-/// Play with seven keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct SevenKeysMania {}
 impl SevenKeysMania {
     /// The acronym of [`SevenKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4268,9 +5116,6 @@ impl SevenKeysMania {
         262144
     }
 }
-/// Play with eight keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct EightKeysMania {}
 impl EightKeysMania {
     /// The acronym of [`EightKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4308,9 +5153,6 @@ impl EightKeysMania {
         524288
     }
 }
-/// Play with nine keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct NineKeysMania {}
 impl NineKeysMania {
     /// The acronym of [`NineKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4348,9 +5190,6 @@ impl NineKeysMania {
         16777216
     }
 }
-/// Play with ten keys.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct TenKeysMania {}
 impl TenKeysMania {
     /// The acronym of [`TenKeysMania`]
     pub const fn acronym() -> Acronym {
@@ -4382,9 +5221,6 @@ impl TenKeysMania {
         GameModKind::Conversion
     }
 }
-/// Watch a perfect automated play through the song.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct AutoplayMania {}
 impl AutoplayMania {
     /// The acronym of [`AutoplayMania`]
     pub const fn acronym() -> Acronym {
@@ -4415,9 +5251,6 @@ impl AutoplayMania {
         2048
     }
 }
-/// Watch the video without visual distractions.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct CinemaMania {}
 impl CinemaMania {
     /// The acronym of [`CinemaMania`]
     pub const fn acronym() -> Acronym {
@@ -4452,16 +5285,6 @@ impl CinemaMania {
         4194304
     }
 }
-/// Can you keep up?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindUpMania {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
-}
 impl WindUpMania {
     /// The acronym of [`WindUpMania`]
     pub const fn acronym() -> Acronym {
@@ -4489,16 +5312,6 @@ impl WindUpMania {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Sloooow doooown...
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct WindDownMania {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// The final speed to ramp to
-    pub final_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl WindDownMania {
     /// The acronym of [`WindDownMania`]
@@ -4528,18 +5341,6 @@ impl WindDownMania {
         GameModKind::Fun
     }
 }
-/// Can you still feel the rhythm without music?
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct MutedMania {
-    /// Increase volume as combo builds.
-    pub inverse_muting: Option<bool>,
-    /// Add a metronome beat to help you keep track of the rhythm.
-    pub enable_metronome: Option<bool>,
-    /// The combo count at which point the track reaches its final volume.
-    pub mute_combo_count: Option<f32>,
-    /// Hit sounds are also muted alongside the track.
-    pub affects_hit_sounds: Option<bool>,
-}
 impl MutedMania {
     /// The acronym of [`MutedMania`]
     pub const fn acronym() -> Acronym {
@@ -4557,14 +5358,6 @@ impl MutedMania {
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
-}
-/// Let track speed adapt to you.
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct AdaptiveSpeedMania {
-    /// The starting speed of the track
-    pub initial_rate: Option<f32>,
-    /// Should pitch be adjusted with speed
-    pub adjust_pitch: Option<bool>,
 }
 impl AdaptiveSpeedMania {
     /// The acronym of [`AdaptiveSpeedMania`]
@@ -4596,9 +5389,6 @@ impl AdaptiveSpeedMania {
         GameModKind::Fun
     }
 }
-/// Score set on earlier osu! versions with the V2 scoring algorithm active.
-#[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-pub struct ScoreV2Mania {}
 impl ScoreV2Mania {
     /// The acronym of [`ScoreV2Mania`]
     pub const fn acronym() -> Acronym {
@@ -4622,11 +5412,6 @@ impl ScoreV2Mania {
     pub const fn bits() -> u32 {
         536870912
     }
-}
-/// Any unknown mod.
-#[derive(Copy, Eq, Clone, Debug, PartialEq, PartialOrd, Ord, Hash)]
-pub struct UnknownMod {
-    pub acronym: Acronym,
 }
 impl UnknownMod {
     /// The default [`Acronym`] for an unknown mod without specific
@@ -4656,87 +5441,109 @@ impl Default for UnknownMod {
         }
     }
 }
-/// The different types of a [`GameMod`]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize))]
-pub enum GameModKind {
-    DifficultyReduction,
-    DifficultyIncrease,
-    Conversion,
-    Automation,
-    Fun,
-    System,
+mod kind {
+    #[cfg(feature = "rkyv")]
+    use rkyv::bytecheck;
+    /// The different types of a [`GameMod`]
+    ///
+    /// [`GameMod`]: super::GameMod
+    #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[cfg_attr(feature = "serde", derive(serde::Serialize))]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self"),
+        repr(u8)
+    )]
+    pub enum GameModKind {
+        DifficultyReduction,
+        DifficultyIncrease,
+        Conversion,
+        Automation,
+        Fun,
+        System,
+    }
 }
-/// A single game mod when the mode is ignored
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-#[non_exhaustive]
-pub enum GameModIntermode {
-    AccuracyChallenge,
-    AdaptiveSpeed,
-    Alternate,
-    ApproachDifferent,
-    Autopilot,
-    Autoplay,
-    BarrelRoll,
-    Blinds,
-    Bubbles,
-    Cinema,
-    Classic,
-    ConstantSpeed,
-    Cover,
-    Daycore,
-    Deflate,
-    Depth,
-    DifficultyAdjust,
-    DoubleTime,
-    DualStages,
-    Easy,
-    EightKeys,
-    FadeIn,
-    FiveKeys,
-    Flashlight,
-    FloatingFruits,
-    FourKeys,
-    FreezeFrame,
-    Grow,
-    HalfTime,
-    HardRock,
-    Hidden,
-    HoldOff,
-    Invert,
-    Magnetised,
-    Mirror,
-    Muted,
-    Nightcore,
-    NineKeys,
-    NoFail,
-    NoScope,
-    OneKey,
-    Perfect,
-    Random,
-    Relax,
-    Repel,
-    ScoreV2,
-    SevenKeys,
-    SingleTap,
-    SixKeys,
-    SpinIn,
-    SpunOut,
-    StrictTracking,
-    SuddenDeath,
-    Swap,
-    Synesthesia,
-    TargetPractice,
-    TenKeys,
-    ThreeKeys,
-    TouchDevice,
-    Traceable,
-    Transform,
-    TwoKeys,
-    Wiggle,
-    WindDown,
-    WindUp,
-    Unknown(UnknownMod),
+mod intermode {
+    #[cfg(feature = "rkyv")]
+    use rkyv::bytecheck;
+    /// A single game mod when the mode is ignored
+    #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self"),
+        repr(u8)
+    )]
+    #[non_exhaustive]
+    pub enum GameModIntermode {
+        AccuracyChallenge,
+        AdaptiveSpeed,
+        Alternate,
+        ApproachDifferent,
+        Autopilot,
+        Autoplay,
+        BarrelRoll,
+        Blinds,
+        Bubbles,
+        Cinema,
+        Classic,
+        ConstantSpeed,
+        Cover,
+        Daycore,
+        Deflate,
+        Depth,
+        DifficultyAdjust,
+        DoubleTime,
+        DualStages,
+        Easy,
+        EightKeys,
+        FadeIn,
+        FiveKeys,
+        Flashlight,
+        FloatingFruits,
+        FourKeys,
+        FreezeFrame,
+        Grow,
+        HalfTime,
+        HardRock,
+        Hidden,
+        HoldOff,
+        Invert,
+        Magnetised,
+        Mirror,
+        Muted,
+        Nightcore,
+        NineKeys,
+        NoFail,
+        NoScope,
+        OneKey,
+        Perfect,
+        Random,
+        Relax,
+        Repel,
+        ScoreV2,
+        SevenKeys,
+        SingleTap,
+        SixKeys,
+        SpinIn,
+        SpunOut,
+        StrictTracking,
+        SuddenDeath,
+        Swap,
+        Synesthesia,
+        TargetPractice,
+        TenKeys,
+        ThreeKeys,
+        TouchDevice,
+        Traceable,
+        Transform,
+        TwoKeys,
+        Wiggle,
+        WindDown,
+        WindUp,
+        Unknown(super::UnknownMod),
+    }
 }
 impl GameModIntermode {
     /// The [`Acronym`] of this [`GameModIntermode`]
@@ -5344,150 +6151,158 @@ impl Borrow<GameModIntermode> for GameModOrder {
         &self.intermode
     }
 }
-/// A single game mod
-#[derive(Clone, Debug, PartialEq)]
-#[non_exhaustive]
-pub enum GameMod {
-    EasyOsu(EasyOsu),
-    NoFailOsu(NoFailOsu),
-    HalfTimeOsu(HalfTimeOsu),
-    DaycoreOsu(DaycoreOsu),
-    HardRockOsu(HardRockOsu),
-    SuddenDeathOsu(SuddenDeathOsu),
-    PerfectOsu(PerfectOsu),
-    DoubleTimeOsu(DoubleTimeOsu),
-    NightcoreOsu(NightcoreOsu),
-    HiddenOsu(HiddenOsu),
-    FlashlightOsu(FlashlightOsu),
-    BlindsOsu(BlindsOsu),
-    StrictTrackingOsu(StrictTrackingOsu),
-    AccuracyChallengeOsu(AccuracyChallengeOsu),
-    TargetPracticeOsu(TargetPracticeOsu),
-    DifficultyAdjustOsu(DifficultyAdjustOsu),
-    ClassicOsu(ClassicOsu),
-    RandomOsu(RandomOsu),
-    MirrorOsu(MirrorOsu),
-    AlternateOsu(AlternateOsu),
-    SingleTapOsu(SingleTapOsu),
-    AutoplayOsu(AutoplayOsu),
-    CinemaOsu(CinemaOsu),
-    RelaxOsu(RelaxOsu),
-    AutopilotOsu(AutopilotOsu),
-    SpunOutOsu(SpunOutOsu),
-    TransformOsu(TransformOsu),
-    WiggleOsu(WiggleOsu),
-    SpinInOsu(SpinInOsu),
-    GrowOsu(GrowOsu),
-    DeflateOsu(DeflateOsu),
-    WindUpOsu(WindUpOsu),
-    WindDownOsu(WindDownOsu),
-    TraceableOsu(TraceableOsu),
-    BarrelRollOsu(BarrelRollOsu),
-    ApproachDifferentOsu(ApproachDifferentOsu),
-    MutedOsu(MutedOsu),
-    NoScopeOsu(NoScopeOsu),
-    MagnetisedOsu(MagnetisedOsu),
-    RepelOsu(RepelOsu),
-    AdaptiveSpeedOsu(AdaptiveSpeedOsu),
-    FreezeFrameOsu(FreezeFrameOsu),
-    BubblesOsu(BubblesOsu),
-    SynesthesiaOsu(SynesthesiaOsu),
-    DepthOsu(DepthOsu),
-    TouchDeviceOsu(TouchDeviceOsu),
-    ScoreV2Osu(ScoreV2Osu),
-    UnknownOsu(UnknownMod),
-    EasyTaiko(EasyTaiko),
-    NoFailTaiko(NoFailTaiko),
-    HalfTimeTaiko(HalfTimeTaiko),
-    DaycoreTaiko(DaycoreTaiko),
-    HardRockTaiko(HardRockTaiko),
-    SuddenDeathTaiko(SuddenDeathTaiko),
-    PerfectTaiko(PerfectTaiko),
-    DoubleTimeTaiko(DoubleTimeTaiko),
-    NightcoreTaiko(NightcoreTaiko),
-    HiddenTaiko(HiddenTaiko),
-    FlashlightTaiko(FlashlightTaiko),
-    AccuracyChallengeTaiko(AccuracyChallengeTaiko),
-    RandomTaiko(RandomTaiko),
-    DifficultyAdjustTaiko(DifficultyAdjustTaiko),
-    ClassicTaiko(ClassicTaiko),
-    SwapTaiko(SwapTaiko),
-    SingleTapTaiko(SingleTapTaiko),
-    ConstantSpeedTaiko(ConstantSpeedTaiko),
-    AutoplayTaiko(AutoplayTaiko),
-    CinemaTaiko(CinemaTaiko),
-    RelaxTaiko(RelaxTaiko),
-    WindUpTaiko(WindUpTaiko),
-    WindDownTaiko(WindDownTaiko),
-    MutedTaiko(MutedTaiko),
-    AdaptiveSpeedTaiko(AdaptiveSpeedTaiko),
-    ScoreV2Taiko(ScoreV2Taiko),
-    UnknownTaiko(UnknownMod),
-    EasyCatch(EasyCatch),
-    NoFailCatch(NoFailCatch),
-    HalfTimeCatch(HalfTimeCatch),
-    DaycoreCatch(DaycoreCatch),
-    HardRockCatch(HardRockCatch),
-    SuddenDeathCatch(SuddenDeathCatch),
-    PerfectCatch(PerfectCatch),
-    DoubleTimeCatch(DoubleTimeCatch),
-    NightcoreCatch(NightcoreCatch),
-    HiddenCatch(HiddenCatch),
-    FlashlightCatch(FlashlightCatch),
-    AccuracyChallengeCatch(AccuracyChallengeCatch),
-    DifficultyAdjustCatch(DifficultyAdjustCatch),
-    ClassicCatch(ClassicCatch),
-    MirrorCatch(MirrorCatch),
-    AutoplayCatch(AutoplayCatch),
-    CinemaCatch(CinemaCatch),
-    RelaxCatch(RelaxCatch),
-    WindUpCatch(WindUpCatch),
-    WindDownCatch(WindDownCatch),
-    FloatingFruitsCatch(FloatingFruitsCatch),
-    MutedCatch(MutedCatch),
-    NoScopeCatch(NoScopeCatch),
-    ScoreV2Catch(ScoreV2Catch),
-    UnknownCatch(UnknownMod),
-    EasyMania(EasyMania),
-    NoFailMania(NoFailMania),
-    HalfTimeMania(HalfTimeMania),
-    DaycoreMania(DaycoreMania),
-    HardRockMania(HardRockMania),
-    SuddenDeathMania(SuddenDeathMania),
-    PerfectMania(PerfectMania),
-    DoubleTimeMania(DoubleTimeMania),
-    NightcoreMania(NightcoreMania),
-    FadeInMania(FadeInMania),
-    HiddenMania(HiddenMania),
-    CoverMania(CoverMania),
-    FlashlightMania(FlashlightMania),
-    AccuracyChallengeMania(AccuracyChallengeMania),
-    RandomMania(RandomMania),
-    DualStagesMania(DualStagesMania),
-    MirrorMania(MirrorMania),
-    DifficultyAdjustMania(DifficultyAdjustMania),
-    ClassicMania(ClassicMania),
-    InvertMania(InvertMania),
-    ConstantSpeedMania(ConstantSpeedMania),
-    HoldOffMania(HoldOffMania),
-    OneKeyMania(OneKeyMania),
-    TwoKeysMania(TwoKeysMania),
-    ThreeKeysMania(ThreeKeysMania),
-    FourKeysMania(FourKeysMania),
-    FiveKeysMania(FiveKeysMania),
-    SixKeysMania(SixKeysMania),
-    SevenKeysMania(SevenKeysMania),
-    EightKeysMania(EightKeysMania),
-    NineKeysMania(NineKeysMania),
-    TenKeysMania(TenKeysMania),
-    AutoplayMania(AutoplayMania),
-    CinemaMania(CinemaMania),
-    WindUpMania(WindUpMania),
-    WindDownMania(WindDownMania),
-    MutedMania(MutedMania),
-    AdaptiveSpeedMania(AdaptiveSpeedMania),
-    ScoreV2Mania(ScoreV2Mania),
-    UnknownMania(UnknownMod),
+mod gamemod {
+    use super::*;
+    /// A single game mod
+    #[derive(Clone, Debug, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(::rkyv::Archive, ::rkyv::Serialize, ::rkyv::Deserialize),
+        archive(check_bytes)
+    )]
+    #[non_exhaustive]
+    pub enum GameMod {
+        EasyOsu(EasyOsu),
+        NoFailOsu(NoFailOsu),
+        HalfTimeOsu(HalfTimeOsu),
+        DaycoreOsu(DaycoreOsu),
+        HardRockOsu(HardRockOsu),
+        SuddenDeathOsu(SuddenDeathOsu),
+        PerfectOsu(PerfectOsu),
+        DoubleTimeOsu(DoubleTimeOsu),
+        NightcoreOsu(NightcoreOsu),
+        HiddenOsu(HiddenOsu),
+        FlashlightOsu(FlashlightOsu),
+        BlindsOsu(BlindsOsu),
+        StrictTrackingOsu(StrictTrackingOsu),
+        AccuracyChallengeOsu(AccuracyChallengeOsu),
+        TargetPracticeOsu(TargetPracticeOsu),
+        DifficultyAdjustOsu(DifficultyAdjustOsu),
+        ClassicOsu(ClassicOsu),
+        RandomOsu(RandomOsu),
+        MirrorOsu(MirrorOsu),
+        AlternateOsu(AlternateOsu),
+        SingleTapOsu(SingleTapOsu),
+        AutoplayOsu(AutoplayOsu),
+        CinemaOsu(CinemaOsu),
+        RelaxOsu(RelaxOsu),
+        AutopilotOsu(AutopilotOsu),
+        SpunOutOsu(SpunOutOsu),
+        TransformOsu(TransformOsu),
+        WiggleOsu(WiggleOsu),
+        SpinInOsu(SpinInOsu),
+        GrowOsu(GrowOsu),
+        DeflateOsu(DeflateOsu),
+        WindUpOsu(WindUpOsu),
+        WindDownOsu(WindDownOsu),
+        TraceableOsu(TraceableOsu),
+        BarrelRollOsu(BarrelRollOsu),
+        ApproachDifferentOsu(ApproachDifferentOsu),
+        MutedOsu(MutedOsu),
+        NoScopeOsu(NoScopeOsu),
+        MagnetisedOsu(MagnetisedOsu),
+        RepelOsu(RepelOsu),
+        AdaptiveSpeedOsu(AdaptiveSpeedOsu),
+        FreezeFrameOsu(FreezeFrameOsu),
+        BubblesOsu(BubblesOsu),
+        SynesthesiaOsu(SynesthesiaOsu),
+        DepthOsu(DepthOsu),
+        TouchDeviceOsu(TouchDeviceOsu),
+        ScoreV2Osu(ScoreV2Osu),
+        UnknownOsu(UnknownMod),
+        EasyTaiko(EasyTaiko),
+        NoFailTaiko(NoFailTaiko),
+        HalfTimeTaiko(HalfTimeTaiko),
+        DaycoreTaiko(DaycoreTaiko),
+        HardRockTaiko(HardRockTaiko),
+        SuddenDeathTaiko(SuddenDeathTaiko),
+        PerfectTaiko(PerfectTaiko),
+        DoubleTimeTaiko(DoubleTimeTaiko),
+        NightcoreTaiko(NightcoreTaiko),
+        HiddenTaiko(HiddenTaiko),
+        FlashlightTaiko(FlashlightTaiko),
+        AccuracyChallengeTaiko(AccuracyChallengeTaiko),
+        RandomTaiko(RandomTaiko),
+        DifficultyAdjustTaiko(DifficultyAdjustTaiko),
+        ClassicTaiko(ClassicTaiko),
+        SwapTaiko(SwapTaiko),
+        SingleTapTaiko(SingleTapTaiko),
+        ConstantSpeedTaiko(ConstantSpeedTaiko),
+        AutoplayTaiko(AutoplayTaiko),
+        CinemaTaiko(CinemaTaiko),
+        RelaxTaiko(RelaxTaiko),
+        WindUpTaiko(WindUpTaiko),
+        WindDownTaiko(WindDownTaiko),
+        MutedTaiko(MutedTaiko),
+        AdaptiveSpeedTaiko(AdaptiveSpeedTaiko),
+        ScoreV2Taiko(ScoreV2Taiko),
+        UnknownTaiko(UnknownMod),
+        EasyCatch(EasyCatch),
+        NoFailCatch(NoFailCatch),
+        HalfTimeCatch(HalfTimeCatch),
+        DaycoreCatch(DaycoreCatch),
+        HardRockCatch(HardRockCatch),
+        SuddenDeathCatch(SuddenDeathCatch),
+        PerfectCatch(PerfectCatch),
+        DoubleTimeCatch(DoubleTimeCatch),
+        NightcoreCatch(NightcoreCatch),
+        HiddenCatch(HiddenCatch),
+        FlashlightCatch(FlashlightCatch),
+        AccuracyChallengeCatch(AccuracyChallengeCatch),
+        DifficultyAdjustCatch(DifficultyAdjustCatch),
+        ClassicCatch(ClassicCatch),
+        MirrorCatch(MirrorCatch),
+        AutoplayCatch(AutoplayCatch),
+        CinemaCatch(CinemaCatch),
+        RelaxCatch(RelaxCatch),
+        WindUpCatch(WindUpCatch),
+        WindDownCatch(WindDownCatch),
+        FloatingFruitsCatch(FloatingFruitsCatch),
+        MutedCatch(MutedCatch),
+        NoScopeCatch(NoScopeCatch),
+        ScoreV2Catch(ScoreV2Catch),
+        UnknownCatch(UnknownMod),
+        EasyMania(EasyMania),
+        NoFailMania(NoFailMania),
+        HalfTimeMania(HalfTimeMania),
+        DaycoreMania(DaycoreMania),
+        HardRockMania(HardRockMania),
+        SuddenDeathMania(SuddenDeathMania),
+        PerfectMania(PerfectMania),
+        DoubleTimeMania(DoubleTimeMania),
+        NightcoreMania(NightcoreMania),
+        FadeInMania(FadeInMania),
+        HiddenMania(HiddenMania),
+        CoverMania(CoverMania),
+        FlashlightMania(FlashlightMania),
+        AccuracyChallengeMania(AccuracyChallengeMania),
+        RandomMania(RandomMania),
+        DualStagesMania(DualStagesMania),
+        MirrorMania(MirrorMania),
+        DifficultyAdjustMania(DifficultyAdjustMania),
+        ClassicMania(ClassicMania),
+        InvertMania(InvertMania),
+        ConstantSpeedMania(ConstantSpeedMania),
+        HoldOffMania(HoldOffMania),
+        OneKeyMania(OneKeyMania),
+        TwoKeysMania(TwoKeysMania),
+        ThreeKeysMania(ThreeKeysMania),
+        FourKeysMania(FourKeysMania),
+        FiveKeysMania(FiveKeysMania),
+        SixKeysMania(SixKeysMania),
+        SevenKeysMania(SevenKeysMania),
+        EightKeysMania(EightKeysMania),
+        NineKeysMania(NineKeysMania),
+        TenKeysMania(TenKeysMania),
+        AutoplayMania(AutoplayMania),
+        CinemaMania(CinemaMania),
+        WindUpMania(WindUpMania),
+        WindDownMania(WindDownMania),
+        MutedMania(MutedMania),
+        AdaptiveSpeedMania(AdaptiveSpeedMania),
+        ScoreV2Mania(ScoreV2Mania),
+        UnknownMania(UnknownMod),
+    }
 }
 impl GameMod {
     /// Create a new [`GameMod`]

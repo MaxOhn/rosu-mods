@@ -111,3 +111,55 @@ impl Ord for Acronym {
         self.as_str().cmp(other.as_str())
     }
 }
+
+// TODO: serde impls
+
+#[cfg(feature = "rkyv")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+const _: () = {
+    use std::ptr::addr_of;
+
+    use rkyv::{
+        bytecheck::{ErrorBox, TupleStructCheckError},
+        Archive, CheckBytes, Deserialize, Fallible, Serialize,
+    };
+
+    impl Archive for Acronym {
+        type Archived = Self;
+        type Resolver = ();
+
+        unsafe fn resolve(&self, pos: usize, (): Self::Resolver, out: *mut Self) {
+            self.0.resolve(pos, [(); 3], out.cast());
+        }
+    }
+
+    impl<S: Fallible + ?Sized> Serialize<S> for Acronym {
+        fn serialize(&self, s: &mut S) -> Result<(), S::Error> {
+            self.0.serialize(s).map(|_| ())
+        }
+    }
+
+    impl<D: Fallible + ?Sized> Deserialize<Self, D> for Acronym {
+        fn deserialize(&self, _: &mut D) -> Result<Self, D::Error> {
+            Ok(*self)
+        }
+    }
+
+    impl<C: ?Sized> CheckBytes<C> for Acronym {
+        type Error = TupleStructCheckError;
+
+        unsafe fn check_bytes<'a>(
+            value: *const Self,
+            ctx: &mut C,
+        ) -> Result<&'a Self, TupleStructCheckError> {
+            <[u8; 3] as CheckBytes<C>>::check_bytes(addr_of!((*value).0), ctx).map_err(|e| {
+                TupleStructCheckError {
+                    field_index: 0,
+                    inner: ErrorBox::new(e),
+                }
+            })?;
+
+            Ok(&*value)
+        }
+    }
+};

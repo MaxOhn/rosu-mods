@@ -98,3 +98,74 @@ const _: () = {
         }
     }
 };
+
+#[cfg(feature = "rkyv")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+const _: () = {
+    use rkyv::{bytecheck::EnumCheckError, Archive, CheckBytes, Deserialize, Fallible, Serialize};
+
+    #[repr(u8)]
+    enum ArchivedTag {
+        Osu,
+        Taiko,
+        Catch,
+        Mania,
+    }
+
+    impl Archive for GameMode {
+        type Archived = Self;
+        type Resolver = ();
+
+        unsafe fn resolve(&self, _: usize, (): Self::Resolver, out: *mut Self) {
+            let tag = match self {
+                Self::Osu => ArchivedTag::Osu,
+                Self::Taiko => ArchivedTag::Taiko,
+                Self::Catch => ArchivedTag::Catch,
+                Self::Mania => ArchivedTag::Mania,
+            };
+
+            out.cast::<ArchivedTag>().write(tag);
+        }
+    }
+
+    impl<S: Fallible + ?Sized> Serialize<S> for GameMode {
+        fn serialize(&self, _: &mut S) -> Result<(), S::Error> {
+            Ok(())
+        }
+    }
+
+    impl<D: Fallible + ?Sized> Deserialize<Self, D> for GameMode {
+        fn deserialize(&self, _: &mut D) -> Result<Self, D::Error> {
+            Ok(*self)
+        }
+    }
+
+    struct Discriminant;
+
+    #[allow(non_upper_case_globals)]
+    impl Discriminant {
+        const Osu: u8 = ArchivedTag::Osu as u8;
+        const Taiko: u8 = ArchivedTag::Taiko as u8;
+        const Catch: u8 = ArchivedTag::Catch as u8;
+        const Mania: u8 = ArchivedTag::Mania as u8;
+    }
+
+    impl<C: ?Sized> CheckBytes<C> for GameMode {
+        type Error = EnumCheckError<u8>;
+
+        unsafe fn check_bytes<'a>(
+            value: *const Self,
+            _: &mut C,
+        ) -> Result<&'a Self, EnumCheckError<u8>> {
+            let tag = *value.cast::<u8>();
+
+            match tag {
+                Discriminant::Osu
+                | Discriminant::Taiko
+                | Discriminant::Catch
+                | Discriminant::Mania => Ok(&*value),
+                _ => Err(EnumCheckError::InvalidTag(tag)),
+            }
+        }
+    }
+};

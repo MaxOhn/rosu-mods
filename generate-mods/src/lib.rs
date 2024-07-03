@@ -43,13 +43,74 @@ pub fn define_gamemod_structs(
     writer: &mut Writer,
     itoa_buf: &mut Buffer,
 ) -> GenResult {
+    let mut archives = String::new();
+    let mut resolvers = String::new();
+
+    let mut archived = |name| {
+        archives.push_str("Archived");
+        archives.push_str(name);
+        archives.push(',');
+    };
+    let mut resolver = |name| {
+        resolvers.push_str(name);
+        resolvers.push_str("Resolver");
+        resolvers.push(',');
+    };
+
+    writer.write(
+        "mod all_structs {\
+            #[cfg(feature = \"rkyv\")]\
+            use rkyv::bytecheck;",
+    )?;
+
     for ruleset in rulesets.iter() {
         for gamemod in ruleset.mods.iter() {
-            gamemod.write(writer, itoa_buf)?;
+            gamemod.define_struct(writer, &mut archived, &mut resolver)?;
         }
     }
 
-    write_unknown_mod(writer)?;
+    define_unknown_mod_struct(writer)?;
+
+    writer.write_raw(
+        b"}\
+        pub use all_structs::{",
+    )?;
+
+    for ruleset in rulesets.iter() {
+        for gamemod in ruleset.mods.iter() {
+            writer.write(&gamemod.name)?;
+            writer.write_raw(b",")?;
+        }
+    }
+
+    writer.write_raw(
+        b"\
+            UnknownMod\
+        };\
+        pub use gamemod::GameMod;\
+        pub use intermode::GameModIntermode;\
+        pub use kind::GameModKind;\
+        /// Types for (de)serialization through `rkyv`.\n\
+        #[cfg(feature = \"rkyv\")]\
+        #[cfg_attr(docsrs, doc(cfg(feature = \"rkyv\")))]\
+        #[doc(hidden)]\
+        pub mod rkyv {\
+            pub use super::gamemod::{ArchivedGameMod, GameModResolver};\
+            pub use super::intermode::GameModIntermodeResolver;\
+            pub use super::kind::GameModKindResolver;\
+            pub use super::all_structs::{",
+    )?;
+    writer.write(&*archives)?;
+    writer.write(&*resolvers)?;
+    writer.write_raw(b"UnknownModResolver};}")?;
+
+    for ruleset in rulesets.iter() {
+        for gamemod in ruleset.mods.iter() {
+            gamemod.define_fns(writer, itoa_buf)?;
+        }
+    }
+
+    define_unknown_mod_impl(writer)?;
 
     Ok(())
 }
@@ -74,16 +135,28 @@ pub fn define_gamemod_kind(rulesets: &[RulesetMods], writer: &mut Writer) -> Gen
     }
 
     writer.write(
-        "/// The different types of a [`GameMod`]\n\
-        #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]\
-        #[cfg_attr(feature = \"serde\", derive(serde::Serialize))]\
-        pub enum GameModKind {\
-            DifficultyReduction,\
-            DifficultyIncrease,\
-            Conversion,\
-            Automation,\
-            Fun,\
-            System,\
+        "mod kind {\
+            #[cfg(feature = \"rkyv\")]\
+            use rkyv::bytecheck;\
+            /// The different types of a [`GameMod`]\n\
+            ///\n\
+            /// [`GameMod`]: super::GameMod\n\
+            #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]\
+            #[cfg_attr(feature = \"serde\", derive(serde::Serialize))]\
+            #[cfg_attr(\
+                feature = \"rkyv\",\
+                derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),\
+                archive(as = \"Self\"),\
+                repr(u8),\
+            )]\
+            pub enum GameModKind {\
+                DifficultyReduction,\
+                DifficultyIncrease,\
+                Conversion,\
+                Automation,\
+                Fun,\
+                System,\
+            }\
         }",
     )
 }
@@ -113,10 +186,19 @@ pub fn define_gamemod_intermode(
     mods.sort_unstable_by(|(a, ..), (b, ..)| a.cmp(b));
 
     writer.write(
-        "/// A single game mod when the mode is ignored\n\
-        #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]\
-        #[non_exhaustive]\
-        pub enum GameModIntermode {",
+        "mod intermode {\
+            #[cfg(feature = \"rkyv\")]\
+            use rkyv::bytecheck;\
+            /// A single game mod when the mode is ignored\n\
+            #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]\
+            #[cfg_attr(\
+                feature = \"rkyv\",\
+                derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),\
+                archive(as = \"Self\"),\
+                repr(u8),\
+            )]\
+            #[non_exhaustive]\
+            pub enum GameModIntermode {",
     )?;
 
     for (name, _) in mods.iter() {
@@ -124,8 +206,8 @@ pub fn define_gamemod_intermode(
         writer.write(b',')?;
     }
 
-    writer.write("Unknown(UnknownMod),")?;
-    writer.write(b'}')?;
+    writer.write("Unknown(super::UnknownMod),")?;
+    writer.write("}}")?;
 
     writer.write(
         "impl GameModIntermode {\
@@ -390,10 +472,17 @@ pub fn define_gamemod_order(
 
 pub fn define_gamemod_enum(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
-        "/// A single game mod\n\
-        #[derive(Clone, Debug, PartialEq)]\
-        #[non_exhaustive]\
-        pub enum GameMod {",
+        "mod gamemod {\
+            use super::*;\
+            /// A single game mod\n\
+            #[derive(Clone, Debug, PartialEq)]\
+            #[cfg_attr(\
+                feature = \"rkyv\",\
+                derive(::rkyv::Archive, ::rkyv::Serialize, ::rkyv::Deserialize),\
+                archive(check_bytes),\
+            )]\
+            #[non_exhaustive]\
+            pub enum GameMod {",
     )?;
 
     for ruleset in rulesets {
@@ -409,7 +498,7 @@ pub fn define_gamemod_enum(rulesets: &[RulesetMods], writer: &mut Writer) -> Gen
         writer.write("(UnknownMod),")?;
     }
 
-    writer.write(b'}')
+    writer.write("}}")
 }
 
 pub fn define_gamemod_fns(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
@@ -427,14 +516,24 @@ pub fn define_gamemod_fns(rulesets: &[RulesetMods], writer: &mut Writer) -> GenR
     writer.write(b'}')
 }
 
-fn write_unknown_mod(writer: &mut Writer) -> GenResult {
+fn define_unknown_mod_struct(writer: &mut Writer) -> GenResult {
     writer.write(
         "/// Any unknown mod.\n\
         #[derive(Copy, Eq, Clone, Debug, PartialEq, PartialOrd, Ord, Hash)]\
+        #[cfg_attr(\
+            feature = \"rkyv\",\
+            derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),\
+            archive(as = \"Self\")\
+        )]\
         pub struct UnknownMod {\
-            pub acronym: Acronym,\
-        }\
-        impl UnknownMod {\
+            pub acronym: crate::Acronym,\
+        }",
+    )
+}
+
+fn define_unknown_mod_impl(writer: &mut Writer) -> GenResult {
+    writer.write(
+        "impl UnknownMod {\
             /// The default [`Acronym`] for an unknown mod without specific\n\
             /// acronym.\n\
             pub const UNKNOWN_ACRONYM: Acronym = unsafe { Acronym::from_str_unchecked(\"??\") };\n\

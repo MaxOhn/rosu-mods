@@ -85,7 +85,7 @@ jobs:
         run: >
           cargo hack check
           --feature-powerset
-          --optional-deps serde
+          --optional-deps serde,rkyv
 
   readme:
     name: Readme

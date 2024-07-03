@@ -85,11 +85,12 @@ assert_eq!(iter.next(), None);
 
 ### Features
 
-| Flag      | Description                                                                           | Dependencies
-| --------- | ------------------------------------------------------------------------------------- | ------------
-| `default` | No features enabled                                                                   |
-| `macros`  | Enables the `mods!` macro                                                             | [`paste`]
-| `serde`   | Implements `Deserialize` and `Serialize` for all types and enables the `serde` module | [`serde`]
+| Flag      | Description                                                                                      | Dependencies
+| --------- | ------------------------------------------------------------------------------------------------ | ------------
+| `default` | No features enabled                                                                              |
+| `macros`  | Enables the `mods!` macro                                                                        | [`paste`]
+| `serde`   | Implements `serde::{Deserialize, Serialize}` for all types and enables the `serde` module        | [`serde`]
+| `rkyv`    | Implements `rkyv::{Archive, Serialize, Deserialize}` for all types and enables the `rkyv` module | [`rkyv`]
 
 [osu!]: https://osu.ppy.sh/home
 [mods.json]: https://github.com/ppy/osu-web/blob/master/database/mods.json
@@ -97,5 +98,6 @@ assert_eq!(iter.next(), None);
 [legacy mods]: https://github.com/ppy/osu-api/wiki#reference
 [`paste`]: https://docs.rs/paste
 [`serde`]: https://docs.rs/serde
+[`rkyv`]: https://docs.rs/rkyv
 
 <!-- cargo-rdme end -->

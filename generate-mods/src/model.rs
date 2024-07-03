@@ -197,13 +197,6 @@ impl GameMod {
         self.bits().map(|n| (n.ilog2() as u8) + 1)
     }
 
-    pub fn write(&self, writer: &mut Writer, itoa_buf: &mut Buffer) -> GenResult {
-        self.define_struct(writer)?;
-        self.define_fns(writer, itoa_buf)?;
-
-        Ok(())
-    }
-
     pub fn impl_serde(&self, writer: &mut Writer) -> GenResult {
         writer.write(
             "#[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
@@ -374,7 +367,12 @@ impl GameMod {
         )
     }
 
-    fn define_struct(&self, writer: &mut Writer) -> GenResult {
+    pub fn define_struct<'a>(
+        &'a self,
+        writer: &mut Writer,
+        archived: &mut impl FnMut(&'a str),
+        resolver: &mut impl FnMut(&'a str),
+    ) -> GenResult {
         writer.write("/// ")?;
         writer.write(&self.description)?;
         writer.write(
@@ -386,9 +384,24 @@ impl GameMod {
             writer.write("Copy, Eq, ")?;
         }
 
-        writer.write("Clone, Debug, Default, PartialEq)]")?;
+        writer.write(
+            "Clone, Debug, Default, PartialEq)]\
+            #[cfg_attr(feature = \"rkyv\", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize",
+        )?;
 
-        writer.write("pub struct ")?;
+        if self.settings.is_empty() {
+            writer.write(", rkyv::CheckBytes), archive(as = \"Self\")")?;
+        } else {
+            writer.write("), archive(check_bytes)")?;
+            (archived)(&self.name);
+        }
+
+        (resolver)(&self.name);
+
+        writer.write(
+            ")]\
+            pub struct ",
+        )?;
         writer.write(&self.name)?;
         writer.write(b'{')?;
 
@@ -399,7 +412,7 @@ impl GameMod {
         writer.write(b'}')
     }
 
-    fn define_fns(&self, writer: &mut Writer, itoa_buf: &mut Buffer) -> GenResult {
+    pub fn define_fns(&self, writer: &mut Writer, itoa_buf: &mut Buffer) -> GenResult {
         writer.write("impl ")?;
         writer.write(&self.name)?;
         writer.write(b'{')?;

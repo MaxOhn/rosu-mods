@@ -684,7 +684,7 @@ impl Extend<GameMod> for GameMods {
 const _: () = {
     use serde::ser::{Serialize, SerializeSeq, Serializer};
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "macros")))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GameMods {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let mut s = s.serialize_seq(Some(self.inner.len()))?;
@@ -694,6 +694,40 @@ const _: () = {
             }
 
             s.end()
+        }
+    }
+};
+
+#[cfg(feature = "rkyv")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+const _: () = {
+    use rkyv::{
+        ser::{ScratchSpace, Serializer},
+        vec::{ArchivedVec, VecResolver},
+        Archive, Archived, Deserialize, Fallible, Infallible, Serialize,
+    };
+
+    impl Archive for GameMods {
+        type Archived = Archived<Vec<GameMod>>;
+        type Resolver = VecResolver;
+
+        unsafe fn resolve(&self, pos: usize, resolver: Self::Resolver, out: *mut Self::Archived) {
+            ArchivedVec::resolve_from_len(self.inner.len(), pos, resolver, out);
+        }
+    }
+
+    impl<S: Serializer + ScratchSpace + Fallible + ?Sized> Serialize<S> for GameMods {
+        fn serialize(&self, s: &mut S) -> Result<Self::Resolver, S::Error> {
+            ArchivedVec::serialize_from_iter::<GameMod, _, _, _>(self.inner.values(), s)
+        }
+    }
+
+    impl<D: Fallible + ?Sized> Deserialize<GameMods, D> for Archived<Vec<GameMod>> {
+        fn deserialize(&self, _: &mut D) -> Result<GameMods, D::Error> {
+            Ok(self
+                .iter()
+                .map(|archived| archived.deserialize(&mut Infallible).unwrap())
+                .collect())
         }
     }
 };

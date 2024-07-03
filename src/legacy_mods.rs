@@ -281,6 +281,7 @@ impl Binary for GameModsLegacy {
 
 impl BitOr for GameModsLegacy {
     type Output = Self;
+
     /// The bitwise or (`|`) of the bits in two flags values.
     fn bitor(self, other: GameModsLegacy) -> Self {
         self.union(other)
@@ -454,6 +455,56 @@ const _: () = {
     impl Serialize for GameModsLegacy {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_u32(self.bits())
+        }
+    }
+};
+
+#[cfg(feature = "rkyv")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+const _: () = {
+    use std::ptr::addr_of;
+
+    use rkyv::{
+        bytecheck::{ErrorBox, TupleStructCheckError},
+        Archive, CheckBytes, Deserialize, Fallible, Serialize,
+    };
+
+    impl Archive for GameModsLegacy {
+        type Archived = Self;
+        type Resolver = ();
+
+        unsafe fn resolve(&self, pos: usize, resolver: (), out: *mut Self) {
+            self.bits().resolve(pos, resolver, out.cast());
+        }
+    }
+
+    impl<S: Fallible + ?Sized> Serialize<S> for GameModsLegacy {
+        fn serialize(&self, s: &mut S) -> Result<(), S::Error> {
+            self.bits().serialize(s)
+        }
+    }
+
+    impl<D: Fallible + ?Sized> Deserialize<Self, D> for GameModsLegacy {
+        fn deserialize(&self, _: &mut D) -> Result<Self, D::Error> {
+            Ok(*self)
+        }
+    }
+
+    impl<C: ?Sized> CheckBytes<C> for GameModsLegacy {
+        type Error = TupleStructCheckError;
+
+        unsafe fn check_bytes<'a>(
+            value: *const Self,
+            ctx: &mut C,
+        ) -> Result<&'a Self, TupleStructCheckError> {
+            <u32 as CheckBytes<C>>::check_bytes(addr_of!((*value).0), ctx).map_err(|e| {
+                TupleStructCheckError {
+                    field_index: 0,
+                    inner: ErrorBox::new(e),
+                }
+            })?;
+
+            Ok(&*value)
         }
     }
 };

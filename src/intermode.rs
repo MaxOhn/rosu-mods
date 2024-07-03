@@ -498,17 +498,7 @@ impl GameModsIntermode {
     /// assert_eq!(hddt.legacy_clock_rate(), 1.5);
     /// ```
     pub fn legacy_clock_rate(&self) -> f32 {
-        if self.inner.contains(&GameModIntermode::DoubleTime)
-            || self.inner.contains(&GameModIntermode::Nightcore)
-        {
-            1.5
-        } else if self.inner.contains(&GameModIntermode::HalfTime)
-            || self.inner.contains(&GameModIntermode::Daycore)
-        {
-            0.75
-        } else {
-            1.0
-        }
+        GameModsLegacy::from_bits(self.bits()).clock_rate()
     }
 
     /// Returns an iterator over all contained mods.
@@ -767,6 +757,37 @@ const _: () = {
     impl Serialize for GameModsIntermode {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             self.inner.serialize(s)
+        }
+    }
+};
+
+#[cfg(feature = "rkyv")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+const _: () = {
+    use rkyv::{
+        ser::{ScratchSpace, Serializer},
+        vec::{ArchivedVec, VecResolver},
+        Archive, Archived, Deserialize, Fallible, Serialize,
+    };
+
+    impl Archive for GameModsIntermode {
+        type Archived = Archived<Vec<GameModIntermode>>;
+        type Resolver = VecResolver;
+
+        unsafe fn resolve(&self, pos: usize, resolver: Self::Resolver, out: *mut Self::Archived) {
+            ArchivedVec::resolve_from_len(self.inner.len(), pos, resolver, out);
+        }
+    }
+
+    impl<S: Serializer + ScratchSpace + Fallible + ?Sized> Serialize<S> for GameModsIntermode {
+        fn serialize(&self, s: &mut S) -> Result<Self::Resolver, S::Error> {
+            ArchivedVec::serialize_from_iter::<GameModIntermode, _, _, _>(self.inner.iter(), s)
+        }
+    }
+
+    impl<D: Fallible + ?Sized> Deserialize<GameModsIntermode, D> for Archived<Vec<GameModIntermode>> {
+        fn deserialize(&self, _: &mut D) -> Result<GameModsIntermode, D::Error> {
+            Ok(self.iter().copied().collect())
         }
     }
 };

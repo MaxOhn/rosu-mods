@@ -1,2 +1,4 @@
 /target
 /generate-mods/Cargo.lock
+expanded.rs
+output.rs
