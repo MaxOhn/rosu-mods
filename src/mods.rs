@@ -681,10 +681,10 @@ impl Extend<GameMod> for GameMods {
 }
 
 #[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::ser::{Serialize, SerializeSeq, Serializer};
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GameMods {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let mut s = s.serialize_seq(Some(self.inner.len()))?;

@@ -45,11 +45,11 @@ impl fmt::Display for GameMode {
 }
 
 #[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
-        de::{Error, Unexpected, Visitor},
+        de::{Deserialize, Deserializer, Error, Unexpected, Visitor},
         ser::{Serialize, Serializer},
-        Deserialize, Deserializer,
     };
 
     struct ModeVisitor;
@@ -84,14 +84,12 @@ const _: () = {
         }
     }
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GameMode {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             d.deserialize_any(ModeVisitor)
         }
     }
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GameMode {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_u8(*self as u8)

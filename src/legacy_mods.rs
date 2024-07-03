@@ -433,6 +433,7 @@ impl IntoIterator for GameModsLegacy {
 }
 
 #[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
         de::{Deserialize, Deserializer},
@@ -441,7 +442,6 @@ const _: () = {
 
     use crate::GameModsIntermode;
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GameModsLegacy {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             // TODO: custom deserialization to avoid the allocation
@@ -451,7 +451,6 @@ const _: () = {
         }
     }
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GameModsLegacy {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_u32(self.bits())

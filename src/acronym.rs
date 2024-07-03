@@ -112,7 +112,44 @@ impl Ord for Acronym {
     }
 }
 
-// TODO: serde impls
+#[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+const _: () = {
+    use serde::{
+        de::{Deserialize, Deserializer, Error as DeError, Visitor},
+        ser::{Serialize, Serializer},
+    };
+
+    impl<'de> Deserialize<'de> for Acronym {
+        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            struct AcronymVisitor;
+
+            impl<'de> Visitor<'de> for AcronymVisitor {
+                type Value = Acronym;
+
+                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+                    f.write_str("string")
+                }
+
+                fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+                    v.parse().map_err(DeError::custom)
+                }
+
+                fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+                    self.visit_str(&v)
+                }
+            }
+
+            d.deserialize_str(AcronymVisitor)
+        }
+    }
+
+    impl Serialize for Acronym {
+        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+            s.serialize_str(self.as_str())
+        }
+    }
+};
 
 #[cfg(feature = "rkyv")]
 #[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]

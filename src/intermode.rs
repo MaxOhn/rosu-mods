@@ -709,13 +709,13 @@ impl FromStr for GameModsIntermode {
 }
 
 #[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
         de::{Deserialize, Deserializer, Error as DeError, SeqAccess, Visitor},
         ser::{Serialize, Serializer},
     };
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GameModsIntermode {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct GameModsIntermodeVisitor;
@@ -753,7 +753,6 @@ const _: () = {
         }
     }
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GameModsIntermode {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             self.inner.serialize(s)
