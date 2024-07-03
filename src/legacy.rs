@@ -436,18 +436,56 @@ impl IntoIterator for GameModsLegacy {
 #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
-        de::{Deserialize, Deserializer},
+        de::{Deserialize, DeserializeSeed, Deserializer, Error as DeError, SeqAccess, Visitor},
         ser::{Serialize, Serializer},
     };
 
-    use crate::GameModsIntermode;
-
     impl<'de> Deserialize<'de> for GameModsLegacy {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            // TODO: custom deserialization to avoid the allocation
-            let mods = GameModsIntermode::deserialize(d)?;
+            struct GameModsLegacyVisitor;
 
-            Ok(mods.as_legacy())
+            impl<'de> Visitor<'de> for GameModsLegacyVisitor {
+                type Value = GameModsLegacy;
+
+                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+                    f.write_str("integer bitflags, mod acronyms, or a sequence of mod acronyms")
+                }
+
+                fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
+                    u32::try_from(v)
+                        .map_err(|_| DeError::custom("bitflags must fit in a u32"))
+                        .map(GameModsLegacy::from_bits)
+                }
+
+                fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+                    v.parse().map_err(DeError::custom)
+                }
+
+                fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
+                    struct GameModsLegacySeed;
+
+                    impl<'de> DeserializeSeed<'de> for GameModsLegacySeed {
+                        type Value = GameModsLegacy;
+
+                        fn deserialize<D: Deserializer<'de>>(
+                            self,
+                            d: D,
+                        ) -> Result<Self::Value, D::Error> {
+                            d.deserialize_str(GameModsLegacyVisitor)
+                        }
+                    }
+
+                    let mut mods = GameModsLegacy::NoMod;
+
+                    while let Some(gamemod) = seq.next_element_seed(GameModsLegacySeed)? {
+                        mods |= gamemod;
+                    }
+
+                    Ok(mods)
+                }
+            }
+
+            d.deserialize_any(GameModsLegacyVisitor)
         }
     }
 
@@ -538,5 +576,38 @@ mod tests {
         assert_eq!(iter.next(), Some(GameModsLegacy::Hidden));
         assert_eq!(iter.next(), Some(GameModsLegacy::Nightcore));
         assert_eq!(iter.next(), None);
+    }
+
+    #[cfg(feature = "serde")]
+    mod serde {
+        use super::*;
+
+        #[test]
+        fn deser_str() {
+            let json = r#""HDHR""#;
+            let mods = serde_json::from_str::<GameModsLegacy>(json).unwrap();
+            let expected = GameModsLegacy::Hidden | GameModsLegacy::HardRock;
+
+            assert_eq!(mods, expected);
+        }
+
+        #[test]
+        fn deser_bits() {
+            let json = "1096";
+            let mods = serde_json::from_str::<GameModsLegacy>(json).unwrap();
+            let expected =
+                GameModsLegacy::Hidden | GameModsLegacy::DoubleTime | GameModsLegacy::Flashlight;
+
+            assert_eq!(mods, expected);
+        }
+
+        #[test]
+        fn deser_seq() {
+            let json = r#"["NF", "EZ", "HT"]"#;
+            let mods = serde_json::from_str::<GameModsLegacy>(json).unwrap();
+            let expected = GameModsLegacy::NoFail | GameModsLegacy::Easy | GameModsLegacy::HalfTime;
+
+            assert_eq!(mods, expected);
+        }
     }
 }

@@ -740,8 +740,7 @@ const _: () = {
                 fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
                     let mut inner = BTreeSet::new();
 
-                    while let Some(elem) = seq.next_element()? {
-                        let acronym = Acronym::from_str(elem).map_err(DeError::custom)?;
+                    while let Some(acronym) = seq.next_element()? {
                         inner.insert(GameModIntermode::from_acronym(acronym));
                     }
 
@@ -900,7 +899,7 @@ mod tests {
     }
 
     #[cfg(feature = "serde")]
-    mod serde_tests {
+    mod serde {
         use super::*;
 
         #[test]
