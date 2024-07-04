@@ -186,7 +186,7 @@ pub fn define_gamemod_intermode(
     mods.sort_unstable_by(|(a, ..), (b, ..)| a.cmp(b));
 
     writer.write(
-        "mod intermode {\
+        "pub(crate) mod intermode {\
             #[cfg(feature = \"rkyv\")]\
             use rkyv::bytecheck;\
             /// A single game mod when the mode is ignored\n\
@@ -472,7 +472,7 @@ pub fn define_gamemod_order(
 
 pub fn define_gamemod_enum(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
-        "mod gamemod {\
+        "pub(crate) mod gamemod {\
             use super::*;\
             /// A single game mod\n\
             #[derive(Clone, Debug, PartialEq)]\

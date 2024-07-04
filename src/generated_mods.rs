@@ -5464,7 +5464,7 @@ mod kind {
         System,
     }
 }
-mod intermode {
+pub(crate) mod intermode {
     #[cfg(feature = "rkyv")]
     use rkyv::bytecheck;
     /// A single game mod when the mode is ignored
@@ -6151,7 +6151,7 @@ impl Borrow<GameModIntermode> for GameModOrder {
         &self.intermode
     }
 }
-mod gamemod {
+pub(crate) mod gamemod {
     use super::*;
     /// A single game mod
     #[derive(Clone, Debug, PartialEq)]
