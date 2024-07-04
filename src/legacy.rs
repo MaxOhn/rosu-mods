@@ -436,9 +436,11 @@ impl IntoIterator for GameModsLegacy {
 #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
-        de::{Deserialize, DeserializeSeed, Deserializer, Error as DeError, SeqAccess, Visitor},
+        de::{Deserialize, Deserializer, Error as DeError, SeqAccess, Visitor},
         ser::{Serialize, Serializer},
     };
+
+    use crate::serde::{GameModRaw, MaybeOwnedStr, BITFLAGS_U32};
 
     impl<'de> Deserialize<'de> for GameModsLegacy {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
@@ -448,13 +450,23 @@ const _: () = {
                 type Value = GameModsLegacy;
 
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("integer bitflags, mod acronyms, or a sequence of mod acronyms")
+                    f.write_str("integer bitflags, mod acronyms, or a sequence of mods")
+                }
+
+                fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
+                    let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+
+                    self.visit_u32(bits)
+                }
+
+                fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
+                    Ok(GameModsLegacy::from_bits(v))
                 }
 
                 fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                    u32::try_from(v)
-                        .map_err(|_| DeError::custom("bitflags must fit in a u32"))
-                        .map(GameModsLegacy::from_bits)
+                    let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+
+                    self.visit_u32(bits)
                 }
 
                 fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
@@ -462,22 +474,21 @@ const _: () = {
                 }
 
                 fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
-                    struct GameModsLegacySeed;
-
-                    impl<'de> DeserializeSeed<'de> for GameModsLegacySeed {
-                        type Value = GameModsLegacy;
-
-                        fn deserialize<D: Deserializer<'de>>(
-                            self,
-                            d: D,
-                        ) -> Result<Self::Value, D::Error> {
-                            d.deserialize_str(GameModsLegacyVisitor)
-                        }
-                    }
-
                     let mut mods = GameModsLegacy::NoMod;
 
-                    while let Some(gamemod) = seq.next_element_seed(GameModsLegacySeed)? {
+                    while let Some(raw) = seq.next_element::<GameModRaw<'_>>()? {
+                        fn try_acronym_to_gamemod<E: DeError>(
+                            acronym: &MaybeOwnedStr<'_>,
+                        ) -> Result<GameModsLegacy, E> {
+                            GameModsLegacy::from_str(acronym.as_str()).map_err(DeError::custom)
+                        }
+
+                        let gamemod = match raw {
+                            GameModRaw::Bits(bits) => GameModsLegacy::from_bits(bits),
+                            GameModRaw::Acronym(acronym) => try_acronym_to_gamemod(&acronym)?,
+                            GameModRaw::Full { acronym, .. } => try_acronym_to_gamemod(&acronym)?,
+                        };
+
                         mods |= gamemod;
                     }
 
@@ -603,7 +614,7 @@ mod tests {
 
         #[test]
         fn deser_seq() {
-            let json = r#"["NF", "EZ", "HT"]"#;
+            let json = r#"["NF", 2, { "acronym": "HT", "settings": { "any": true } }]"#;
             let mods = serde_json::from_str::<GameModsLegacy>(json).unwrap();
             let expected = GameModsLegacy::NoFail | GameModsLegacy::Easy | GameModsLegacy::HalfTime;
 

@@ -18,7 +18,7 @@ use crate::{
     Acronym, GameModIntermode, GameMode, GameMods, GameModsIntermode,
 };
 
-const BITFLAGS_U32: &str = "bitflags must be a u32";
+pub(crate) const BITFLAGS_U32: &str = "bitflags must be a u32";
 const EXPECTED_ACRONYM_FIRST: &str = "expected `acronym` as first field";
 
 const MODES: [GameMode; 4] = [
@@ -338,11 +338,11 @@ impl DeError for GameModDeserializeError {
 impl<'de> Deserializer<'de> for &'de GameModSettings<'_> {
     type Error = GameModDeserializeError;
 
-    fn deserialize_any<V>(self, _: V) -> Result<V::Value, Self::Error>
+    fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,
     {
-        unimplemented!()
+        self.deserialize_map(visitor)
     }
 
     fn deserialize_bool<V>(self, _: V) -> Result<V::Value, Self::Error>
@@ -592,6 +592,29 @@ impl<'de> MapAccess<'de> for GameModSettingsMap<'de> {
         seed.deserialize(self.value.take().unwrap())
     }
 
+    fn next_entry_seed<K, V>(
+        &mut self,
+        kseed: K,
+        vseed: V,
+    ) -> Result<Option<(K::Value, V::Value)>, Self::Error>
+    where
+        K: DeserializeSeed<'de>,
+        V: DeserializeSeed<'de>,
+    {
+        match self.fields.next() {
+            Some(field) => {
+                self.value.take();
+
+                let key_de = BorrowedStrDeserializer::new(field.name.as_str());
+                let key = kseed.deserialize(key_de)?;
+                let value = vseed.deserialize(&field.value)?;
+
+                Ok(Some((key, value)))
+            }
+            None => Ok(None),
+        }
+    }
+
     fn size_hint(&self) -> Option<usize> {
         let (lower, _) = self.fields.size_hint();
 
@@ -625,16 +648,20 @@ impl<'de> Deserialize<'de> for Value<'de> {
                 Ok(Value::Bool(v))
             }
 
+            fn visit_f32<E: DeError>(self, v: f32) -> Result<Self::Value, E> {
+                Ok(Value::Number(v))
+            }
+
             fn visit_f64<E: DeError>(self, v: f64) -> Result<Self::Value, E> {
-                Ok(Value::Number(v as f32))
+                self.visit_f32(v as f32)
             }
 
             fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                Ok(Value::Number(v as f32))
+                self.visit_f32(v as f32)
             }
 
             fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
-                Ok(Value::Number(v as f32))
+                self.visit_f32(v as f32)
             }
 
             fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
@@ -763,14 +790,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
         unimplemented!()
     }
 
-    fn deserialize_str<V>(self, _: V) -> Result<V::Value, Self::Error>
-    where
-        V: Visitor<'de>,
-    {
-        unimplemented!()
-    }
-
-    fn deserialize_string<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    fn deserialize_str<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,
     {
@@ -782,6 +802,13 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
             )),
             Value::Str(v) => visitor.visit_borrowed_str(v.as_str()),
         }
+    }
+
+    fn deserialize_string<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_str(visitor)
     }
 
     fn deserialize_bytes<V>(self, _: V) -> Result<V::Value, Self::Error>
@@ -883,11 +910,11 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
         unimplemented!()
     }
 
-    fn deserialize_identifier<V>(self, _: V) -> Result<V::Value, Self::Error>
+    fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,
     {
-        unimplemented!()
+        self.deserialize_str(visitor)
     }
 
     fn deserialize_ignored_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -1148,7 +1175,7 @@ impl<'de> Visitor<'de> for GameModsSeed {
     }
 }
 
-enum GameModRaw<'a> {
+pub(crate) enum GameModRaw<'a> {
     Bits(u32),
     Acronym(MaybeOwnedStr<'a>),
     Full {
@@ -1223,14 +1250,32 @@ impl<'de> Deserialize<'de> for GameModRaw<'de> {
                 f.write_str("GameMod")
             }
 
+            fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
+                let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+
+                self.visit_u32(bits)
+            }
+
+            fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
+                Ok(GameModRaw::Bits(v))
+            }
+
             fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                u32::try_from(v)
-                    .map(GameModRaw::Bits)
-                    .map_err(|_| DeError::custom(BITFLAGS_U32))
+                let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+
+                self.visit_u32(bits)
             }
 
             fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
                 Ok(GameModRaw::Acronym(MaybeOwnedStr::Borrowed(v)))
+            }
+
+            fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+                self.visit_string(v.to_owned())
+            }
+
+            fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+                Ok(GameModRaw::Acronym(MaybeOwnedStr::Owned(v)))
             }
 
             fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {

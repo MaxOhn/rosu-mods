@@ -7427,7 +7427,7 @@ const _: () = {
         Deserialize,
     };
 
-    use crate::serde::{GameModSettings, GameModSettingsSeed, MaybeOwnedStr};
+    use crate::serde::{GameModRaw, GameModSettings, GameModSettingsSeed, MaybeOwnedStr};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyOsu {
@@ -12947,25 +12947,21 @@ const _: () = {
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GameModIntermode {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct GameModIntermodeVisitor;
-            impl<'de> Visitor<'de> for GameModIntermodeVisitor {
-                type Value = GameModIntermode;
-                fn expecting(&self, f: &mut Formatter) -> FmtResult {
-                    f.write_str("integer bitflags or an acronym")
-                }
-                fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                    u32::try_from(v)
-                        .map_err(|_| DeError::custom("bitflags must fit in a u32"))
-                        .map(GameModIntermode::try_from_bits)?
-                        .ok_or_else(|| DeError::custom("invalid bitflags"))
-                }
-                fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
-                    v.parse()
-                        .map(GameModIntermode::from_acronym)
-                        .map_err(DeError::custom)
-                }
+            fn try_acronym_to_gamemod<E: DeError>(
+                acronym: &MaybeOwnedStr<'_>,
+            ) -> Result<GameModIntermode, E> {
+                acronym
+                    .as_str()
+                    .parse()
+                    .map(GameModIntermode::from_acronym)
+                    .map_err(DeError::custom)
             }
-            d.deserialize_any(GameModIntermodeVisitor)
+            match GameModRaw::deserialize(d)? {
+                GameModRaw::Bits(bits) => GameModIntermode::try_from_bits(bits)
+                    .ok_or_else(|| DeError::custom("invalid bitflags")),
+                GameModRaw::Acronym(acronym) => try_acronym_to_gamemod(&acronym),
+                GameModRaw::Full { acronym, .. } => try_acronym_to_gamemod(&acronym),
+            }
         }
     }
     #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]

@@ -716,6 +716,8 @@ const _: () = {
         ser::{Serialize, Serializer},
     };
 
+    use crate::serde::{GameModRaw, MaybeOwnedStr, BITFLAGS_U32};
+
     impl<'de> Deserialize<'de> for GameModsIntermode {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct GameModsIntermodeVisitor;
@@ -724,13 +726,23 @@ const _: () = {
                 type Value = GameModsIntermode;
 
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("integer bitflags, mod acronyms, or a sequence of mod acronyms")
+                    f.write_str("integer bitflags, mod acronyms, or a sequence of mods")
+                }
+
+                fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
+                    let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+
+                    self.visit_u32(bits)
+                }
+
+                fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
+                    Ok(GameModsIntermode::from_bits(v))
                 }
 
                 fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                    u32::try_from(v)
-                        .map_err(|_| DeError::custom("bitflags must fit in a u32"))
-                        .map(GameModsIntermode::from_bits)
+                    let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+
+                    self.visit_u32(bits)
                 }
 
                 fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
@@ -740,8 +752,25 @@ const _: () = {
                 fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
                     let mut inner = BTreeSet::new();
 
-                    while let Some(acronym) = seq.next_element()? {
-                        inner.insert(GameModIntermode::from_acronym(acronym));
+                    while let Some(raw) = seq.next_element::<GameModRaw<'_>>()? {
+                        fn try_acronym_to_gamemod<E: DeError>(
+                            acronym: &MaybeOwnedStr<'_>,
+                        ) -> Result<GameModIntermode, E> {
+                            acronym
+                                .as_str()
+                                .parse()
+                                .map(GameModIntermode::from_acronym)
+                                .map_err(DeError::custom)
+                        }
+
+                        let gamemod = match raw {
+                            GameModRaw::Bits(bits) => GameModIntermode::try_from_bits(bits)
+                                .ok_or_else(|| DeError::custom("invalid bitflags"))?,
+                            GameModRaw::Acronym(acronym) => try_acronym_to_gamemod(&acronym)?,
+                            GameModRaw::Full { acronym, .. } => try_acronym_to_gamemod(&acronym)?,
+                        };
+
+                        inner.insert(gamemod);
                     }
 
                     Ok(GameModsIntermode { inner })
@@ -930,13 +959,14 @@ mod tests {
 
         #[test]
         fn deser_seq() {
-            let json = r#"["WU", "BL", "EZ"]"#;
+            let json = r#"["WU", "BL", 2, { "acronym": "NS", "settings": { "any": true } }]"#;
             let mods = serde_json::from_str::<GameModsIntermode>(json).unwrap();
 
             let mut expected = GameModsIntermode::default();
             expected.insert(GameModIntermode::Blinds);
             expected.insert(GameModIntermode::Easy);
             expected.insert(GameModIntermode::WindUp);
+            expected.insert(GameModIntermode::NoScope);
 
             assert_eq!(mods, expected);
         }
