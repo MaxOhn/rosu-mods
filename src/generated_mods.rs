@@ -11958,7 +11958,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for UnknownMod {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct UnknownModVisitor;
@@ -11977,7 +11976,6 @@ const _: () = {
             d.deserialize_map(UnknownModVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for UnknownMod {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_map(Some(0)).and_then(SerializeMap::end)
@@ -12174,7 +12172,6 @@ const _: () = {
             Ok(res)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GameMod {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let mut s = s.serialize_map(None)?;
@@ -12673,7 +12670,6 @@ const _: () = {
             s.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GameModIntermode {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             fn try_acronym_to_gamemod<E: DeError>(
@@ -12693,7 +12689,6 @@ const _: () = {
             }
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl serde::Serialize for GameModIntermode {
         fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_str(self.acronym().as_str())

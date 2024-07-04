@@ -855,8 +855,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     }
 
     writer.write(
-        "#[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
-        impl<'de> Deserialize<'de> for UnknownMod {\
+        "impl<'de> Deserialize<'de> for UnknownMod {\
             fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {\
                 struct UnknownModVisitor;\
                 impl<'de> Visitor<'de> for UnknownModVisitor {\
@@ -872,7 +871,6 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                 d.deserialize_map(UnknownModVisitor)\
             }\
         }\
-        #[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
         impl Serialize for UnknownMod {\
             fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {\
                 s.serialize_map(Some(0)).and_then(SerializeMap::end)\
@@ -938,8 +936,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     )?;
 
     writer.write(
-        "#[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
-        impl Serialize for GameMod {\
+        "impl Serialize for GameMod {\
             fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {\
                 let mut s = s.serialize_map(None)?;\
                 s.serialize_entry(\"acronym\", self.acronym().as_str())?;\
@@ -992,7 +989,6 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                     s.end()\
                 }\
             }\
-            #[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
             impl<'de> Deserialize<'de> for GameModIntermode {\
                 fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {\
                     fn try_acronym_to_gamemod<E: DeError>(\
@@ -1012,7 +1008,6 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                     }\
                 }\
             }\
-            #[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
             impl serde::Serialize for GameModIntermode {\
                 fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {\
                     s.serialize_str(self.acronym().as_str())\
