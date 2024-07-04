@@ -2,6 +2,13 @@
 name = "rosu-mods"
 version = "0.1.0"
 edition = "2021"
+authors = ["MaxOhn <ohn.m@hotmail.de>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/MaxOhn/rosu-mods"
+documentation = "https://docs.rs/rosu-mods/"
+description = "Library for osu! mods"
+keywords = ["osu", "mods", "lazer"]
 
 [features]
 default = []
