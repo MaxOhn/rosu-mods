@@ -835,6 +835,7 @@ pub fn impl_gamemod_traits(writer: &mut Writer) -> GenResult {
 pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
         "#[cfg(feature = \"serde\")]\
+        #[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
         const _: () = {",
     )?;
 

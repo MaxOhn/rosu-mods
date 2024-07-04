@@ -7417,6 +7417,7 @@ impl PartialOrd for GameMod {
     }
 }
 #[cfg(feature = "serde")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
         de::{
@@ -7429,7 +7430,6 @@ const _: () = {
 
     use crate::serde::{GameModRaw, GameModSettings, GameModSettingsSeed, MaybeOwnedStr};
 
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct EasyOsuVisitor;
@@ -7455,7 +7455,6 @@ const _: () = {
             d.deserialize_map(EasyOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for EasyOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.retries.is_some() as usize;
@@ -7466,7 +7465,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NoFailOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NoFailOsuVisitor;
@@ -7482,7 +7480,6 @@ const _: () = {
             d.deserialize_map(NoFailOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NoFailOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -7490,7 +7487,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HalfTimeOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HalfTimeOsuVisitor;
@@ -7519,7 +7515,6 @@ const _: () = {
             d.deserialize_map(HalfTimeOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HalfTimeOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -7534,7 +7529,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DaycoreOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DaycoreOsuVisitor;
@@ -7560,7 +7554,6 @@ const _: () = {
             d.deserialize_map(DaycoreOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DaycoreOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -7571,7 +7564,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HardRockOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HardRockOsuVisitor;
@@ -7587,7 +7579,6 @@ const _: () = {
             d.deserialize_map(HardRockOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HardRockOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -7595,7 +7586,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SuddenDeathOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SuddenDeathOsuVisitor;
@@ -7621,7 +7611,6 @@ const _: () = {
             d.deserialize_map(SuddenDeathOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SuddenDeathOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -7632,7 +7621,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for PerfectOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct PerfectOsuVisitor;
@@ -7658,7 +7646,6 @@ const _: () = {
             d.deserialize_map(PerfectOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for PerfectOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -7669,7 +7656,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DoubleTimeOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DoubleTimeOsuVisitor;
@@ -7698,7 +7684,6 @@ const _: () = {
             d.deserialize_map(DoubleTimeOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DoubleTimeOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -7713,7 +7698,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NightcoreOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NightcoreOsuVisitor;
@@ -7739,7 +7723,6 @@ const _: () = {
             d.deserialize_map(NightcoreOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NightcoreOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -7750,7 +7733,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HiddenOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HiddenOsuVisitor;
@@ -7778,7 +7760,6 @@ const _: () = {
             d.deserialize_map(HiddenOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HiddenOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.only_fade_approach_circles.is_some() as usize;
@@ -7789,7 +7770,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FlashlightOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FlashlightOsuVisitor;
@@ -7822,7 +7802,6 @@ const _: () = {
             d.deserialize_map(FlashlightOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FlashlightOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.follow_delay.is_some() as usize
@@ -7841,7 +7820,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for BlindsOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct BlindsOsuVisitor;
@@ -7857,7 +7835,6 @@ const _: () = {
             d.deserialize_map(BlindsOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for BlindsOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -7865,7 +7842,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for StrictTrackingOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct StrictTrackingOsuVisitor;
@@ -7881,7 +7857,6 @@ const _: () = {
             d.deserialize_map(StrictTrackingOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for StrictTrackingOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -7889,7 +7864,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AccuracyChallengeOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AccuracyChallengeOsuVisitor;
@@ -7922,7 +7896,6 @@ const _: () = {
             d.deserialize_map(AccuracyChallengeOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AccuracyChallengeOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.minimum_accuracy.is_some() as usize
@@ -7941,7 +7914,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for TargetPracticeOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct TargetPracticeOsuVisitor;
@@ -7970,7 +7942,6 @@ const _: () = {
             d.deserialize_map(TargetPracticeOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for TargetPracticeOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.seed.is_some() as usize + self.metronome.is_some() as usize;
@@ -7984,7 +7955,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DifficultyAdjustOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DifficultyAdjustOsuVisitor;
@@ -8028,7 +7998,6 @@ const _: () = {
             d.deserialize_map(DifficultyAdjustOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DifficultyAdjustOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.circle_size.is_some() as usize
@@ -8055,7 +8024,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ClassicOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ClassicOsuVisitor;
@@ -8105,7 +8073,6 @@ const _: () = {
             d.deserialize_map(ClassicOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ClassicOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.no_slider_head_accuracy.is_some() as usize
@@ -8132,7 +8099,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RandomOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RandomOsuVisitor;
@@ -8161,7 +8127,6 @@ const _: () = {
             d.deserialize_map(RandomOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RandomOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -8176,7 +8141,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MirrorOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MirrorOsuVisitor;
@@ -8202,7 +8166,6 @@ const _: () = {
             d.deserialize_map(MirrorOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MirrorOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.reflection.is_some() as usize;
@@ -8213,7 +8176,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AlternateOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AlternateOsuVisitor;
@@ -8229,7 +8191,6 @@ const _: () = {
             d.deserialize_map(AlternateOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AlternateOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8237,7 +8198,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SingleTapOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SingleTapOsuVisitor;
@@ -8253,7 +8213,6 @@ const _: () = {
             d.deserialize_map(SingleTapOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SingleTapOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8261,7 +8220,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AutoplayOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AutoplayOsuVisitor;
@@ -8277,7 +8235,6 @@ const _: () = {
             d.deserialize_map(AutoplayOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AutoplayOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8285,7 +8242,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for CinemaOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct CinemaOsuVisitor;
@@ -8301,7 +8257,6 @@ const _: () = {
             d.deserialize_map(CinemaOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for CinemaOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8309,7 +8264,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RelaxOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RelaxOsuVisitor;
@@ -8325,7 +8279,6 @@ const _: () = {
             d.deserialize_map(RelaxOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RelaxOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8333,7 +8286,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AutopilotOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AutopilotOsuVisitor;
@@ -8349,7 +8301,6 @@ const _: () = {
             d.deserialize_map(AutopilotOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AutopilotOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8357,7 +8308,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SpunOutOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SpunOutOsuVisitor;
@@ -8373,7 +8323,6 @@ const _: () = {
             d.deserialize_map(SpunOutOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SpunOutOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8381,7 +8330,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for TransformOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct TransformOsuVisitor;
@@ -8397,7 +8345,6 @@ const _: () = {
             d.deserialize_map(TransformOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for TransformOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8405,7 +8352,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WiggleOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WiggleOsuVisitor;
@@ -8431,7 +8377,6 @@ const _: () = {
             d.deserialize_map(WiggleOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WiggleOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.strength.is_some() as usize;
@@ -8442,7 +8387,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SpinInOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SpinInOsuVisitor;
@@ -8458,7 +8402,6 @@ const _: () = {
             d.deserialize_map(SpinInOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SpinInOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8466,7 +8409,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for GrowOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct GrowOsuVisitor;
@@ -8492,7 +8434,6 @@ const _: () = {
             d.deserialize_map(GrowOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for GrowOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.start_scale.is_some() as usize;
@@ -8503,7 +8444,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DeflateOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DeflateOsuVisitor;
@@ -8529,7 +8469,6 @@ const _: () = {
             d.deserialize_map(DeflateOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DeflateOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.start_scale.is_some() as usize;
@@ -8540,7 +8479,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindUpOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindUpOsuVisitor;
@@ -8573,7 +8511,6 @@ const _: () = {
             d.deserialize_map(WindUpOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindUpOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -8592,7 +8529,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindDownOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindDownOsuVisitor;
@@ -8625,7 +8561,6 @@ const _: () = {
             d.deserialize_map(WindDownOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindDownOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -8644,7 +8579,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for TraceableOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct TraceableOsuVisitor;
@@ -8660,7 +8594,6 @@ const _: () = {
             d.deserialize_map(TraceableOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for TraceableOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8668,7 +8601,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for BarrelRollOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct BarrelRollOsuVisitor;
@@ -8697,7 +8629,6 @@ const _: () = {
             d.deserialize_map(BarrelRollOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for BarrelRollOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -8712,7 +8643,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ApproachDifferentOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ApproachDifferentOsuVisitor;
@@ -8741,7 +8671,6 @@ const _: () = {
             d.deserialize_map(ApproachDifferentOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ApproachDifferentOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.scale.is_some() as usize + self.style.is_some() as usize;
@@ -8755,7 +8684,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MutedOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MutedOsuVisitor;
@@ -8795,7 +8723,6 @@ const _: () = {
             d.deserialize_map(MutedOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MutedOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.inverse_muting.is_some() as usize
@@ -8818,7 +8745,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NoScopeOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NoScopeOsuVisitor;
@@ -8844,7 +8770,6 @@ const _: () = {
             d.deserialize_map(NoScopeOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NoScopeOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.hidden_combo_count.is_some() as usize;
@@ -8855,7 +8780,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MagnetisedOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MagnetisedOsuVisitor;
@@ -8881,7 +8805,6 @@ const _: () = {
             d.deserialize_map(MagnetisedOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MagnetisedOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.attraction_strength.is_some() as usize;
@@ -8892,7 +8815,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RepelOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RepelOsuVisitor;
@@ -8918,7 +8840,6 @@ const _: () = {
             d.deserialize_map(RepelOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RepelOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.repulsion_strength.is_some() as usize;
@@ -8929,7 +8850,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AdaptiveSpeedOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AdaptiveSpeedOsuVisitor;
@@ -8958,7 +8878,6 @@ const _: () = {
             d.deserialize_map(AdaptiveSpeedOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AdaptiveSpeedOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -8973,7 +8892,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FreezeFrameOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FreezeFrameOsuVisitor;
@@ -8989,7 +8907,6 @@ const _: () = {
             d.deserialize_map(FreezeFrameOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FreezeFrameOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -8997,7 +8914,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for BubblesOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct BubblesOsuVisitor;
@@ -9013,7 +8929,6 @@ const _: () = {
             d.deserialize_map(BubblesOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for BubblesOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9021,7 +8936,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SynesthesiaOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SynesthesiaOsuVisitor;
@@ -9037,7 +8951,6 @@ const _: () = {
             d.deserialize_map(SynesthesiaOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SynesthesiaOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9045,7 +8958,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DepthOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DepthOsuVisitor;
@@ -9076,7 +8988,6 @@ const _: () = {
             d.deserialize_map(DepthOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DepthOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -9091,7 +9002,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for TouchDeviceOsu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct TouchDeviceOsuVisitor;
@@ -9107,7 +9017,6 @@ const _: () = {
             d.deserialize_map(TouchDeviceOsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for TouchDeviceOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9115,7 +9024,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ScoreV2Osu {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ScoreV2OsuVisitor;
@@ -9131,7 +9039,6 @@ const _: () = {
             d.deserialize_map(ScoreV2OsuVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ScoreV2Osu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9139,7 +9046,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct EasyTaikoVisitor;
@@ -9155,7 +9061,6 @@ const _: () = {
             d.deserialize_map(EasyTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for EasyTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9163,7 +9068,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NoFailTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NoFailTaikoVisitor;
@@ -9179,7 +9083,6 @@ const _: () = {
             d.deserialize_map(NoFailTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NoFailTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9187,7 +9090,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HalfTimeTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HalfTimeTaikoVisitor;
@@ -9216,7 +9118,6 @@ const _: () = {
             d.deserialize_map(HalfTimeTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HalfTimeTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -9231,7 +9132,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DaycoreTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DaycoreTaikoVisitor;
@@ -9257,7 +9157,6 @@ const _: () = {
             d.deserialize_map(DaycoreTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DaycoreTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -9268,7 +9167,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HardRockTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HardRockTaikoVisitor;
@@ -9284,7 +9182,6 @@ const _: () = {
             d.deserialize_map(HardRockTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HardRockTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9292,7 +9189,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SuddenDeathTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SuddenDeathTaikoVisitor;
@@ -9318,7 +9214,6 @@ const _: () = {
             d.deserialize_map(SuddenDeathTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SuddenDeathTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -9329,7 +9224,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for PerfectTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct PerfectTaikoVisitor;
@@ -9355,7 +9249,6 @@ const _: () = {
             d.deserialize_map(PerfectTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for PerfectTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -9366,7 +9259,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DoubleTimeTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DoubleTimeTaikoVisitor;
@@ -9395,7 +9287,6 @@ const _: () = {
             d.deserialize_map(DoubleTimeTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DoubleTimeTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -9410,7 +9301,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NightcoreTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NightcoreTaikoVisitor;
@@ -9436,7 +9326,6 @@ const _: () = {
             d.deserialize_map(NightcoreTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NightcoreTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -9447,7 +9336,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HiddenTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HiddenTaikoVisitor;
@@ -9463,7 +9351,6 @@ const _: () = {
             d.deserialize_map(HiddenTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HiddenTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9471,7 +9358,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FlashlightTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FlashlightTaikoVisitor;
@@ -9501,7 +9387,6 @@ const _: () = {
             d.deserialize_map(FlashlightTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FlashlightTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -9516,7 +9401,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AccuracyChallengeTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AccuracyChallengeTaikoVisitor;
@@ -9549,7 +9433,6 @@ const _: () = {
             d.deserialize_map(AccuracyChallengeTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AccuracyChallengeTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.minimum_accuracy.is_some() as usize
@@ -9568,7 +9451,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RandomTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RandomTaikoVisitor;
@@ -9594,7 +9476,6 @@ const _: () = {
             d.deserialize_map(RandomTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RandomTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.seed.is_some() as usize;
@@ -9605,7 +9486,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DifficultyAdjustTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DifficultyAdjustTaikoVisitor;
@@ -9645,7 +9525,6 @@ const _: () = {
             d.deserialize_map(DifficultyAdjustTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DifficultyAdjustTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.scroll_speed.is_some() as usize
@@ -9668,7 +9547,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ClassicTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ClassicTaikoVisitor;
@@ -9684,7 +9562,6 @@ const _: () = {
             d.deserialize_map(ClassicTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ClassicTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9692,7 +9569,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SwapTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SwapTaikoVisitor;
@@ -9708,7 +9584,6 @@ const _: () = {
             d.deserialize_map(SwapTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SwapTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9716,7 +9591,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SingleTapTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SingleTapTaikoVisitor;
@@ -9732,7 +9606,6 @@ const _: () = {
             d.deserialize_map(SingleTapTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SingleTapTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9740,7 +9613,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ConstantSpeedTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ConstantSpeedTaikoVisitor;
@@ -9756,7 +9628,6 @@ const _: () = {
             d.deserialize_map(ConstantSpeedTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ConstantSpeedTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9764,7 +9635,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AutoplayTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AutoplayTaikoVisitor;
@@ -9780,7 +9650,6 @@ const _: () = {
             d.deserialize_map(AutoplayTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AutoplayTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9788,7 +9657,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for CinemaTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct CinemaTaikoVisitor;
@@ -9804,7 +9672,6 @@ const _: () = {
             d.deserialize_map(CinemaTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for CinemaTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9812,7 +9679,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RelaxTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RelaxTaikoVisitor;
@@ -9828,7 +9694,6 @@ const _: () = {
             d.deserialize_map(RelaxTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RelaxTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -9836,7 +9701,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindUpTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindUpTaikoVisitor;
@@ -9869,7 +9733,6 @@ const _: () = {
             d.deserialize_map(WindUpTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindUpTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -9888,7 +9751,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindDownTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindDownTaikoVisitor;
@@ -9921,7 +9783,6 @@ const _: () = {
             d.deserialize_map(WindDownTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindDownTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -9940,7 +9801,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MutedTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MutedTaikoVisitor;
@@ -9980,7 +9840,6 @@ const _: () = {
             d.deserialize_map(MutedTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MutedTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.inverse_muting.is_some() as usize
@@ -10003,7 +9862,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AdaptiveSpeedTaiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AdaptiveSpeedTaikoVisitor;
@@ -10032,7 +9890,6 @@ const _: () = {
             d.deserialize_map(AdaptiveSpeedTaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AdaptiveSpeedTaiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -10047,7 +9904,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ScoreV2Taiko {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ScoreV2TaikoVisitor;
@@ -10063,7 +9919,6 @@ const _: () = {
             d.deserialize_map(ScoreV2TaikoVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ScoreV2Taiko {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10071,7 +9926,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct EasyCatchVisitor;
@@ -10097,7 +9951,6 @@ const _: () = {
             d.deserialize_map(EasyCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for EasyCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.retries.is_some() as usize;
@@ -10108,7 +9961,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NoFailCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NoFailCatchVisitor;
@@ -10124,7 +9976,6 @@ const _: () = {
             d.deserialize_map(NoFailCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NoFailCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10132,7 +9983,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HalfTimeCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HalfTimeCatchVisitor;
@@ -10161,7 +10011,6 @@ const _: () = {
             d.deserialize_map(HalfTimeCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HalfTimeCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -10176,7 +10025,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DaycoreCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DaycoreCatchVisitor;
@@ -10202,7 +10050,6 @@ const _: () = {
             d.deserialize_map(DaycoreCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DaycoreCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -10213,7 +10060,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HardRockCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HardRockCatchVisitor;
@@ -10229,7 +10075,6 @@ const _: () = {
             d.deserialize_map(HardRockCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HardRockCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10237,7 +10082,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SuddenDeathCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SuddenDeathCatchVisitor;
@@ -10263,7 +10107,6 @@ const _: () = {
             d.deserialize_map(SuddenDeathCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SuddenDeathCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -10274,7 +10117,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for PerfectCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct PerfectCatchVisitor;
@@ -10300,7 +10142,6 @@ const _: () = {
             d.deserialize_map(PerfectCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for PerfectCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -10311,7 +10152,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DoubleTimeCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DoubleTimeCatchVisitor;
@@ -10340,7 +10180,6 @@ const _: () = {
             d.deserialize_map(DoubleTimeCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DoubleTimeCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -10355,7 +10194,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NightcoreCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NightcoreCatchVisitor;
@@ -10381,7 +10219,6 @@ const _: () = {
             d.deserialize_map(NightcoreCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NightcoreCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -10392,7 +10229,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HiddenCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HiddenCatchVisitor;
@@ -10408,7 +10244,6 @@ const _: () = {
             d.deserialize_map(HiddenCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HiddenCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10416,7 +10251,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FlashlightCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FlashlightCatchVisitor;
@@ -10446,7 +10280,6 @@ const _: () = {
             d.deserialize_map(FlashlightCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FlashlightCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -10461,7 +10294,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AccuracyChallengeCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AccuracyChallengeCatchVisitor;
@@ -10494,7 +10326,6 @@ const _: () = {
             d.deserialize_map(AccuracyChallengeCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AccuracyChallengeCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.minimum_accuracy.is_some() as usize
@@ -10513,7 +10344,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DifficultyAdjustCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DifficultyAdjustCatchVisitor;
@@ -10561,7 +10391,6 @@ const _: () = {
             d.deserialize_map(DifficultyAdjustCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DifficultyAdjustCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.circle_size.is_some() as usize
@@ -10592,7 +10421,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ClassicCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ClassicCatchVisitor;
@@ -10608,7 +10436,6 @@ const _: () = {
             d.deserialize_map(ClassicCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ClassicCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10616,7 +10443,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MirrorCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MirrorCatchVisitor;
@@ -10632,7 +10458,6 @@ const _: () = {
             d.deserialize_map(MirrorCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MirrorCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10640,7 +10465,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AutoplayCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AutoplayCatchVisitor;
@@ -10656,7 +10480,6 @@ const _: () = {
             d.deserialize_map(AutoplayCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AutoplayCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10664,7 +10487,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for CinemaCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct CinemaCatchVisitor;
@@ -10680,7 +10502,6 @@ const _: () = {
             d.deserialize_map(CinemaCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for CinemaCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10688,7 +10509,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RelaxCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RelaxCatchVisitor;
@@ -10704,7 +10524,6 @@ const _: () = {
             d.deserialize_map(RelaxCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RelaxCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10712,7 +10531,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindUpCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindUpCatchVisitor;
@@ -10745,7 +10563,6 @@ const _: () = {
             d.deserialize_map(WindUpCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindUpCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -10764,7 +10581,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindDownCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindDownCatchVisitor;
@@ -10797,7 +10613,6 @@ const _: () = {
             d.deserialize_map(WindDownCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindDownCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -10816,7 +10631,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FloatingFruitsCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FloatingFruitsCatchVisitor;
@@ -10832,7 +10646,6 @@ const _: () = {
             d.deserialize_map(FloatingFruitsCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FloatingFruitsCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10840,7 +10653,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MutedCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MutedCatchVisitor;
@@ -10880,7 +10692,6 @@ const _: () = {
             d.deserialize_map(MutedCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MutedCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.inverse_muting.is_some() as usize
@@ -10903,7 +10714,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NoScopeCatch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NoScopeCatchVisitor;
@@ -10929,7 +10739,6 @@ const _: () = {
             d.deserialize_map(NoScopeCatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NoScopeCatch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.hidden_combo_count.is_some() as usize;
@@ -10940,7 +10749,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ScoreV2Catch {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ScoreV2CatchVisitor;
@@ -10956,7 +10764,6 @@ const _: () = {
             d.deserialize_map(ScoreV2CatchVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ScoreV2Catch {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -10964,7 +10771,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EasyMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct EasyManiaVisitor;
@@ -10990,7 +10796,6 @@ const _: () = {
             d.deserialize_map(EasyManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for EasyMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.retries.is_some() as usize;
@@ -11001,7 +10806,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NoFailMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NoFailManiaVisitor;
@@ -11017,7 +10821,6 @@ const _: () = {
             d.deserialize_map(NoFailManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NoFailMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11025,7 +10828,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HalfTimeMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HalfTimeManiaVisitor;
@@ -11054,7 +10856,6 @@ const _: () = {
             d.deserialize_map(HalfTimeManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HalfTimeMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -11069,7 +10870,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DaycoreMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DaycoreManiaVisitor;
@@ -11095,7 +10895,6 @@ const _: () = {
             d.deserialize_map(DaycoreManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DaycoreMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -11106,7 +10905,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HardRockMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HardRockManiaVisitor;
@@ -11122,7 +10920,6 @@ const _: () = {
             d.deserialize_map(HardRockManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HardRockMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11130,7 +10927,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SuddenDeathMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SuddenDeathManiaVisitor;
@@ -11156,7 +10952,6 @@ const _: () = {
             d.deserialize_map(SuddenDeathManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SuddenDeathMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -11167,7 +10962,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for PerfectMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct PerfectManiaVisitor;
@@ -11193,7 +10987,6 @@ const _: () = {
             d.deserialize_map(PerfectManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for PerfectMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.restart.is_some() as usize;
@@ -11204,7 +10997,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DoubleTimeMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DoubleTimeManiaVisitor;
@@ -11233,7 +11025,6 @@ const _: () = {
             d.deserialize_map(DoubleTimeManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DoubleTimeMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -11248,7 +11039,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NightcoreMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NightcoreManiaVisitor;
@@ -11274,7 +11064,6 @@ const _: () = {
             d.deserialize_map(NightcoreManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NightcoreMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.speed_change.is_some() as usize;
@@ -11285,7 +11074,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FadeInMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FadeInManiaVisitor;
@@ -11301,7 +11089,6 @@ const _: () = {
             d.deserialize_map(FadeInManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FadeInMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11309,7 +11096,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HiddenMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HiddenManiaVisitor;
@@ -11325,7 +11111,6 @@ const _: () = {
             d.deserialize_map(HiddenManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HiddenMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11333,7 +11118,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for CoverMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct CoverManiaVisitor;
@@ -11362,7 +11146,6 @@ const _: () = {
             d.deserialize_map(CoverManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for CoverMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.coverage.is_some() as usize + self.direction.is_some() as usize;
@@ -11376,7 +11159,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FlashlightMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FlashlightManiaVisitor;
@@ -11406,7 +11188,6 @@ const _: () = {
             d.deserialize_map(FlashlightManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FlashlightMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -11421,7 +11202,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AccuracyChallengeMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AccuracyChallengeManiaVisitor;
@@ -11454,7 +11234,6 @@ const _: () = {
             d.deserialize_map(AccuracyChallengeManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AccuracyChallengeMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.minimum_accuracy.is_some() as usize
@@ -11473,7 +11252,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for RandomMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct RandomManiaVisitor;
@@ -11499,7 +11277,6 @@ const _: () = {
             d.deserialize_map(RandomManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for RandomMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.seed.is_some() as usize;
@@ -11510,7 +11287,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DualStagesMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DualStagesManiaVisitor;
@@ -11526,7 +11302,6 @@ const _: () = {
             d.deserialize_map(DualStagesManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DualStagesMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11534,7 +11309,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MirrorMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MirrorManiaVisitor;
@@ -11550,7 +11324,6 @@ const _: () = {
             d.deserialize_map(MirrorManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MirrorMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11558,7 +11331,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for DifficultyAdjustMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct DifficultyAdjustManiaVisitor;
@@ -11591,7 +11363,6 @@ const _: () = {
             d.deserialize_map(DifficultyAdjustManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for DifficultyAdjustMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.drain_rate.is_some() as usize
@@ -11610,7 +11381,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ClassicMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ClassicManiaVisitor;
@@ -11626,7 +11396,6 @@ const _: () = {
             d.deserialize_map(ClassicManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ClassicMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11634,7 +11403,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for InvertMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct InvertManiaVisitor;
@@ -11650,7 +11418,6 @@ const _: () = {
             d.deserialize_map(InvertManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for InvertMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11658,7 +11425,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ConstantSpeedMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ConstantSpeedManiaVisitor;
@@ -11674,7 +11440,6 @@ const _: () = {
             d.deserialize_map(ConstantSpeedManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ConstantSpeedMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11682,7 +11447,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for HoldOffMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HoldOffManiaVisitor;
@@ -11698,7 +11462,6 @@ const _: () = {
             d.deserialize_map(HoldOffManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for HoldOffMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11706,7 +11469,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for OneKeyMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct OneKeyManiaVisitor;
@@ -11722,7 +11484,6 @@ const _: () = {
             d.deserialize_map(OneKeyManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for OneKeyMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11730,7 +11491,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for TwoKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct TwoKeysManiaVisitor;
@@ -11746,7 +11506,6 @@ const _: () = {
             d.deserialize_map(TwoKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for TwoKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11754,7 +11513,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ThreeKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ThreeKeysManiaVisitor;
@@ -11770,7 +11528,6 @@ const _: () = {
             d.deserialize_map(ThreeKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ThreeKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11778,7 +11535,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FourKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FourKeysManiaVisitor;
@@ -11794,7 +11550,6 @@ const _: () = {
             d.deserialize_map(FourKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FourKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11802,7 +11557,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for FiveKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct FiveKeysManiaVisitor;
@@ -11818,7 +11572,6 @@ const _: () = {
             d.deserialize_map(FiveKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for FiveKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11826,7 +11579,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SixKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SixKeysManiaVisitor;
@@ -11842,7 +11594,6 @@ const _: () = {
             d.deserialize_map(SixKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SixKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11850,7 +11601,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for SevenKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct SevenKeysManiaVisitor;
@@ -11866,7 +11616,6 @@ const _: () = {
             d.deserialize_map(SevenKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for SevenKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11874,7 +11623,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for EightKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct EightKeysManiaVisitor;
@@ -11890,7 +11638,6 @@ const _: () = {
             d.deserialize_map(EightKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for EightKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11898,7 +11645,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for NineKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct NineKeysManiaVisitor;
@@ -11914,7 +11660,6 @@ const _: () = {
             d.deserialize_map(NineKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for NineKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11922,7 +11667,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for TenKeysMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct TenKeysManiaVisitor;
@@ -11938,7 +11682,6 @@ const _: () = {
             d.deserialize_map(TenKeysManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for TenKeysMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11946,7 +11689,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AutoplayMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AutoplayManiaVisitor;
@@ -11962,7 +11704,6 @@ const _: () = {
             d.deserialize_map(AutoplayManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AutoplayMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11970,7 +11711,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for CinemaMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct CinemaManiaVisitor;
@@ -11986,7 +11726,6 @@ const _: () = {
             d.deserialize_map(CinemaManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for CinemaMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;
@@ -11994,7 +11733,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindUpMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindUpManiaVisitor;
@@ -12027,7 +11765,6 @@ const _: () = {
             d.deserialize_map(WindUpManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindUpMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -12046,7 +11783,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for WindDownMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct WindDownManiaVisitor;
@@ -12079,7 +11815,6 @@ const _: () = {
             d.deserialize_map(WindDownManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for WindDownMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.initial_rate.is_some() as usize
@@ -12098,7 +11833,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for MutedMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct MutedManiaVisitor;
@@ -12138,7 +11872,6 @@ const _: () = {
             d.deserialize_map(MutedManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for MutedMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = self.inverse_muting.is_some() as usize
@@ -12161,7 +11894,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for AdaptiveSpeedMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AdaptiveSpeedManiaVisitor;
@@ -12190,7 +11922,6 @@ const _: () = {
             d.deserialize_map(AdaptiveSpeedManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for AdaptiveSpeedMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count =
@@ -12205,7 +11936,6 @@ const _: () = {
             map.end()
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl<'de> Deserialize<'de> for ScoreV2Mania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct ScoreV2ManiaVisitor;
@@ -12221,7 +11951,6 @@ const _: () = {
             d.deserialize_map(ScoreV2ManiaVisitor)
         }
     }
-    #[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
     impl Serialize for ScoreV2Mania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
             let field_count = 0;

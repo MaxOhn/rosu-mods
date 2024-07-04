@@ -198,10 +198,7 @@ impl GameMod {
     }
 
     pub fn impl_serde(&self, writer: &mut Writer) -> GenResult {
-        writer.write(
-            "#[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
-            impl<'de> Deserialize<'de> for ",
-        )?;
+        writer.write("impl<'de> Deserialize<'de> for ")?;
         writer.write(&self.name)?;
         writer.write(
             " {\
@@ -303,10 +300,7 @@ impl GameMod {
         }",
         )?;
 
-        writer.write(
-            "#[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
-            impl Serialize for ",
-        )?;
+        writer.write("impl Serialize for ")?;
         writer.write(&self.name)?;
         writer.write(
             " {\
