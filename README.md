@@ -99,5 +99,10 @@ assert_eq!(iter.next(), None);
 [`paste`]: https://docs.rs/paste
 [`serde`]: https://docs.rs/serde
 [`rkyv`]: https://docs.rs/rkyv
+[`GameModsLegacy`]: https://docs.rs/rosu-mods/latest/rosu_mods/legacy/struct.GameModsLegacy.html
+[`GameMods`]: https://docs.rs/rosu-mods/latest/rosu_mods/mods/struct.GameMods.html
+[`GameMod`]: https://docs.rs/rosu-mods/latest/rosu_mods/generated_mods/gamemod/enum.GameMod.html
+[`GameModsIntermode`]: https://docs.rs/rosu-mods/latest/rosu_mods/intermode/struct.GameModsIntermode.html
+[`GameModIntermode`]: https://docs.rs/rosu-mods/latest/rosu_mods/generated_mods/intermode/enum.GameModIntermode.html
 
 <!-- cargo-rdme end -->

@@ -111,6 +111,11 @@
 //! [`paste`]: https://docs.rs/paste
 //! [`serde`]: https://docs.rs/serde
 //! [`rkyv`]: https://docs.rs/rkyv
+//! [`GameModsLegacy`]: crate::legacy::GameModsLegacy
+//! [`GameMods`]: crate::mods::GameMods
+//! [`GameMod`]: crate::generated_mods::gamemod::GameMod
+//! [`GameModsIntermode`]: crate::intermode::GameModsIntermode
+//! [`GameModIntermode`]: crate::generated_mods::intermode::GameModIntermode
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(rustdoc::broken_intra_doc_links, rustdoc::missing_crate_level_docs)]
