@@ -225,64 +225,54 @@ impl GameMod {
         writer.write(
             "\")\
                     }\
-                    fn visit_map<A: MapAccess<'de>>(self, ",
+                    fn visit_map<A: MapAccess<'de>>(\
+                        self,\
+                        mut map: A\
+                    ) -> Result<Self::Value, A::Error> {\
+                        const FIELDS: &'static [&'static str] = &[",
         )?;
 
-        if self.settings.is_empty() {
-            writer.write(b'_')?;
-        } else {
-            writer.write("mut map")?;
+        for setting in self.settings.iter() {
+            writer.write_raw(b"\"")?;
+            writer.write(&setting.name)?;
+            writer.write_raw(b"\",")?;
         }
 
-        writer.write(": A) -> Result<Self::Value, A::Error> {")?;
+        writer.write("];")?;
 
-        if !self.settings.is_empty() {
-            writer.write("const FIELDS: &'static [&'static str] = &[")?;
+        for setting in self.settings.iter() {
+            writer.write("let mut ")?;
+            writer.write(&setting.name)?;
+            writer.write(" = None;")?;
+        }
 
-            for setting in self.settings.iter() {
-                writer.write_raw(b"\"")?;
-                writer.write(&setting.name)?;
-                writer.write_raw(b"\",")?;
-            }
-
-            writer.write("];")?;
-
-            for setting in self.settings.iter() {
-                writer.write("let mut ")?;
-                writer.write(&setting.name)?;
-                writer.write(" = None;")?;
-            }
-
-            writer.write(
-                "\
+        writer.write(
+            "\
                         while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {\
                             match key.as_str() {",
-            )?;
+        )?;
 
-            for setting in self.settings.iter() {
-                writer.write(b'"')?;
-                writer.write(&setting.name)?;
-                writer.write("\" => ")?;
-                writer.write(&setting.name)?;
-                writer.write(" = Some(map.next_value()?),")?;
-            }
+        for setting in self.settings.iter() {
+            writer.write(b'"')?;
+            writer.write(&setting.name)?;
+            writer.write("\" => ")?;
+            writer.write(&setting.name)?;
+            writer.write(" = Some(map.next_value()?),")?;
+        }
 
-            writer.write(
-                "\
+        writer.write(
+            "\
                                 _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),\
                             }\
                         }\
                         Ok(Self::Value {",
-            )?;
+        )?;
 
-            for setting in self.settings.iter() {
-                writer.write(&setting.name)?;
-                writer.write(b':')?;
-                writer.write(&setting.name)?;
-                writer.write(".unwrap_or_default(),")?;
-            }
-        } else {
-            writer.write("Ok(Self::Value {")?;
+        for setting in self.settings.iter() {
+            writer.write(&setting.name)?;
+            writer.write(b':')?;
+            writer.write(&setting.name)?;
+            writer.write(".unwrap_or_default(),")?;
         }
 
         writer.write(
