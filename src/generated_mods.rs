@@ -1125,6 +1125,14 @@ mod all_structs {
         /// The actual decrease to apply
         pub speed_change: Option<f32>,
     }
+    /// No more timing the end of hold notes.
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
+        archive(as = "Self")
+    )]
+    pub struct NoReleaseMania {}
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
@@ -1500,14 +1508,15 @@ pub use all_structs::{
     HardRockCatch, HardRockMania, HardRockOsu, HardRockTaiko, HiddenCatch, HiddenMania, HiddenOsu,
     HiddenTaiko, HoldOffMania, InvertMania, MagnetisedOsu, MirrorCatch, MirrorMania, MirrorOsu,
     MutedCatch, MutedMania, MutedOsu, MutedTaiko, NightcoreCatch, NightcoreMania, NightcoreOsu,
-    NightcoreTaiko, NineKeysMania, NoFailCatch, NoFailMania, NoFailOsu, NoFailTaiko, NoScopeCatch,
-    NoScopeOsu, OneKeyMania, PerfectCatch, PerfectMania, PerfectOsu, PerfectTaiko, RandomMania,
-    RandomOsu, RandomTaiko, RelaxCatch, RelaxOsu, RelaxTaiko, RepelOsu, ScoreV2Catch, ScoreV2Mania,
-    ScoreV2Osu, ScoreV2Taiko, SevenKeysMania, SingleTapOsu, SingleTapTaiko, SixKeysMania,
-    SpinInOsu, SpunOutOsu, StrictTrackingOsu, SuddenDeathCatch, SuddenDeathMania, SuddenDeathOsu,
-    SuddenDeathTaiko, SwapTaiko, SynesthesiaOsu, TargetPracticeOsu, TenKeysMania, ThreeKeysMania,
-    TouchDeviceOsu, TraceableOsu, TransformOsu, TwoKeysMania, UnknownMod, WiggleOsu, WindDownCatch,
-    WindDownMania, WindDownOsu, WindDownTaiko, WindUpCatch, WindUpMania, WindUpOsu, WindUpTaiko,
+    NightcoreTaiko, NineKeysMania, NoFailCatch, NoFailMania, NoFailOsu, NoFailTaiko,
+    NoReleaseMania, NoScopeCatch, NoScopeOsu, OneKeyMania, PerfectCatch, PerfectMania, PerfectOsu,
+    PerfectTaiko, RandomMania, RandomOsu, RandomTaiko, RelaxCatch, RelaxOsu, RelaxTaiko, RepelOsu,
+    ScoreV2Catch, ScoreV2Mania, ScoreV2Osu, ScoreV2Taiko, SevenKeysMania, SingleTapOsu,
+    SingleTapTaiko, SixKeysMania, SpinInOsu, SpunOutOsu, StrictTrackingOsu, SuddenDeathCatch,
+    SuddenDeathMania, SuddenDeathOsu, SuddenDeathTaiko, SwapTaiko, SynesthesiaOsu,
+    TargetPracticeOsu, TenKeysMania, ThreeKeysMania, TouchDeviceOsu, TraceableOsu, TransformOsu,
+    TwoKeysMania, UnknownMod, WiggleOsu, WindDownCatch, WindDownMania, WindDownOsu, WindDownTaiko,
+    WindUpCatch, WindUpMania, WindUpOsu, WindUpTaiko,
 };
 pub use gamemod::GameMod;
 pub use intermode::GameModIntermode;
@@ -1563,13 +1572,13 @@ pub mod rkyv {
         MutedManiaResolver, MutedOsuResolver, MutedTaikoResolver, NightcoreCatchResolver,
         NightcoreManiaResolver, NightcoreOsuResolver, NightcoreTaikoResolver,
         NineKeysManiaResolver, NoFailCatchResolver, NoFailManiaResolver, NoFailOsuResolver,
-        NoFailTaikoResolver, NoScopeCatchResolver, NoScopeOsuResolver, OneKeyManiaResolver,
-        PerfectCatchResolver, PerfectManiaResolver, PerfectOsuResolver, PerfectTaikoResolver,
-        RandomManiaResolver, RandomOsuResolver, RandomTaikoResolver, RelaxCatchResolver,
-        RelaxOsuResolver, RelaxTaikoResolver, RepelOsuResolver, ScoreV2CatchResolver,
-        ScoreV2ManiaResolver, ScoreV2OsuResolver, ScoreV2TaikoResolver, SevenKeysManiaResolver,
-        SingleTapOsuResolver, SingleTapTaikoResolver, SixKeysManiaResolver, SpinInOsuResolver,
-        SpunOutOsuResolver, StrictTrackingOsuResolver, SuddenDeathCatchResolver,
+        NoFailTaikoResolver, NoReleaseManiaResolver, NoScopeCatchResolver, NoScopeOsuResolver,
+        OneKeyManiaResolver, PerfectCatchResolver, PerfectManiaResolver, PerfectOsuResolver,
+        PerfectTaikoResolver, RandomManiaResolver, RandomOsuResolver, RandomTaikoResolver,
+        RelaxCatchResolver, RelaxOsuResolver, RelaxTaikoResolver, RepelOsuResolver,
+        ScoreV2CatchResolver, ScoreV2ManiaResolver, ScoreV2OsuResolver, ScoreV2TaikoResolver,
+        SevenKeysManiaResolver, SingleTapOsuResolver, SingleTapTaikoResolver, SixKeysManiaResolver,
+        SpinInOsuResolver, SpunOutOsuResolver, StrictTrackingOsuResolver, SuddenDeathCatchResolver,
         SuddenDeathManiaResolver, SuddenDeathOsuResolver, SuddenDeathTaikoResolver,
         SwapTaikoResolver, SynesthesiaOsuResolver, TargetPracticeOsuResolver, TenKeysManiaResolver,
         ThreeKeysManiaResolver, TouchDeviceOsuResolver, TraceableOsuResolver, TransformOsuResolver,
@@ -4384,6 +4393,24 @@ impl DaycoreMania {
         GameModKind::DifficultyReduction
     }
 }
+impl NoReleaseMania {
+    /// The acronym of [`NoReleaseMania`]
+    pub const fn acronym() -> Acronym {
+        unsafe { Acronym::from_str_unchecked("NR") }
+    }
+    /// Iterator of [`Acronym`] for mods that are incompatible with [`NoReleaseMania`]
+    pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
+        unsafe { [Acronym::from_str_unchecked("HO")] }.into_iter()
+    }
+    /// The description of [`NoReleaseMania`]
+    pub const fn description() -> &'static str {
+        "No more timing the end of hold notes."
+    }
+    /// The [`GameModKind`] of [`NoReleaseMania`]
+    pub const fn kind() -> GameModKind {
+        GameModKind::DifficultyReduction
+    }
+}
 impl HardRockMania {
     /// The acronym of [`HardRockMania`]
     pub const fn acronym() -> Acronym {
@@ -4846,7 +4873,13 @@ impl HoldOffMania {
     }
     /// Iterator of [`Acronym`] for mods that are incompatible with [`HoldOffMania`]
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
-        unsafe { [Acronym::from_str_unchecked("IN")] }.into_iter()
+        unsafe {
+            [
+                Acronym::from_str_unchecked("NR"),
+                Acronym::from_str_unchecked("IN"),
+            ]
+        }
+        .into_iter()
     }
     /// The description of [`HoldOffMania`]
     pub const fn description() -> &'static str {
@@ -5516,6 +5549,7 @@ pub(crate) mod intermode {
         Nightcore,
         NineKeys,
         NoFail,
+        NoRelease,
         NoScope,
         OneKey,
         Perfect,
@@ -5589,6 +5623,7 @@ impl GameModIntermode {
                 Self::Nightcore => Acronym::from_str_unchecked("NC"),
                 Self::NineKeys => Acronym::from_str_unchecked("9K"),
                 Self::NoFail => Acronym::from_str_unchecked("NF"),
+                Self::NoRelease => Acronym::from_str_unchecked("NR"),
                 Self::NoScope => Acronym::from_str_unchecked("NS"),
                 Self::OneKey => Acronym::from_str_unchecked("1K"),
                 Self::Perfect => Acronym::from_str_unchecked("PF"),
@@ -5663,6 +5698,7 @@ impl GameModIntermode {
             Self::Nightcore => Some(576),
             Self::NineKeys => Some(16777216),
             Self::NoFail => Some(1),
+            Self::NoRelease => None,
             Self::NoScope => None,
             Self::OneKey => Some(67108864),
             Self::Perfect => Some(16416),
@@ -5734,6 +5770,7 @@ impl GameModIntermode {
             Self::Nightcore => GameModKind::DifficultyIncrease,
             Self::NineKeys => GameModKind::Conversion,
             Self::NoFail => GameModKind::DifficultyReduction,
+            Self::NoRelease => GameModKind::DifficultyReduction,
             Self::NoScope => GameModKind::Fun,
             Self::OneKey => GameModKind::Conversion,
             Self::Perfect => GameModKind::DifficultyIncrease,
@@ -5805,6 +5842,7 @@ impl GameModIntermode {
             "NC" => Self::Nightcore,
             "9K" => Self::NineKeys,
             "NF" => Self::NoFail,
+            "NR" => Self::NoRelease,
             "NS" => Self::NoScope,
             "1K" => Self::OneKey,
             "PF" => Self::Perfect,
@@ -6067,6 +6105,7 @@ impl From<&GameMod> for GameModOrder {
                 GameMod::NoFailMania(_) => arm!(Mania, NoFailMania, Some(1), NoFail),
                 GameMod::HalfTimeMania(_) => arm!(Mania, HalfTimeMania, Some(9), HalfTime),
                 GameMod::DaycoreMania(_) => arm!(Mania, DaycoreMania, None, Daycore),
+                GameMod::NoReleaseMania(_) => arm!(Mania, NoReleaseMania, None, NoRelease),
                 GameMod::HardRockMania(_) => arm!(Mania, HardRockMania, Some(5), HardRock),
                 GameMod::SuddenDeathMania(_) => arm!(Mania, SuddenDeathMania, Some(6), SuddenDeath),
                 GameMod::PerfectMania(_) => arm!(Mania, PerfectMania, Some(15), Perfect),
@@ -6266,6 +6305,7 @@ pub(crate) mod gamemod {
         NoFailMania(NoFailMania),
         HalfTimeMania(HalfTimeMania),
         DaycoreMania(DaycoreMania),
+        NoReleaseMania(NoReleaseMania),
         HardRockMania(HardRockMania),
         SuddenDeathMania(SuddenDeathMania),
         PerfectMania(PerfectMania),
@@ -6409,6 +6449,7 @@ impl GameMod {
             ("NF", GameMode::Mania) => Self::NoFailMania(Default::default()),
             ("HT", GameMode::Mania) => Self::HalfTimeMania(Default::default()),
             ("DC", GameMode::Mania) => Self::DaycoreMania(Default::default()),
+            ("NR", GameMode::Mania) => Self::NoReleaseMania(Default::default()),
             ("HR", GameMode::Mania) => Self::HardRockMania(Default::default()),
             ("SD", GameMode::Mania) => Self::SuddenDeathMania(Default::default()),
             ("PF", GameMode::Mania) => Self::PerfectMania(Default::default()),
@@ -6561,6 +6602,7 @@ impl GameMod {
             Self::NoFailMania(_) => NoFailMania::acronym(),
             Self::HalfTimeMania(_) => HalfTimeMania::acronym(),
             Self::DaycoreMania(_) => DaycoreMania::acronym(),
+            Self::NoReleaseMania(_) => NoReleaseMania::acronym(),
             Self::HardRockMania(_) => HardRockMania::acronym(),
             Self::SuddenDeathMania(_) => SuddenDeathMania::acronym(),
             Self::PerfectMania(_) => PerfectMania::acronym(),
@@ -6710,6 +6752,7 @@ impl GameMod {
             Self::NoFailMania(_) => NoFailMania::incompatible_mods().collect(),
             Self::HalfTimeMania(_) => HalfTimeMania::incompatible_mods().collect(),
             Self::DaycoreMania(_) => DaycoreMania::incompatible_mods().collect(),
+            Self::NoReleaseMania(_) => NoReleaseMania::incompatible_mods().collect(),
             Self::HardRockMania(_) => HardRockMania::incompatible_mods().collect(),
             Self::SuddenDeathMania(_) => SuddenDeathMania::incompatible_mods().collect(),
             Self::PerfectMania(_) => PerfectMania::incompatible_mods().collect(),
@@ -6854,6 +6897,7 @@ impl GameMod {
             Self::NoFailMania(_) => NoFailMania::description(),
             Self::HalfTimeMania(_) => HalfTimeMania::description(),
             Self::DaycoreMania(_) => DaycoreMania::description(),
+            Self::NoReleaseMania(_) => NoReleaseMania::description(),
             Self::HardRockMania(_) => HardRockMania::description(),
             Self::SuddenDeathMania(_) => SuddenDeathMania::description(),
             Self::PerfectMania(_) => PerfectMania::description(),
@@ -6996,6 +7040,7 @@ impl GameMod {
             Self::NoFailMania(_) => NoFailMania::kind(),
             Self::HalfTimeMania(_) => HalfTimeMania::kind(),
             Self::DaycoreMania(_) => DaycoreMania::kind(),
+            Self::NoReleaseMania(_) => NoReleaseMania::kind(),
             Self::HardRockMania(_) => HardRockMania::kind(),
             Self::SuddenDeathMania(_) => SuddenDeathMania::kind(),
             Self::PerfectMania(_) => PerfectMania::kind(),
@@ -7225,6 +7270,7 @@ impl GameMod {
             | Self::NoFailMania(_)
             | Self::HalfTimeMania(_)
             | Self::DaycoreMania(_)
+            | Self::NoReleaseMania(_)
             | Self::HardRockMania(_)
             | Self::SuddenDeathMania(_)
             | Self::PerfectMania(_)
@@ -7367,6 +7413,7 @@ impl GameMod {
             Self::NoFailMania(_) => GameModIntermode::NoFail,
             Self::HalfTimeMania(_) => GameModIntermode::HalfTime,
             Self::DaycoreMania(_) => GameModIntermode::Daycore,
+            Self::NoReleaseMania(_) => GameModIntermode::NoRelease,
             Self::HardRockMania(_) => GameModIntermode::HardRock,
             Self::SuddenDeathMania(_) => GameModIntermode::SuddenDeath,
             Self::PerfectMania(_) => GameModIntermode::Perfect,
@@ -7473,7 +7520,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("NoFailOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -7572,7 +7625,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HardRockOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -7828,7 +7887,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("BlindsOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -7850,7 +7915,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("StrictTrackingOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8184,7 +8255,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("AlternateOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8206,7 +8283,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SingleTapOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8228,7 +8311,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("AutoplayOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8250,7 +8339,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("CinemaOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8272,7 +8367,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("RelaxOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8294,7 +8395,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("AutopilotOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8316,7 +8423,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SpunOutOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8338,7 +8451,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("TransformOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8395,7 +8514,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SpinInOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8587,7 +8712,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("TraceableOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8900,7 +9031,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("FreezeFrameOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8922,7 +9059,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("BubblesOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -8944,7 +9087,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SynesthesiaOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9010,7 +9159,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("TouchDeviceOsu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9032,7 +9187,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ScoreV2Osu")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9054,7 +9215,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("EasyTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9076,7 +9243,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("NoFailTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9175,7 +9348,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HardRockTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9344,7 +9523,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HiddenTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9555,7 +9740,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ClassicTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9577,7 +9768,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SwapTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9599,7 +9796,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SingleTapTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9621,7 +9824,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ConstantSpeedTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9643,7 +9852,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("AutoplayTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9665,7 +9880,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("CinemaTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9687,7 +9908,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("RelaxTaiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9912,7 +10139,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ScoreV2Taiko")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -9969,7 +10202,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("NoFailCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10068,7 +10307,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HardRockCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10237,7 +10482,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HiddenCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10429,7 +10680,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ClassicCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10451,7 +10708,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("MirrorCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10473,7 +10736,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("AutoplayCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10495,7 +10764,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("CinemaCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10517,7 +10792,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("RelaxCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10639,7 +10920,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("FloatingFruitsCatch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10757,7 +11044,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ScoreV2Catch")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10814,7 +11107,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("NoFailMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -10905,6 +11204,34 @@ const _: () = {
             map.end()
         }
     }
+    impl<'de> Deserialize<'de> for NoReleaseMania {
+        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            struct NoReleaseManiaVisitor;
+            impl<'de> Visitor<'de> for NoReleaseManiaVisitor {
+                type Value = NoReleaseMania;
+                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+                    f.write_str("NoReleaseMania")
+                }
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
+                    Ok(Self::Value {})
+                }
+            }
+            d.deserialize_map(NoReleaseManiaVisitor)
+        }
+    }
+    impl Serialize for NoReleaseMania {
+        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+            let field_count = 0;
+            let map = s.serialize_map(Some(field_count))?;
+            map.end()
+        }
+    }
     impl<'de> Deserialize<'de> for HardRockMania {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct HardRockManiaVisitor;
@@ -10913,7 +11240,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HardRockMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11082,7 +11415,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("FadeInMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11104,7 +11443,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HiddenMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11295,7 +11640,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("DualStagesMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11317,7 +11668,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("MirrorMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11389,7 +11746,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ClassicMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11411,7 +11774,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("InvertMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11433,7 +11802,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ConstantSpeedMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11455,7 +11830,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("HoldOffMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11477,7 +11858,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("OneKeyMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11499,7 +11886,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("TwoKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11521,7 +11914,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ThreeKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11543,7 +11942,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("FourKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11565,7 +11970,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("FiveKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11587,7 +11998,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SixKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11609,7 +12026,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("SevenKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11631,7 +12054,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("EightKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11653,7 +12082,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("NineKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11675,7 +12110,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("TenKeysMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11697,7 +12138,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("AutoplayMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11719,7 +12166,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("CinemaMania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -11944,7 +12397,13 @@ const _: () = {
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     f.write_str("ScoreV2Mania")
                 }
-                fn visit_map<A: MapAccess<'de>>(self, _: A) -> Result<Self::Value, A::Error> {
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] = &[];
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
                     Ok(Self::Value {})
                 }
             }
@@ -12108,6 +12567,7 @@ const _: () = {
                 ("NF", GameMode::Mania) => GameMod::NoFailMania(Deserialize::deserialize(d)?),
                 ("HT", GameMode::Mania) => GameMod::HalfTimeMania(Deserialize::deserialize(d)?),
                 ("DC", GameMode::Mania) => GameMod::DaycoreMania(Deserialize::deserialize(d)?),
+                ("NR", GameMode::Mania) => GameMod::NoReleaseMania(Deserialize::deserialize(d)?),
                 ("HR", GameMode::Mania) => GameMod::HardRockMania(Deserialize::deserialize(d)?),
                 ("SD", GameMode::Mania) => GameMod::SuddenDeathMania(Deserialize::deserialize(d)?),
                 ("PF", GameMode::Mania) => GameMod::PerfectMania(Deserialize::deserialize(d)?),
@@ -12781,6 +13241,7 @@ const _: () = {
                 "MU" => try_deser!(MutedOsu, MutedTaiko, MutedCatch, MutedMania,),
                 "NC" => try_deser!(NightcoreOsu, NightcoreTaiko, NightcoreCatch, NightcoreMania,),
                 "NF" => try_deser!(NoFailOsu, NoFailTaiko, NoFailCatch, NoFailMania,),
+                "NR" => try_deser!(Skip_, Skip_, Skip_, NoReleaseMania,),
                 "NS" => try_deser!(NoScopeOsu, Skip_, NoScopeCatch, Skip_,),
                 "PF" => try_deser!(PerfectOsu, PerfectTaiko, PerfectCatch, PerfectMania,),
                 "RD" => try_deser!(RandomOsu, RandomTaiko, Skip_, RandomMania,),
@@ -12878,6 +13339,7 @@ macro_rules! mods_inner {
     ( < $( ! $mode:ident )? MU ) => { mods_inner!(> $( $mode )? Muted ) };
     ( < $( ! $mode:ident )? NC ) => { mods_inner!(> $( $mode )? Nightcore ) };
     ( < $( ! $mode:ident )? NF ) => { mods_inner!(> $( $mode )? NoFail ) };
+    ( < $( ! $mode:ident )? NR ) => { mods_inner!(> $( $mode )? NoRelease ) };
     ( < $( ! $mode:ident )? NS ) => { mods_inner!(> $( $mode )? NoScope ) };
     ( < $( ! $mode:ident )? PF ) => { mods_inner!(> $( $mode )? Perfect ) };
     ( < $( ! $mode:ident )? RD ) => { mods_inner!(> $( $mode )? Random ) };
