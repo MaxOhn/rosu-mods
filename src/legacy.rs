@@ -44,6 +44,7 @@ use crate::{
 /// assert_eq!(iter.next(), None);
 /// ```
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
 pub struct GameModsLegacy(u32);
 
 #[allow(non_upper_case_globals)]
@@ -154,8 +155,8 @@ impl GameModsLegacy {
     ///
     /// This method will return `None` if any unknown bits are set.
     pub const fn try_from_bits(bits: u32) -> Option<Self> {
-        if Self::from_bits(bits).0 == bits {
-            Some(Self(bits))
+        if Self::from_bits(bits).bits() == bits {
+            Some(Self::from_bits_retain(bits))
         } else {
             None
         }
@@ -163,7 +164,7 @@ impl GameModsLegacy {
 
     /// Convert from a bits value, unsetting any unknown bits.
     pub const fn from_bits(bits: u32) -> Self {
-        Self(bits & Self::all().bits())
+        Self::from_bits_retain(bits & Self::all().bits())
     }
 
     /// Convert from a bits value exactly.
@@ -175,7 +176,7 @@ impl GameModsLegacy {
 
     /// Whether all bits in this flags value are unset.
     pub const fn is_empty(self) -> bool {
-        self.0 == Self::NoMod.bits()
+        self.bits() == Self::NoMod.bits()
     }
 
     /// Whether any set bits in a source flags value are also set in a target flags value.
@@ -510,19 +511,16 @@ const _: () = {
 #[cfg(feature = "rkyv")]
 #[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
 const _: () = {
-    use std::ptr::addr_of;
-
     use rkyv::{
-        bytecheck::{ErrorBox, TupleStructCheckError},
-        Archive, CheckBytes, Deserialize, Fallible, Serialize,
+        primitive::ArchivedU32, rancor::Fallible, Archive, Archived, Deserialize, Place, Serialize,
     };
 
     impl Archive for GameModsLegacy {
-        type Archived = Self;
+        type Archived = Archived<u32>;
         type Resolver = ();
 
-        unsafe fn resolve(&self, pos: usize, resolver: (), out: *mut Self) {
-            self.bits().resolve(pos, resolver, out.cast());
+        fn resolve(&self, resolver: (), out: Place<Self::Archived>) {
+            self.bits().resolve(resolver, out);
         }
     }
 
@@ -532,27 +530,9 @@ const _: () = {
         }
     }
 
-    impl<D: Fallible + ?Sized> Deserialize<Self, D> for GameModsLegacy {
-        fn deserialize(&self, _: &mut D) -> Result<Self, D::Error> {
-            Ok(*self)
-        }
-    }
-
-    impl<C: ?Sized> CheckBytes<C> for GameModsLegacy {
-        type Error = TupleStructCheckError;
-
-        unsafe fn check_bytes<'a>(
-            value: *const Self,
-            ctx: &mut C,
-        ) -> Result<&'a Self, TupleStructCheckError> {
-            <u32 as CheckBytes<C>>::check_bytes(addr_of!((*value).0), ctx).map_err(|e| {
-                TupleStructCheckError {
-                    field_index: 0,
-                    inner: ErrorBox::new(e),
-                }
-            })?;
-
-            Ok(&*value)
+    impl<D: Fallible + ?Sized> Deserialize<GameModsLegacy, D> for ArchivedU32 {
+        fn deserialize(&self, _: &mut D) -> Result<GameModsLegacy, D::Error> {
+            Ok(GameModsLegacy::from_bits_retain(self.to_native()))
         }
     }
 };

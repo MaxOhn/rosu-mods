@@ -10,6 +10,12 @@ use crate::error::AcronymParseError;
 ///
 /// [`GameMod`]: crate::generated_mods::GameMod
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[repr(transparent)]
+#[cfg_attr(
+    feature = "rkyv",
+    derive(rkyv::bytecheck::CheckBytes),
+    bytecheck(crate = rkyv::bytecheck),
+)]
 pub struct Acronym([u8; 3]);
 
 impl Acronym {
@@ -154,19 +160,22 @@ const _: () = {
 #[cfg(feature = "rkyv")]
 #[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
 const _: () = {
-    use std::ptr::addr_of;
-
     use rkyv::{
-        bytecheck::{ErrorBox, TupleStructCheckError},
-        Archive, CheckBytes, Deserialize, Fallible, Serialize,
+        munge::munge, rancor::Fallible, traits::NoUndef, Archive, Deserialize, Place, Portable,
+        Serialize,
     };
+
+    unsafe impl Portable for Acronym {}
+
+    unsafe impl NoUndef for Acronym {}
 
     impl Archive for Acronym {
         type Archived = Self;
         type Resolver = ();
 
-        unsafe fn resolve(&self, pos: usize, (): Self::Resolver, out: *mut Self) {
-            self.0.resolve(pos, [(); 3], out.cast());
+        fn resolve(&self, (): Self::Resolver, out: Place<Self::Archived>) {
+            munge!(let Self(out) = out);
+            self.0.resolve([(); 3], out);
         }
     }
 
@@ -179,24 +188,6 @@ const _: () = {
     impl<D: Fallible + ?Sized> Deserialize<Self, D> for Acronym {
         fn deserialize(&self, _: &mut D) -> Result<Self, D::Error> {
             Ok(*self)
-        }
-    }
-
-    impl<C: ?Sized> CheckBytes<C> for Acronym {
-        type Error = TupleStructCheckError;
-
-        unsafe fn check_bytes<'a>(
-            value: *const Self,
-            ctx: &mut C,
-        ) -> Result<&'a Self, TupleStructCheckError> {
-            <[u8; 3] as CheckBytes<C>>::check_bytes(addr_of!((*value).0), ctx).map_err(|e| {
-                TupleStructCheckError {
-                    field_index: 0,
-                    inner: ErrorBox::new(e),
-                }
-            })?;
-
-            Ok(&*value)
         }
     }
 };

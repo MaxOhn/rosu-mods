@@ -1,0 +1,5 @@
+[build]
+rustdocflags = ["--cfg", "docsrs"]
+
+[env]
+MIRIFLAGS = "-Zmiri-tree-borrows"

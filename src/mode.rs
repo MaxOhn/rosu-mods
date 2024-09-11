@@ -2,6 +2,12 @@ use std::fmt;
 
 /// Available game modes
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[cfg_attr(
+    feature = "rkyv",
+    repr(u8),
+    derive(rkyv::Portable, rkyv::bytecheck::CheckBytes),
+    bytecheck(crate = rkyv::bytecheck),
+)]
 pub enum GameMode {
     /// osu!standard
     #[default]
@@ -100,29 +106,16 @@ const _: () = {
 #[cfg(feature = "rkyv")]
 #[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
 const _: () = {
-    use rkyv::{bytecheck::EnumCheckError, Archive, CheckBytes, Deserialize, Fallible, Serialize};
+    use rkyv::{rancor::Fallible, traits::NoUndef, Archive, Deserialize, Place, Serialize};
 
-    #[repr(u8)]
-    enum ArchivedTag {
-        Osu,
-        Taiko,
-        Catch,
-        Mania,
-    }
+    unsafe impl NoUndef for GameMode {}
 
     impl Archive for GameMode {
         type Archived = Self;
         type Resolver = ();
 
-        unsafe fn resolve(&self, _: usize, (): Self::Resolver, out: *mut Self) {
-            let tag = match self {
-                Self::Osu => ArchivedTag::Osu,
-                Self::Taiko => ArchivedTag::Taiko,
-                Self::Catch => ArchivedTag::Catch,
-                Self::Mania => ArchivedTag::Mania,
-            };
-
-            out.cast::<ArchivedTag>().write(tag);
+        fn resolve(&self, (): Self::Resolver, out: Place<Self::Archived>) {
+            out.write(*self);
         }
     }
 
@@ -135,35 +128,6 @@ const _: () = {
     impl<D: Fallible + ?Sized> Deserialize<Self, D> for GameMode {
         fn deserialize(&self, _: &mut D) -> Result<Self, D::Error> {
             Ok(*self)
-        }
-    }
-
-    struct Discriminant;
-
-    #[allow(non_upper_case_globals)]
-    impl Discriminant {
-        const Osu: u8 = ArchivedTag::Osu as u8;
-        const Taiko: u8 = ArchivedTag::Taiko as u8;
-        const Catch: u8 = ArchivedTag::Catch as u8;
-        const Mania: u8 = ArchivedTag::Mania as u8;
-    }
-
-    impl<C: ?Sized> CheckBytes<C> for GameMode {
-        type Error = EnumCheckError<u8>;
-
-        unsafe fn check_bytes<'a>(
-            value: *const Self,
-            _: &mut C,
-        ) -> Result<&'a Self, EnumCheckError<u8>> {
-            let tag = *value.cast::<u8>();
-
-            match tag {
-                Discriminant::Osu
-                | Discriminant::Taiko
-                | Discriminant::Catch
-                | Discriminant::Mania => Ok(&*value),
-                _ => Err(EnumCheckError::InvalidTag(tag)),
-            }
         }
     }
 };

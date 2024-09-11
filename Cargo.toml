@@ -16,7 +16,7 @@ macros = ["paste"]
 
 [dependencies]
 paste = { version = "1.0.15", optional = true }
-rkyv = { version = "0.7.44", optional = true, default-features = false, features = ["size_32", "validation"] }
+rkyv = { version = "0.8.8", optional = true, default-features = false, features = ["alloc", "bytecheck"] }
 serde = { version = "1.0.203", optional = true, features = ["derive"] }
 
 [dev-dependencies]

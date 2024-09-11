@@ -374,9 +374,17 @@ impl GameMod {
         )?;
 
         if self.settings.is_empty() {
-            writer.write(", rkyv::CheckBytes), archive(as = \"Self\")")?;
+            writer.write(
+                "\
+                    ,\
+                    rkyv::Portable,\
+                    rkyv::bytecheck::CheckBytes,\
+                ),\
+                bytecheck(crate = rkyv::bytecheck),\
+                rkyv(as = Self), repr(transparent)",
+            )?;
         } else {
-            writer.write("), archive(check_bytes)")?;
+            writer.write(")")?;
             (archived)(&self.name);
         }
 

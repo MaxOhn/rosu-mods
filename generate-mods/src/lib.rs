@@ -57,11 +57,7 @@ pub fn define_gamemod_structs(
         resolvers.push(',');
     };
 
-    writer.write(
-        "mod all_structs {\
-            #[cfg(feature = \"rkyv\")]\
-            use rkyv::bytecheck;",
-    )?;
+    writer.write("mod all_structs {")?;
 
     for ruleset in rulesets.iter() {
         for gamemod in ruleset.mods.iter() {
@@ -136,8 +132,6 @@ pub fn define_gamemod_kind(rulesets: &[RulesetMods], writer: &mut Writer) -> Gen
 
     writer.write(
         "mod kind {\
-            #[cfg(feature = \"rkyv\")]\
-            use rkyv::bytecheck;\
             /// The different types of a [`GameMod`]\n\
             ///\n\
             /// [`GameMod`]: super::GameMod\n\
@@ -145,8 +139,15 @@ pub fn define_gamemod_kind(rulesets: &[RulesetMods], writer: &mut Writer) -> Gen
             #[cfg_attr(feature = \"serde\", derive(serde::Serialize))]\
             #[cfg_attr(\
                 feature = \"rkyv\",\
-                derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),\
-                archive(as = \"Self\"),\
+                derive(\
+                    rkyv::Archive,\
+                    rkyv::Serialize,\
+                    rkyv::Deserialize,\
+                    rkyv::Portable,\
+                    rkyv::bytecheck::CheckBytes,\
+                ),\
+                bytecheck(crate = rkyv::bytecheck),\
+                rkyv(as = Self),\
                 repr(u8),\
             )]\
             pub enum GameModKind {\
@@ -187,14 +188,19 @@ pub fn define_gamemod_intermode(
 
     writer.write(
         "pub(crate) mod intermode {\
-            #[cfg(feature = \"rkyv\")]\
-            use rkyv::bytecheck;\
             /// A single game mod when the mode is ignored\n\
             #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]\
             #[cfg_attr(\
                 feature = \"rkyv\",\
-                derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),\
-                archive(as = \"Self\"),\
+                derive(\
+                    rkyv::Archive,\
+                    rkyv::Serialize,\
+                    rkyv::Deserialize,\
+                    rkyv::Portable,\
+                    rkyv::bytecheck::CheckBytes,\
+                ),\
+                rkyv(as = Self),\
+                bytecheck(crate = rkyv::bytecheck),\
                 repr(u8),\
             )]\
             #[non_exhaustive]\
@@ -479,7 +485,6 @@ pub fn define_gamemod_enum(rulesets: &[RulesetMods], writer: &mut Writer) -> Gen
             #[cfg_attr(\
                 feature = \"rkyv\",\
                 derive(::rkyv::Archive, ::rkyv::Serialize, ::rkyv::Deserialize),\
-                archive(check_bytes),\
             )]\
             #[non_exhaustive]\
             pub enum GameMod {",
@@ -522,8 +527,16 @@ fn define_unknown_mod_struct(writer: &mut Writer) -> GenResult {
         #[derive(Copy, Eq, Clone, Debug, PartialEq, PartialOrd, Ord, Hash)]\
         #[cfg_attr(\
             feature = \"rkyv\",\
-            derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),\
-            archive(as = \"Self\")\
+            derive(\
+                rkyv::Archive,\
+                rkyv::Serialize,\
+                rkyv::Deserialize,\
+                rkyv::Portable,\
+                rkyv::bytecheck::CheckBytes,\
+            ),\
+            bytecheck(crate = rkyv::bytecheck),\
+            rkyv(as = Self),\
+            repr(transparent),\
         )]\
         pub struct UnknownMod {\
             pub acronym: crate::Acronym,\

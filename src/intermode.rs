@@ -792,27 +792,30 @@ const _: () = {
 #[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
 const _: () = {
     use rkyv::{
-        ser::{ScratchSpace, Serializer},
+        rancor::Fallible,
+        ser::{Allocator, Writer},
         vec::{ArchivedVec, VecResolver},
-        Archive, Archived, Deserialize, Fallible, Serialize,
+        Archive, Archived, Deserialize, Place, Serialize,
     };
 
     impl Archive for GameModsIntermode {
         type Archived = Archived<Vec<GameModIntermode>>;
         type Resolver = VecResolver;
 
-        unsafe fn resolve(&self, pos: usize, resolver: Self::Resolver, out: *mut Self::Archived) {
-            ArchivedVec::resolve_from_len(self.inner.len(), pos, resolver, out);
+        fn resolve(&self, resolver: Self::Resolver, out: Place<Self::Archived>) {
+            ArchivedVec::resolve_from_len(self.inner.len(), resolver, out);
         }
     }
 
-    impl<S: Serializer + ScratchSpace + Fallible + ?Sized> Serialize<S> for GameModsIntermode {
+    impl<S: Fallible + Allocator + Writer + ?Sized> Serialize<S> for GameModsIntermode {
         fn serialize(&self, s: &mut S) -> Result<Self::Resolver, S::Error> {
-            ArchivedVec::serialize_from_iter::<GameModIntermode, _, _, _>(self.inner.iter(), s)
+            ArchivedVec::serialize_from_iter::<GameModIntermode, _, _>(self.inner.iter(), s)
         }
     }
 
-    impl<D: Fallible + ?Sized> Deserialize<GameModsIntermode, D> for Archived<Vec<GameModIntermode>> {
+    impl<D: Fallible + ?Sized> Deserialize<GameModsIntermode, D>
+        for ArchivedVec<Archived<GameModIntermode>>
+    {
         fn deserialize(&self, _: &mut D) -> Result<GameModsIntermode, D::Error> {
             Ok(self.iter().copied().collect())
         }

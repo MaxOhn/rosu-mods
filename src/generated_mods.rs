@@ -16,14 +16,11 @@ use std::{
 use crate::{Acronym, GameMode};
 
 mod all_structs {
-    #[cfg(feature = "rkyv")]
-    use rkyv::bytecheck;
     /// Larger circles, more forgiving HP drain, less accuracy required, and three lives!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct EasyOsu {
         /// Number of extra lives
@@ -31,18 +28,13 @@ mod all_structs {
     }
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct NoFailOsu {}
     /// Less zoom...
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct HalfTimeOsu {
         /// The actual decrease to apply
@@ -54,8 +46,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DaycoreOsu {
         /// The actual decrease to apply
@@ -63,18 +54,13 @@ mod all_structs {
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HardRockOsu {}
     /// Miss and fail.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct SuddenDeathOsu {
         /// Automatically restarts when failed.
@@ -84,8 +70,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct PerfectOsu {
         /// Automatically restarts when failed.
@@ -95,8 +80,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DoubleTimeOsu {
         /// The actual increase to apply
@@ -108,8 +92,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct NightcoreOsu {
         /// The actual increase to apply
@@ -119,8 +102,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct HiddenOsu {
         /// The main object body will not fade when enabled.
@@ -130,8 +112,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct FlashlightOsu {
         /// Milliseconds until the flashlight reaches the cursor
@@ -143,26 +124,17 @@ mod all_structs {
     }
     /// Play with blinds on your screen.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct BlindsOsu {}
     /// Once you start a slider, follow precisely or get a miss.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct StrictTrackingOsu {}
     /// Fail if your accuracy drops too low!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AccuracyChallengeOsu {
         /// Trigger a failure if your accuracy goes below this value.
@@ -176,8 +148,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct TargetPracticeOsu {
         /// Use a custom seed instead of a random one
@@ -189,8 +160,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DifficultyAdjustOsu {
         /// Override a beatmap's set CS.
@@ -208,8 +178,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct ClassicOsu {
         /// Scores sliders proportionally to the number of ticks hit.
@@ -227,8 +196,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct RandomOsu {
         /// How sharp angles should be
@@ -240,8 +208,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MirrorOsu {
         /// Choose which axes objects are mirrored over.
@@ -249,74 +216,41 @@ mod all_structs {
     }
     /// Don't use the same key twice in a row!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct AlternateOsu {}
     /// You must only use one key!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SingleTapOsu {}
     /// Watch a perfect automated play through the song.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct AutoplayOsu {}
     /// Watch the video without visual distractions.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct CinemaOsu {}
     /// You don't need to click. Give your clicking/tapping fingers a break from the heat of things.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct RelaxOsu {}
     /// Automatic cursor movement - just follow the rhythm.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct AutopilotOsu {}
     /// Spinners will be automatically completed.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SpunOutOsu {}
     /// Everything rotates. EVERYTHING.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct TransformOsu {}
     /// They just won't stay still...
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WiggleOsu {
         /// Multiplier applied to the wiggling strength.
@@ -324,18 +258,13 @@ mod all_structs {
     }
     /// Circles spin in. No approach circles.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SpinInOsu {}
     /// Hit them at the right size!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct GrowOsu {
         /// The initial size multiplier applied to all objects.
@@ -345,8 +274,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DeflateOsu {
         /// The initial size multiplier applied to all objects.
@@ -356,8 +284,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindUpOsu {
         /// The starting speed of the track
@@ -371,8 +298,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindDownOsu {
         /// The starting speed of the track
@@ -384,18 +310,13 @@ mod all_structs {
     }
     /// Put your faith in the approach circles...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct TraceableOsu {}
     /// The whole playfield is on a wheel!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct BarrelRollOsu {
         /// Rotations per minute
@@ -407,8 +328,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct ApproachDifferentOsu {
         /// Change the initial size of the approach circle, relative to hit circles.
@@ -420,8 +340,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MutedOsu {
         /// Increase volume as combo builds.
@@ -437,8 +356,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct NoScopeOsu {
         /// The combo count at which the cursor becomes completely hidden
@@ -448,8 +366,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MagnetisedOsu {
         /// How strong the pull is.
@@ -459,8 +376,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct RepelOsu {
         /// How strong the repulsion is.
@@ -470,8 +386,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AdaptiveSpeedOsu {
         /// The starting speed of the track
@@ -481,34 +396,21 @@ mod all_structs {
     }
     /// Burn the notes into your memory.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct FreezeFrameOsu {}
     /// Don't let their popping distract you!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct BubblesOsu {}
     /// Colours hit objects based on the rhythm.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SynesthesiaOsu {}
     /// 3D. Almost.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DepthOsu {
         /// How far away objects appear.
@@ -518,42 +420,25 @@ mod all_structs {
     }
     /// Automatically applied to plays on devices with a touchscreen.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct TouchDeviceOsu {}
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ScoreV2Osu {}
     /// Beats move slower, and less accuracy required!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct EasyTaiko {}
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct NoFailTaiko {}
     /// Less zoom...
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct HalfTimeTaiko {
         /// The actual decrease to apply
@@ -565,8 +450,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DaycoreTaiko {
         /// The actual decrease to apply
@@ -574,18 +458,13 @@ mod all_structs {
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HardRockTaiko {}
     /// Miss and fail.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct SuddenDeathTaiko {
         /// Automatically restarts when failed.
@@ -595,8 +474,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct PerfectTaiko {
         /// Automatically restarts when failed.
@@ -606,8 +484,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DoubleTimeTaiko {
         /// The actual increase to apply
@@ -619,8 +496,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct NightcoreTaiko {
         /// The actual increase to apply
@@ -628,18 +504,13 @@ mod all_structs {
     }
     /// Beats fade out before you hit them!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HiddenTaiko {}
     /// Restricted view area.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct FlashlightTaiko {
         /// Multiplier applied to the default flashlight size.
@@ -651,8 +522,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AccuracyChallengeTaiko {
         /// Trigger a failure if your accuracy goes below this value.
@@ -666,8 +536,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct RandomTaiko {
         /// Use a custom seed instead of a random one
@@ -677,8 +546,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DifficultyAdjustTaiko {
         /// Adjust a beatmap's set scroll speed
@@ -692,66 +560,37 @@ mod all_structs {
     }
     /// Feeling nostalgic?
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ClassicTaiko {}
     /// Dons become kats, kats become dons
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SwapTaiko {}
     /// One key for dons, one key for kats.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SingleTapTaiko {}
     /// No more tricky speed changes!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ConstantSpeedTaiko {}
     /// Watch a perfect automated play through the song.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct AutoplayTaiko {}
     /// Watch the video without visual distractions.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct CinemaTaiko {}
     /// No need to remember which key is correct anymore!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct RelaxTaiko {}
     /// Can you keep up?
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindUpTaiko {
         /// The starting speed of the track
@@ -765,8 +604,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindDownTaiko {
         /// The starting speed of the track
@@ -780,8 +618,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MutedTaiko {
         /// Increase volume as combo builds.
@@ -797,8 +634,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AdaptiveSpeedTaiko {
         /// The starting speed of the track
@@ -808,18 +644,13 @@ mod all_structs {
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ScoreV2Taiko {}
     /// Larger fruits, more forgiving HP drain, less accuracy required, and three lives!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct EasyCatch {
         /// Number of extra lives
@@ -827,18 +658,13 @@ mod all_structs {
     }
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct NoFailCatch {}
     /// Less zoom...
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct HalfTimeCatch {
         /// The actual decrease to apply
@@ -850,8 +676,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DaycoreCatch {
         /// The actual decrease to apply
@@ -859,18 +684,13 @@ mod all_structs {
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HardRockCatch {}
     /// Miss and fail.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct SuddenDeathCatch {
         /// Automatically restarts when failed.
@@ -880,8 +700,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct PerfectCatch {
         /// Automatically restarts when failed.
@@ -891,8 +710,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DoubleTimeCatch {
         /// The actual increase to apply
@@ -904,8 +722,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct NightcoreCatch {
         /// The actual increase to apply
@@ -913,18 +730,13 @@ mod all_structs {
     }
     /// Play with fading fruits.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HiddenCatch {}
     /// Restricted view area.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct FlashlightCatch {
         /// Multiplier applied to the default flashlight size.
@@ -936,8 +748,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AccuracyChallengeCatch {
         /// Trigger a failure if your accuracy goes below this value.
@@ -951,8 +762,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DifficultyAdjustCatch {
         /// Override a beatmap's set CS.
@@ -970,50 +780,29 @@ mod all_structs {
     }
     /// Feeling nostalgic?
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ClassicCatch {}
     /// Fruits are flipped horizontally.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct MirrorCatch {}
     /// Watch a perfect automated play through the song.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct AutoplayCatch {}
     /// Watch the video without visual distractions.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct CinemaCatch {}
     /// Use the mouse to control the catcher.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct RelaxCatch {}
     /// Can you keep up?
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindUpCatch {
         /// The starting speed of the track
@@ -1027,8 +816,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindDownCatch {
         /// The starting speed of the track
@@ -1040,18 +828,13 @@ mod all_structs {
     }
     /// The fruits are... floating?
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct FloatingFruitsCatch {}
     /// Can you still feel the rhythm without music?
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MutedCatch {
         /// Increase volume as combo builds.
@@ -1067,8 +850,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct NoScopeCatch {
         /// The combo count at which the cursor becomes completely hidden
@@ -1076,18 +858,13 @@ mod all_structs {
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ScoreV2Catch {}
     /// More forgiving HP drain, less accuracy required, and three lives!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct EasyMania {
         /// Number of extra lives
@@ -1095,18 +872,13 @@ mod all_structs {
     }
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct NoFailMania {}
     /// Less zoom...
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct HalfTimeMania {
         /// The actual decrease to apply
@@ -1118,8 +890,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DaycoreMania {
         /// The actual decrease to apply
@@ -1127,26 +898,17 @@ mod all_structs {
     }
     /// No more timing the end of hold notes.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct NoReleaseMania {}
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HardRockMania {}
     /// Miss and fail.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct SuddenDeathMania {
         /// Automatically restarts when failed.
@@ -1156,8 +918,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct PerfectMania {
         /// Automatically restarts when failed.
@@ -1167,8 +928,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DoubleTimeMania {
         /// The actual increase to apply
@@ -1180,8 +940,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct NightcoreMania {
         /// The actual increase to apply
@@ -1189,26 +948,17 @@ mod all_structs {
     }
     /// Keys appear out of nowhere!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct FadeInMania {}
     /// Keys fade out before you hit them!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HiddenMania {}
     /// Decrease the playfield's viewing area.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct CoverMania {
         /// The proportion of playfield height that notes will be hidden for.
@@ -1220,8 +970,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct FlashlightMania {
         /// Multiplier applied to the default flashlight size.
@@ -1233,8 +982,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AccuracyChallengeMania {
         /// Trigger a failure if your accuracy goes below this value.
@@ -1248,8 +996,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct RandomMania {
         /// Use a custom seed instead of a random one
@@ -1257,26 +1004,17 @@ mod all_structs {
     }
     /// Double the stages, double the fun!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct DualStagesMania {}
     /// Notes are flipped horizontally.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct MirrorMania {}
     /// Override a beatmap's difficulty settings.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DifficultyAdjustMania {
         /// Override a beatmap's set HP.
@@ -1288,138 +1026,73 @@ mod all_structs {
     }
     /// Feeling nostalgic?
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ClassicMania {}
     /// Hold the keys. To the beat.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct InvertMania {}
     /// No more tricky speed changes!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ConstantSpeedMania {}
     /// Replaces all hold notes with normal notes.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct HoldOffMania {}
     /// Play with one key.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct OneKeyMania {}
     /// Play with two keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct TwoKeysMania {}
     /// Play with three keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ThreeKeysMania {}
     /// Play with four keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct FourKeysMania {}
     /// Play with five keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct FiveKeysMania {}
     /// Play with six keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SixKeysMania {}
     /// Play with seven keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct SevenKeysMania {}
     /// Play with eight keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct EightKeysMania {}
     /// Play with nine keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct NineKeysMania {}
     /// Play with ten keys.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct TenKeysMania {}
     /// Watch a perfect automated play through the song.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct AutoplayMania {}
     /// Watch the video without visual distractions.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct CinemaMania {}
     /// Can you keep up?
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindUpMania {
         /// The starting speed of the track
@@ -1433,8 +1106,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct WindDownMania {
         /// The starting speed of the track
@@ -1448,8 +1120,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MutedMania {
         /// Increase volume as combo builds.
@@ -1465,8 +1136,7 @@ mod all_structs {
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize),
-        archive(check_bytes)
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct AdaptiveSpeedMania {
         /// The starting speed of the track
@@ -1476,19 +1146,11 @@ mod all_structs {
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ScoreV2Mania {}
     /// Any unknown mod.
     #[derive(Copy, Eq, Clone, Debug, PartialEq, PartialOrd, Ord, Hash)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self")
-    )]
+    #[cfg_attr(feature = "rkyv",derive(rkyv::Archive,rkyv::Serialize,rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self),repr(transparent),)]
     pub struct UnknownMod {
         pub acronym: crate::Acronym,
     }
@@ -5475,19 +5137,12 @@ impl Default for UnknownMod {
     }
 }
 mod kind {
-    #[cfg(feature = "rkyv")]
-    use rkyv::bytecheck;
     /// The different types of a [`GameMod`]
     ///
     /// [`GameMod`]: super::GameMod
     #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
     #[cfg_attr(feature = "serde", derive(serde::Serialize))]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self"),
-        repr(u8)
-    )]
+    #[cfg_attr(feature = "rkyv",derive(rkyv::Archive,rkyv::Serialize,rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self),repr(u8),)]
     pub enum GameModKind {
         DifficultyReduction,
         DifficultyIncrease,
@@ -5498,16 +5153,9 @@ mod kind {
     }
 }
 pub(crate) mod intermode {
-    #[cfg(feature = "rkyv")]
-    use rkyv::bytecheck;
     /// A single game mod when the mode is ignored
     #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(
-        feature = "rkyv",
-        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, rkyv::CheckBytes),
-        archive(as = "Self"),
-        repr(u8)
-    )]
+    #[cfg_attr(feature = "rkyv",derive(rkyv::Archive,rkyv::Serialize,rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),rkyv(as = Self),bytecheck(crate = rkyv::bytecheck),repr(u8),)]
     #[non_exhaustive]
     pub enum GameModIntermode {
         AccuracyChallenge,
@@ -6196,8 +5844,7 @@ pub(crate) mod gamemod {
     #[derive(Clone, Debug, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
-        derive(::rkyv::Archive, ::rkyv::Serialize, ::rkyv::Deserialize),
-        archive(check_bytes)
+        derive(::rkyv::Archive, ::rkyv::Serialize, ::rkyv::Deserialize)
     )]
     #[non_exhaustive]
     pub enum GameMod {
