@@ -119,7 +119,7 @@ impl Ord for Acronym {
 }
 
 #[cfg(feature = "serde")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
         de::{Deserialize, Deserializer, Error as DeError, Visitor},
@@ -158,7 +158,7 @@ const _: () = {
 };
 
 #[cfg(feature = "rkyv")]
-#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "rkyv")))]
 const _: () = {
     use rkyv::{
         munge::munge, rancor::Fallible, traits::NoUndef, Archive, Deserialize, Place, Portable,

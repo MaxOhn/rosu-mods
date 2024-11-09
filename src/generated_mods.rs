@@ -1185,7 +1185,7 @@ pub use intermode::GameModIntermode;
 pub use kind::GameModKind;
 /// Types for (de)serialization through `rkyv`.
 #[cfg(feature = "rkyv")]
-#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "rkyv")))]
 #[doc(hidden)]
 pub mod rkyv {
     pub use super::all_structs::{
@@ -7111,7 +7111,7 @@ impl PartialOrd for GameMod {
     }
 }
 #[cfg(feature = "serde")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
         de::{

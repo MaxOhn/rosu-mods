@@ -88,7 +88,7 @@ pub fn define_gamemod_structs(
         pub use kind::GameModKind;\
         /// Types for (de)serialization through `rkyv`.\n\
         #[cfg(feature = \"rkyv\")]\
-        #[cfg_attr(docsrs, doc(cfg(feature = \"rkyv\")))]\
+        #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = \"rkyv\")))]\
         #[doc(hidden)]\
         pub mod rkyv {\
             pub use super::gamemod::{ArchivedGameMod, GameModResolver};\
@@ -848,7 +848,7 @@ pub fn impl_gamemod_traits(writer: &mut Writer) -> GenResult {
 pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
         "#[cfg(feature = \"serde\")]\
-        #[cfg_attr(docsrs, doc(cfg(feature = \"serde\")))]\
+        #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = \"serde\")))]\
         const _: () = {",
     )?;
 

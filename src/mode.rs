@@ -51,7 +51,7 @@ impl fmt::Display for GameMode {
 }
 
 #[cfg(feature = "serde")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::{
         de::{Deserialize, Deserializer, Error, Unexpected, Visitor},
@@ -104,7 +104,7 @@ const _: () = {
 };
 
 #[cfg(feature = "rkyv")]
-#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "rkyv")))]
 const _: () = {
     use rkyv::{rancor::Fallible, traits::NoUndef, Archive, Deserialize, Place, Serialize};
 

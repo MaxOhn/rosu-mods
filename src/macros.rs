@@ -22,7 +22,7 @@
 /// [`GameMods`]: crate::GameMods
 /// [`GameModsIntermode`]: crate::GameModsIntermode
 #[macro_export(local_inner_macros)]
-#[cfg_attr(docsrs, doc(cfg(feature = "macros")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "macros")))]
 macro_rules! mods {
     ( Osu $( : $( $acronym:tt )* )? ) => {
         mods_inner!(@ Osu: $( $( $acronym )* )?)

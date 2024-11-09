@@ -681,7 +681,7 @@ impl Extend<GameMod> for GameMods {
 }
 
 #[cfg(feature = "serde")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 const _: () = {
     use serde::ser::{Serialize, SerializeSeq, Serializer};
 
@@ -699,7 +699,7 @@ const _: () = {
 };
 
 #[cfg(feature = "rkyv")]
-#[cfg_attr(docsrs, doc(cfg(feature = "rkyv")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "rkyv")))]
 const _: () = {
     use rkyv::{
         rancor::{Fallible, Source},
