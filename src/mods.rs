@@ -463,7 +463,7 @@ impl GameMods {
     /// hddtwu.insert(GameMod::WindUpOsu(Default::default()));
     /// assert_eq!(hddtwu.clock_rate(), None);
     /// ```
-    pub fn clock_rate(&self) -> Option<f32> {
+    pub fn clock_rate(&self) -> Option<f64> {
         self.inner
             .values()
             .map(GameMod::clock_rate)

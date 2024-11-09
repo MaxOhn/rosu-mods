@@ -4,9 +4,9 @@ impl GameMod {
     /// The clock rate of the [`GameMod`].
     ///
     /// Returns `None` if there is no single clock rate.
-    pub const fn clock_rate(&self) -> Option<f32> {
+    pub const fn clock_rate(&self) -> Option<f64> {
         // TODO: replace with `Option::unwrap_or` when it's const stable
-        const fn unwrap_or(opt: Option<f32>, default: f32) -> f32 {
+        const fn unwrap_or(opt: Option<f64>, default: f64) -> f64 {
             match opt {
                 Some(n) => n,
                 None => default,
