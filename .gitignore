@@ -1,4 +1,5 @@
 /target
 /generate-mods/Cargo.lock
+/.vscode
 expanded.rs
 output.rs

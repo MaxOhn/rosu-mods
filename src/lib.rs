@@ -117,7 +117,7 @@
 //! [`GameModsIntermode`]: crate::intermode::GameModsIntermode
 //! [`GameModIntermode`]: crate::generated_mods::intermode::GameModIntermode
 
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(all(docsrs, not(doctest)), feature(doc_cfg))]
 #![deny(rustdoc::broken_intra_doc_links, rustdoc::missing_crate_level_docs)]
 #![warn(clippy::missing_const_for_fn, clippy::pedantic)]
 #![allow(
@@ -166,7 +166,7 @@ pub mod iter;
 pub use generated_mods::rkyv;
 
 /// Types for (de)serialization through `serde`.
-#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 pub mod serde;
 
 pub use self::{mode::GameMode, mods::GameMods};

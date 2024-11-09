@@ -3,22 +3,28 @@
 use std::fmt::Debug;
 
 use rkyv::{
-    ser::serializers::AllocSerializer, validation::validators::DefaultValidator, Archive,
-    CheckBytes, Deserialize, Infallible, Serialize,
+    api::high::{HighSerializer, HighValidator},
+    bytecheck::CheckBytes,
+    rancor::{Panic, ResultExt, Strategy},
+    ser::allocator::ArenaHandle,
+    util::AlignedVec,
+    Archive, Deserialize, Serialize,
 };
 use rosu_mods::{
     generated_mods::{BarrelRollOsu, DoubleTimeTaiko, NoFailCatch, NoScopeOsu, UnknownMod},
     Acronym, GameMod, GameModIntermode, GameMode, GameMods, GameModsIntermode, GameModsLegacy,
 };
 
+type Serializer<'a> = HighSerializer<AlignedVec, ArenaHandle<'a>, Panic>;
+
 fn roundtrip<T>(orig: &T)
 where
-    T: Archive + Serialize<AllocSerializer<128>> + PartialEq + Debug,
-    T::Archived: Deserialize<T, Infallible> + for<'a> CheckBytes<DefaultValidator<'a>>,
+    T: Archive + for<'a> Serialize<Serializer<'a>> + PartialEq + Debug,
+    T::Archived: Deserialize<T, Strategy<(), Panic>> + for<'a> CheckBytes<HighValidator<'a, Panic>>,
 {
-    let bytes = rkyv::to_bytes::<_, 128>(orig).unwrap();
-    let archived = rkyv::check_archived_root::<T>(&bytes).unwrap();
-    let deserialized = archived.deserialize(&mut Infallible).unwrap();
+    let bytes = rkyv::to_bytes(orig).always_ok();
+    let archived: &T::Archived = rkyv::access(&bytes).always_ok();
+    let deserialized: T = rkyv::api::deserialize_using(archived, &mut ()).always_ok();
 
     assert_eq!(orig, &deserialized);
 }
