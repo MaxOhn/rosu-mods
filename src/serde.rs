@@ -630,7 +630,7 @@ struct GameModSettingField<'a> {
 enum Value<'de> {
     Bool(bool),
     Str(MaybeOwnedStr<'de>),
-    Number(f32),
+    Number(f64),
 }
 
 impl<'de> Deserialize<'de> for Value<'de> {
@@ -649,19 +649,19 @@ impl<'de> Deserialize<'de> for Value<'de> {
             }
 
             fn visit_f32<E: DeError>(self, v: f32) -> Result<Self::Value, E> {
-                Ok(Value::Number(v))
+                self.visit_f64(v as f64)
             }
 
             fn visit_f64<E: DeError>(self, v: f64) -> Result<Self::Value, E> {
-                self.visit_f32(v as f32)
+                Ok(Value::Number(v))
             }
 
             fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                self.visit_f32(v as f32)
+                self.visit_f64(v as f64)
             }
 
             fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
-                self.visit_f32(v as f32)
+                self.visit_f64(v as f64)
             }
 
             fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
@@ -690,7 +690,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
     {
         match self {
             Value::Bool(v) => visitor.visit_bool(*v),
-            Value::Number(v) => visitor.visit_f32(*v),
+            Value::Number(v) => visitor.visit_f64(*v),
             Value::Str(v) => visitor.visit_borrowed_str(v.as_str()),
         }
     }
@@ -765,22 +765,22 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
         unimplemented!()
     }
 
-    fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    fn deserialize_f32<V>(self, _: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        unimplemented!()
+    }
+
+    fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,
     {
         match self {
             Value::Bool(v) => Err(DeError::invalid_type(Unexpected::Bool(*v), &visitor)),
-            Value::Number(v) => visitor.visit_f32(*v),
+            Value::Number(v) => visitor.visit_f64(*v),
             Value::Str(v) => Err(DeError::invalid_type(Unexpected::Str(v.as_str()), &visitor)),
         }
-    }
-
-    fn deserialize_f64<V>(self, _: V) -> Result<V::Value, Self::Error>
-    where
-        V: Visitor<'de>,
-    {
-        unimplemented!()
     }
 
     fn deserialize_char<V>(self, _: V) -> Result<V::Value, Self::Error>

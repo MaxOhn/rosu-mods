@@ -24,7 +24,7 @@ mod all_structs {
     )]
     pub struct EasyOsu {
         /// Number of extra lives
-        pub retries: Option<f32>,
+        pub retries: Option<f64>,
     }
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -38,7 +38,7 @@ mod all_structs {
     )]
     pub struct HalfTimeOsu {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -50,7 +50,7 @@ mod all_structs {
     )]
     pub struct DaycoreOsu {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -84,7 +84,7 @@ mod all_structs {
     )]
     pub struct DoubleTimeOsu {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -96,7 +96,7 @@ mod all_structs {
     )]
     pub struct NightcoreOsu {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Play with no approach circles and fading circles/sliders.
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -116,9 +116,9 @@ mod all_structs {
     )]
     pub struct FlashlightOsu {
         /// Milliseconds until the flashlight reaches the cursor
-        pub follow_delay: Option<f32>,
+        pub follow_delay: Option<f64>,
         /// Multiplier applied to the default flashlight size.
-        pub size_multiplier: Option<f32>,
+        pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
         pub combo_based_size: Option<bool>,
     }
@@ -138,7 +138,7 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeOsu {
         /// Trigger a failure if your accuracy goes below this value.
-        pub minimum_accuracy: Option<f32>,
+        pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
@@ -152,7 +152,7 @@ mod all_structs {
     )]
     pub struct TargetPracticeOsu {
         /// Use a custom seed instead of a random one
-        pub seed: Option<f32>,
+        pub seed: Option<f64>,
         /// Whether a metronome beat should play in the background
         pub metronome: Option<bool>,
     }
@@ -164,13 +164,13 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustOsu {
         /// Override a beatmap's set CS.
-        pub circle_size: Option<f32>,
+        pub circle_size: Option<f64>,
         /// Override a beatmap's set AR.
-        pub approach_rate: Option<f32>,
+        pub approach_rate: Option<f64>,
         /// Override a beatmap's set HP.
-        pub drain_rate: Option<f32>,
+        pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
-        pub overall_difficulty: Option<f32>,
+        pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
         pub extended_limits: Option<bool>,
     }
@@ -200,9 +200,9 @@ mod all_structs {
     )]
     pub struct RandomOsu {
         /// How sharp angles should be
-        pub angle_sharpness: Option<f32>,
+        pub angle_sharpness: Option<f64>,
         /// Use a custom seed instead of a random one
-        pub seed: Option<f32>,
+        pub seed: Option<f64>,
     }
     /// Flip objects on the chosen axes.
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -254,7 +254,7 @@ mod all_structs {
     )]
     pub struct WiggleOsu {
         /// Multiplier applied to the wiggling strength.
-        pub strength: Option<f32>,
+        pub strength: Option<f64>,
     }
     /// Circles spin in. No approach circles.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -268,7 +268,7 @@ mod all_structs {
     )]
     pub struct GrowOsu {
         /// The initial size multiplier applied to all objects.
-        pub start_scale: Option<f32>,
+        pub start_scale: Option<f64>,
     }
     /// Hit them at the right size!
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -278,7 +278,7 @@ mod all_structs {
     )]
     pub struct DeflateOsu {
         /// The initial size multiplier applied to all objects.
-        pub start_scale: Option<f32>,
+        pub start_scale: Option<f64>,
     }
     /// Can you keep up?
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -288,9 +288,9 @@ mod all_structs {
     )]
     pub struct WindUpOsu {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -302,9 +302,9 @@ mod all_structs {
     )]
     pub struct WindDownOsu {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -320,7 +320,7 @@ mod all_structs {
     )]
     pub struct BarrelRollOsu {
         /// Rotations per minute
-        pub spin_speed: Option<f32>,
+        pub spin_speed: Option<f64>,
         /// The direction of rotation
         pub direction: Option<String>,
     }
@@ -332,7 +332,7 @@ mod all_structs {
     )]
     pub struct ApproachDifferentOsu {
         /// Change the initial size of the approach circle, relative to hit circles.
-        pub scale: Option<f32>,
+        pub scale: Option<f64>,
         /// Change the animation style of the approach circles.
         pub style: Option<String>,
     }
@@ -348,7 +348,7 @@ mod all_structs {
         /// Add a metronome beat to help you keep track of the rhythm.
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
-        pub mute_combo_count: Option<f32>,
+        pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
         pub affects_hit_sounds: Option<bool>,
     }
@@ -360,7 +360,7 @@ mod all_structs {
     )]
     pub struct NoScopeOsu {
         /// The combo count at which the cursor becomes completely hidden
-        pub hidden_combo_count: Option<f32>,
+        pub hidden_combo_count: Option<f64>,
     }
     /// No need to chase the circles – your cursor is a magnet!
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -370,7 +370,7 @@ mod all_structs {
     )]
     pub struct MagnetisedOsu {
         /// How strong the pull is.
-        pub attraction_strength: Option<f32>,
+        pub attraction_strength: Option<f64>,
     }
     /// Hit objects run away!
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -380,7 +380,7 @@ mod all_structs {
     )]
     pub struct RepelOsu {
         /// How strong the repulsion is.
-        pub repulsion_strength: Option<f32>,
+        pub repulsion_strength: Option<f64>,
     }
     /// Let track speed adapt to you.
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -390,7 +390,7 @@ mod all_structs {
     )]
     pub struct AdaptiveSpeedOsu {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -414,7 +414,7 @@ mod all_structs {
     )]
     pub struct DepthOsu {
         /// How far away objects appear.
-        pub max_depth: Option<f32>,
+        pub max_depth: Option<f64>,
         /// Whether approach circles should be visible.
         pub show_approach_circles: Option<bool>,
     }
@@ -442,7 +442,7 @@ mod all_structs {
     )]
     pub struct HalfTimeTaiko {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -454,7 +454,7 @@ mod all_structs {
     )]
     pub struct DaycoreTaiko {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -488,7 +488,7 @@ mod all_structs {
     )]
     pub struct DoubleTimeTaiko {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -500,7 +500,7 @@ mod all_structs {
     )]
     pub struct NightcoreTaiko {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Beats fade out before you hit them!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -514,7 +514,7 @@ mod all_structs {
     )]
     pub struct FlashlightTaiko {
         /// Multiplier applied to the default flashlight size.
-        pub size_multiplier: Option<f32>,
+        pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
         pub combo_based_size: Option<bool>,
     }
@@ -526,7 +526,7 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeTaiko {
         /// Trigger a failure if your accuracy goes below this value.
-        pub minimum_accuracy: Option<f32>,
+        pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
@@ -540,7 +540,7 @@ mod all_structs {
     )]
     pub struct RandomTaiko {
         /// Use a custom seed instead of a random one
-        pub seed: Option<f32>,
+        pub seed: Option<f64>,
     }
     /// Override a beatmap's difficulty settings.
     #[derive(Clone, Debug, Default, PartialEq)]
@@ -550,11 +550,11 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustTaiko {
         /// Adjust a beatmap's set scroll speed
-        pub scroll_speed: Option<f32>,
+        pub scroll_speed: Option<f64>,
         /// Override a beatmap's set HP.
-        pub drain_rate: Option<f32>,
+        pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
-        pub overall_difficulty: Option<f32>,
+        pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
         pub extended_limits: Option<bool>,
     }
@@ -594,9 +594,9 @@ mod all_structs {
     )]
     pub struct WindUpTaiko {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -608,9 +608,9 @@ mod all_structs {
     )]
     pub struct WindDownTaiko {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -626,7 +626,7 @@ mod all_structs {
         /// Add a metronome beat to help you keep track of the rhythm.
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
-        pub mute_combo_count: Option<f32>,
+        pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
         pub affects_hit_sounds: Option<bool>,
     }
@@ -638,7 +638,7 @@ mod all_structs {
     )]
     pub struct AdaptiveSpeedTaiko {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -654,7 +654,7 @@ mod all_structs {
     )]
     pub struct EasyCatch {
         /// Number of extra lives
-        pub retries: Option<f32>,
+        pub retries: Option<f64>,
     }
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -668,7 +668,7 @@ mod all_structs {
     )]
     pub struct HalfTimeCatch {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -680,7 +680,7 @@ mod all_structs {
     )]
     pub struct DaycoreCatch {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -714,7 +714,7 @@ mod all_structs {
     )]
     pub struct DoubleTimeCatch {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -726,7 +726,7 @@ mod all_structs {
     )]
     pub struct NightcoreCatch {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Play with fading fruits.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -740,7 +740,7 @@ mod all_structs {
     )]
     pub struct FlashlightCatch {
         /// Multiplier applied to the default flashlight size.
-        pub size_multiplier: Option<f32>,
+        pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
         pub combo_based_size: Option<bool>,
     }
@@ -752,7 +752,7 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeCatch {
         /// Trigger a failure if your accuracy goes below this value.
-        pub minimum_accuracy: Option<f32>,
+        pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
@@ -766,15 +766,15 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustCatch {
         /// Override a beatmap's set CS.
-        pub circle_size: Option<f32>,
+        pub circle_size: Option<f64>,
         /// Override a beatmap's set AR.
-        pub approach_rate: Option<f32>,
+        pub approach_rate: Option<f64>,
         /// Adjust the patterns as if Hard Rock is enabled.
         pub hard_rock_offsets: Option<bool>,
         /// Override a beatmap's set HP.
-        pub drain_rate: Option<f32>,
+        pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
-        pub overall_difficulty: Option<f32>,
+        pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
         pub extended_limits: Option<bool>,
     }
@@ -806,9 +806,9 @@ mod all_structs {
     )]
     pub struct WindUpCatch {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -820,9 +820,9 @@ mod all_structs {
     )]
     pub struct WindDownCatch {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -842,7 +842,7 @@ mod all_structs {
         /// Add a metronome beat to help you keep track of the rhythm.
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
-        pub mute_combo_count: Option<f32>,
+        pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
         pub affects_hit_sounds: Option<bool>,
     }
@@ -854,7 +854,7 @@ mod all_structs {
     )]
     pub struct NoScopeCatch {
         /// The combo count at which the cursor becomes completely hidden
-        pub hidden_combo_count: Option<f32>,
+        pub hidden_combo_count: Option<f64>,
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -868,7 +868,7 @@ mod all_structs {
     )]
     pub struct EasyMania {
         /// Number of extra lives
-        pub retries: Option<f32>,
+        pub retries: Option<f64>,
     }
     /// You can't fail, no matter what.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -882,7 +882,7 @@ mod all_structs {
     )]
     pub struct HalfTimeMania {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -894,7 +894,7 @@ mod all_structs {
     )]
     pub struct DaycoreMania {
         /// The actual decrease to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// No more timing the end of hold notes.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -932,7 +932,7 @@ mod all_structs {
     )]
     pub struct DoubleTimeMania {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -944,7 +944,7 @@ mod all_structs {
     )]
     pub struct NightcoreMania {
         /// The actual increase to apply
-        pub speed_change: Option<f32>,
+        pub speed_change: Option<f64>,
     }
     /// Keys appear out of nowhere!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -962,7 +962,7 @@ mod all_structs {
     )]
     pub struct CoverMania {
         /// The proportion of playfield height that notes will be hidden for.
-        pub coverage: Option<f32>,
+        pub coverage: Option<f64>,
         /// The direction on which the cover is applied
         pub direction: Option<String>,
     }
@@ -974,7 +974,7 @@ mod all_structs {
     )]
     pub struct FlashlightMania {
         /// Multiplier applied to the default flashlight size.
-        pub size_multiplier: Option<f32>,
+        pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
         pub combo_based_size: Option<bool>,
     }
@@ -986,7 +986,7 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeMania {
         /// Trigger a failure if your accuracy goes below this value.
-        pub minimum_accuracy: Option<f32>,
+        pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
@@ -1000,7 +1000,7 @@ mod all_structs {
     )]
     pub struct RandomMania {
         /// Use a custom seed instead of a random one
-        pub seed: Option<f32>,
+        pub seed: Option<f64>,
     }
     /// Double the stages, double the fun!
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -1018,9 +1018,9 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustMania {
         /// Override a beatmap's set HP.
-        pub drain_rate: Option<f32>,
+        pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
-        pub overall_difficulty: Option<f32>,
+        pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
         pub extended_limits: Option<bool>,
     }
@@ -1096,9 +1096,9 @@ mod all_structs {
     )]
     pub struct WindUpMania {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -1110,9 +1110,9 @@ mod all_structs {
     )]
     pub struct WindDownMania {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// The final speed to ramp to
-        pub final_rate: Option<f32>,
+        pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }
@@ -1128,7 +1128,7 @@ mod all_structs {
         /// Add a metronome beat to help you keep track of the rhythm.
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
-        pub mute_combo_count: Option<f32>,
+        pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
         pub affects_hit_sounds: Option<bool>,
     }
@@ -1140,7 +1140,7 @@ mod all_structs {
     )]
     pub struct AdaptiveSpeedMania {
         /// The starting speed of the track
-        pub initial_rate: Option<f32>,
+        pub initial_rate: Option<f64>,
         /// Should pitch be adjusted with speed
         pub adjust_pitch: Option<bool>,
     }

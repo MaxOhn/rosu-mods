@@ -497,7 +497,7 @@ impl GameModsIntermode {
     /// hddt.insert(GameModIntermode::DoubleTime);
     /// assert_eq!(hddt.legacy_clock_rate(), 1.5);
     /// ```
-    pub fn legacy_clock_rate(&self) -> f32 {
+    pub fn legacy_clock_rate(&self) -> f64 {
         GameModsLegacy::from_bits(self.bits()).clock_rate()
     }
 

@@ -547,7 +547,7 @@ impl SettingType {
     pub fn write(self, writer: &mut Writer) -> GenResult {
         match self {
             SettingType::Bool => writer.write("bool"),
-            SettingType::Number => writer.write("f32"),
+            SettingType::Number => writer.write("f64"),
             SettingType::String => writer.write("String"),
         }
     }

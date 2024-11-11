@@ -86,7 +86,7 @@ impl GameModsLegacy {
 impl GameModsLegacy {
     /// Returns the clock rate for the mods i.e. 1.5 for DT, 0.75 for HT,
     /// and 1.0 otherwise.
-    pub const fn clock_rate(self) -> f32 {
+    pub const fn clock_rate(self) -> f64 {
         if self.contains(Self::DoubleTime) {
             1.5
         } else if self.contains(Self::HalfTime) {
