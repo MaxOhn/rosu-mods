@@ -1,4 +1,8 @@
-# v0.2.0 (2024-11-18)
+# v0.2.1 (2024-11-28)
+
+- `GameModsIntermode::legacy_clock_rate` now considers `GameModIntermode::Daycore` properly
+
+## v0.2.0 (2024-11-18)
 
 - [Breaking] All `f32` fields of inner `GameMod` types are now `f64` for added precision ([#3])
 - [Breaking] `rkyv` has been bumped to 0.8 ([#2])
