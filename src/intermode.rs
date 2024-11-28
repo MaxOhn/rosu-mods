@@ -498,7 +498,13 @@ impl GameModsIntermode {
     /// assert_eq!(hddt.legacy_clock_rate(), 1.5);
     /// ```
     pub fn legacy_clock_rate(&self) -> f64 {
-        GameModsLegacy::from_bits(self.bits()).clock_rate()
+        self.iter()
+            .find_map(|gamemod| match gamemod {
+                GameModIntermode::DoubleTime | GameModIntermode::Nightcore => Some(1.5),
+                GameModIntermode::HalfTime | GameModIntermode::Daycore => Some(0.75),
+                _ => None,
+            })
+            .unwrap_or(1.0)
     }
 
     /// Returns an iterator over all contained mods.
