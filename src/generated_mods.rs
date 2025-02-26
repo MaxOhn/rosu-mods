@@ -63,6 +63,8 @@ mod all_structs {
         derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct SuddenDeathOsu {
+        ///
+        pub fail_on_slider_tail: Option<bool>,
         /// Automatically restarts when failed.
         pub restart: Option<bool>,
     }
@@ -211,7 +213,7 @@ mod all_structs {
         derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct MirrorOsu {
-        /// Choose which axes objects are mirrored over.
+        ///
         pub reflection: Option<String>,
     }
     /// Don't use the same key twice in a row!
@@ -417,6 +419,18 @@ mod all_structs {
         pub max_depth: Option<f64>,
         /// Whether approach circles should be visible.
         pub show_approach_circles: Option<bool>,
+    }
+    /// The cursor blooms into.. a larger cursor!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
+    )]
+    pub struct BloomOsu {
+        /// The combo count at which the cursor reaches its maximum size
+        pub max_size_combo_count: Option<f64>,
+        /// The multiplier applied to cursor size when combo reaches maximum
+        pub max_cursor_size: Option<f64>,
     }
     /// Automatically applied to plays on devices with a touchscreen.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -1159,9 +1173,9 @@ pub use all_structs::{
     AccuracyChallengeCatch, AccuracyChallengeMania, AccuracyChallengeOsu, AccuracyChallengeTaiko,
     AdaptiveSpeedMania, AdaptiveSpeedOsu, AdaptiveSpeedTaiko, AlternateOsu, ApproachDifferentOsu,
     AutopilotOsu, AutoplayCatch, AutoplayMania, AutoplayOsu, AutoplayTaiko, BarrelRollOsu,
-    BlindsOsu, BubblesOsu, CinemaCatch, CinemaMania, CinemaOsu, CinemaTaiko, ClassicCatch,
-    ClassicMania, ClassicOsu, ClassicTaiko, ConstantSpeedMania, ConstantSpeedTaiko, CoverMania,
-    DaycoreCatch, DaycoreMania, DaycoreOsu, DaycoreTaiko, DeflateOsu, DepthOsu,
+    BlindsOsu, BloomOsu, BubblesOsu, CinemaCatch, CinemaMania, CinemaOsu, CinemaTaiko,
+    ClassicCatch, ClassicMania, ClassicOsu, ClassicTaiko, ConstantSpeedMania, ConstantSpeedTaiko,
+    CoverMania, DaycoreCatch, DaycoreMania, DaycoreOsu, DaycoreTaiko, DeflateOsu, DepthOsu,
     DifficultyAdjustCatch, DifficultyAdjustMania, DifficultyAdjustOsu, DifficultyAdjustTaiko,
     DoubleTimeCatch, DoubleTimeMania, DoubleTimeOsu, DoubleTimeTaiko, DualStagesMania, EasyCatch,
     EasyMania, EasyOsu, EasyTaiko, EightKeysMania, FadeInMania, FiveKeysMania, FlashlightCatch,
@@ -1196,57 +1210,58 @@ pub mod rkyv {
         ArchivedAccuracyChallengeMania, ArchivedAccuracyChallengeOsu,
         ArchivedAccuracyChallengeTaiko, ArchivedAdaptiveSpeedMania, ArchivedAdaptiveSpeedOsu,
         ArchivedAdaptiveSpeedTaiko, ArchivedApproachDifferentOsu, ArchivedBarrelRollOsu,
-        ArchivedClassicOsu, ArchivedCoverMania, ArchivedDaycoreCatch, ArchivedDaycoreMania,
-        ArchivedDaycoreOsu, ArchivedDaycoreTaiko, ArchivedDeflateOsu, ArchivedDepthOsu,
-        ArchivedDifficultyAdjustCatch, ArchivedDifficultyAdjustMania, ArchivedDifficultyAdjustOsu,
-        ArchivedDifficultyAdjustTaiko, ArchivedDoubleTimeCatch, ArchivedDoubleTimeMania,
-        ArchivedDoubleTimeOsu, ArchivedDoubleTimeTaiko, ArchivedEasyCatch, ArchivedEasyMania,
-        ArchivedEasyOsu, ArchivedFlashlightCatch, ArchivedFlashlightMania, ArchivedFlashlightOsu,
-        ArchivedFlashlightTaiko, ArchivedGrowOsu, ArchivedHalfTimeCatch, ArchivedHalfTimeMania,
-        ArchivedHalfTimeOsu, ArchivedHalfTimeTaiko, ArchivedHiddenOsu, ArchivedMagnetisedOsu,
-        ArchivedMirrorOsu, ArchivedMutedCatch, ArchivedMutedMania, ArchivedMutedOsu,
-        ArchivedMutedTaiko, ArchivedNightcoreCatch, ArchivedNightcoreMania, ArchivedNightcoreOsu,
-        ArchivedNightcoreTaiko, ArchivedNoScopeCatch, ArchivedNoScopeOsu, ArchivedPerfectCatch,
-        ArchivedPerfectMania, ArchivedPerfectOsu, ArchivedPerfectTaiko, ArchivedRandomMania,
-        ArchivedRandomOsu, ArchivedRandomTaiko, ArchivedRepelOsu, ArchivedSuddenDeathCatch,
-        ArchivedSuddenDeathMania, ArchivedSuddenDeathOsu, ArchivedSuddenDeathTaiko,
-        ArchivedTargetPracticeOsu, ArchivedWiggleOsu, ArchivedWindDownCatch, ArchivedWindDownMania,
-        ArchivedWindDownOsu, ArchivedWindDownTaiko, ArchivedWindUpCatch, ArchivedWindUpMania,
-        ArchivedWindUpOsu, ArchivedWindUpTaiko, AutopilotOsuResolver, AutoplayCatchResolver,
-        AutoplayManiaResolver, AutoplayOsuResolver, AutoplayTaikoResolver, BarrelRollOsuResolver,
-        BlindsOsuResolver, BubblesOsuResolver, CinemaCatchResolver, CinemaManiaResolver,
-        CinemaOsuResolver, CinemaTaikoResolver, ClassicCatchResolver, ClassicManiaResolver,
-        ClassicOsuResolver, ClassicTaikoResolver, ConstantSpeedManiaResolver,
-        ConstantSpeedTaikoResolver, CoverManiaResolver, DaycoreCatchResolver, DaycoreManiaResolver,
-        DaycoreOsuResolver, DaycoreTaikoResolver, DeflateOsuResolver, DepthOsuResolver,
-        DifficultyAdjustCatchResolver, DifficultyAdjustManiaResolver, DifficultyAdjustOsuResolver,
-        DifficultyAdjustTaikoResolver, DoubleTimeCatchResolver, DoubleTimeManiaResolver,
-        DoubleTimeOsuResolver, DoubleTimeTaikoResolver, DualStagesManiaResolver, EasyCatchResolver,
-        EasyManiaResolver, EasyOsuResolver, EasyTaikoResolver, EightKeysManiaResolver,
-        FadeInManiaResolver, FiveKeysManiaResolver, FlashlightCatchResolver,
-        FlashlightManiaResolver, FlashlightOsuResolver, FlashlightTaikoResolver,
-        FloatingFruitsCatchResolver, FourKeysManiaResolver, FreezeFrameOsuResolver,
-        GrowOsuResolver, HalfTimeCatchResolver, HalfTimeManiaResolver, HalfTimeOsuResolver,
-        HalfTimeTaikoResolver, HardRockCatchResolver, HardRockManiaResolver, HardRockOsuResolver,
-        HardRockTaikoResolver, HiddenCatchResolver, HiddenManiaResolver, HiddenOsuResolver,
-        HiddenTaikoResolver, HoldOffManiaResolver, InvertManiaResolver, MagnetisedOsuResolver,
-        MirrorCatchResolver, MirrorManiaResolver, MirrorOsuResolver, MutedCatchResolver,
-        MutedManiaResolver, MutedOsuResolver, MutedTaikoResolver, NightcoreCatchResolver,
-        NightcoreManiaResolver, NightcoreOsuResolver, NightcoreTaikoResolver,
-        NineKeysManiaResolver, NoFailCatchResolver, NoFailManiaResolver, NoFailOsuResolver,
-        NoFailTaikoResolver, NoReleaseManiaResolver, NoScopeCatchResolver, NoScopeOsuResolver,
-        OneKeyManiaResolver, PerfectCatchResolver, PerfectManiaResolver, PerfectOsuResolver,
-        PerfectTaikoResolver, RandomManiaResolver, RandomOsuResolver, RandomTaikoResolver,
-        RelaxCatchResolver, RelaxOsuResolver, RelaxTaikoResolver, RepelOsuResolver,
-        ScoreV2CatchResolver, ScoreV2ManiaResolver, ScoreV2OsuResolver, ScoreV2TaikoResolver,
-        SevenKeysManiaResolver, SingleTapOsuResolver, SingleTapTaikoResolver, SixKeysManiaResolver,
-        SpinInOsuResolver, SpunOutOsuResolver, StrictTrackingOsuResolver, SuddenDeathCatchResolver,
-        SuddenDeathManiaResolver, SuddenDeathOsuResolver, SuddenDeathTaikoResolver,
-        SwapTaikoResolver, SynesthesiaOsuResolver, TargetPracticeOsuResolver, TenKeysManiaResolver,
-        ThreeKeysManiaResolver, TouchDeviceOsuResolver, TraceableOsuResolver, TransformOsuResolver,
-        TwoKeysManiaResolver, UnknownModResolver, WiggleOsuResolver, WindDownCatchResolver,
-        WindDownManiaResolver, WindDownOsuResolver, WindDownTaikoResolver, WindUpCatchResolver,
-        WindUpManiaResolver, WindUpOsuResolver, WindUpTaikoResolver,
+        ArchivedBloomOsu, ArchivedClassicOsu, ArchivedCoverMania, ArchivedDaycoreCatch,
+        ArchivedDaycoreMania, ArchivedDaycoreOsu, ArchivedDaycoreTaiko, ArchivedDeflateOsu,
+        ArchivedDepthOsu, ArchivedDifficultyAdjustCatch, ArchivedDifficultyAdjustMania,
+        ArchivedDifficultyAdjustOsu, ArchivedDifficultyAdjustTaiko, ArchivedDoubleTimeCatch,
+        ArchivedDoubleTimeMania, ArchivedDoubleTimeOsu, ArchivedDoubleTimeTaiko, ArchivedEasyCatch,
+        ArchivedEasyMania, ArchivedEasyOsu, ArchivedFlashlightCatch, ArchivedFlashlightMania,
+        ArchivedFlashlightOsu, ArchivedFlashlightTaiko, ArchivedGrowOsu, ArchivedHalfTimeCatch,
+        ArchivedHalfTimeMania, ArchivedHalfTimeOsu, ArchivedHalfTimeTaiko, ArchivedHiddenOsu,
+        ArchivedMagnetisedOsu, ArchivedMirrorOsu, ArchivedMutedCatch, ArchivedMutedMania,
+        ArchivedMutedOsu, ArchivedMutedTaiko, ArchivedNightcoreCatch, ArchivedNightcoreMania,
+        ArchivedNightcoreOsu, ArchivedNightcoreTaiko, ArchivedNoScopeCatch, ArchivedNoScopeOsu,
+        ArchivedPerfectCatch, ArchivedPerfectMania, ArchivedPerfectOsu, ArchivedPerfectTaiko,
+        ArchivedRandomMania, ArchivedRandomOsu, ArchivedRandomTaiko, ArchivedRepelOsu,
+        ArchivedSuddenDeathCatch, ArchivedSuddenDeathMania, ArchivedSuddenDeathOsu,
+        ArchivedSuddenDeathTaiko, ArchivedTargetPracticeOsu, ArchivedWiggleOsu,
+        ArchivedWindDownCatch, ArchivedWindDownMania, ArchivedWindDownOsu, ArchivedWindDownTaiko,
+        ArchivedWindUpCatch, ArchivedWindUpMania, ArchivedWindUpOsu, ArchivedWindUpTaiko,
+        AutopilotOsuResolver, AutoplayCatchResolver, AutoplayManiaResolver, AutoplayOsuResolver,
+        AutoplayTaikoResolver, BarrelRollOsuResolver, BlindsOsuResolver, BloomOsuResolver,
+        BubblesOsuResolver, CinemaCatchResolver, CinemaManiaResolver, CinemaOsuResolver,
+        CinemaTaikoResolver, ClassicCatchResolver, ClassicManiaResolver, ClassicOsuResolver,
+        ClassicTaikoResolver, ConstantSpeedManiaResolver, ConstantSpeedTaikoResolver,
+        CoverManiaResolver, DaycoreCatchResolver, DaycoreManiaResolver, DaycoreOsuResolver,
+        DaycoreTaikoResolver, DeflateOsuResolver, DepthOsuResolver, DifficultyAdjustCatchResolver,
+        DifficultyAdjustManiaResolver, DifficultyAdjustOsuResolver, DifficultyAdjustTaikoResolver,
+        DoubleTimeCatchResolver, DoubleTimeManiaResolver, DoubleTimeOsuResolver,
+        DoubleTimeTaikoResolver, DualStagesManiaResolver, EasyCatchResolver, EasyManiaResolver,
+        EasyOsuResolver, EasyTaikoResolver, EightKeysManiaResolver, FadeInManiaResolver,
+        FiveKeysManiaResolver, FlashlightCatchResolver, FlashlightManiaResolver,
+        FlashlightOsuResolver, FlashlightTaikoResolver, FloatingFruitsCatchResolver,
+        FourKeysManiaResolver, FreezeFrameOsuResolver, GrowOsuResolver, HalfTimeCatchResolver,
+        HalfTimeManiaResolver, HalfTimeOsuResolver, HalfTimeTaikoResolver, HardRockCatchResolver,
+        HardRockManiaResolver, HardRockOsuResolver, HardRockTaikoResolver, HiddenCatchResolver,
+        HiddenManiaResolver, HiddenOsuResolver, HiddenTaikoResolver, HoldOffManiaResolver,
+        InvertManiaResolver, MagnetisedOsuResolver, MirrorCatchResolver, MirrorManiaResolver,
+        MirrorOsuResolver, MutedCatchResolver, MutedManiaResolver, MutedOsuResolver,
+        MutedTaikoResolver, NightcoreCatchResolver, NightcoreManiaResolver, NightcoreOsuResolver,
+        NightcoreTaikoResolver, NineKeysManiaResolver, NoFailCatchResolver, NoFailManiaResolver,
+        NoFailOsuResolver, NoFailTaikoResolver, NoReleaseManiaResolver, NoScopeCatchResolver,
+        NoScopeOsuResolver, OneKeyManiaResolver, PerfectCatchResolver, PerfectManiaResolver,
+        PerfectOsuResolver, PerfectTaikoResolver, RandomManiaResolver, RandomOsuResolver,
+        RandomTaikoResolver, RelaxCatchResolver, RelaxOsuResolver, RelaxTaikoResolver,
+        RepelOsuResolver, ScoreV2CatchResolver, ScoreV2ManiaResolver, ScoreV2OsuResolver,
+        ScoreV2TaikoResolver, SevenKeysManiaResolver, SingleTapOsuResolver, SingleTapTaikoResolver,
+        SixKeysManiaResolver, SpinInOsuResolver, SpunOutOsuResolver, StrictTrackingOsuResolver,
+        SuddenDeathCatchResolver, SuddenDeathManiaResolver, SuddenDeathOsuResolver,
+        SuddenDeathTaikoResolver, SwapTaikoResolver, SynesthesiaOsuResolver,
+        TargetPracticeOsuResolver, TenKeysManiaResolver, ThreeKeysManiaResolver,
+        TouchDeviceOsuResolver, TraceableOsuResolver, TransformOsuResolver, TwoKeysManiaResolver,
+        UnknownModResolver, WiggleOsuResolver, WindDownCatchResolver, WindDownManiaResolver,
+        WindDownOsuResolver, WindDownTaikoResolver, WindUpCatchResolver, WindUpManiaResolver,
+        WindUpOsuResolver, WindUpTaikoResolver,
     };
     pub use super::gamemod::{ArchivedGameMod, GameModResolver};
     pub use super::intermode::GameModIntermodeResolver;
@@ -1579,7 +1594,13 @@ impl FlashlightOsu {
     }
     /// Iterator of [`Acronym`] for mods that are incompatible with [`FlashlightOsu`]
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
-        unsafe { [Acronym::from_str_unchecked("BL")] }.into_iter()
+        unsafe {
+            [
+                Acronym::from_str_unchecked("BL"),
+                Acronym::from_str_unchecked("BM"),
+            ]
+        }
+        .into_iter()
     }
     /// The description of [`FlashlightOsu`]
     pub const fn description() -> &'static str {
@@ -2312,7 +2333,7 @@ impl NoScopeOsu {
     }
     /// Iterator of [`Acronym`] for mods that are incompatible with [`NoScopeOsu`]
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
-        [].into_iter()
+        unsafe { [Acronym::from_str_unchecked("BM")] }.into_iter()
     }
     /// The description of [`NoScopeOsu`]
     pub const fn description() -> &'static str {
@@ -2515,6 +2536,31 @@ impl DepthOsu {
         GameModKind::Fun
     }
 }
+impl BloomOsu {
+    /// The acronym of [`BloomOsu`]
+    pub const fn acronym() -> Acronym {
+        unsafe { Acronym::from_str_unchecked("BM") }
+    }
+    /// Iterator of [`Acronym`] for mods that are incompatible with [`BloomOsu`]
+    pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
+        unsafe {
+            [
+                Acronym::from_str_unchecked("FL"),
+                Acronym::from_str_unchecked("NS"),
+                Acronym::from_str_unchecked("TD"),
+            ]
+        }
+        .into_iter()
+    }
+    /// The description of [`BloomOsu`]
+    pub const fn description() -> &'static str {
+        "The cursor blooms into.. a larger cursor!"
+    }
+    /// The [`GameModKind`] of [`BloomOsu`]
+    pub const fn kind() -> GameModKind {
+        GameModKind::Fun
+    }
+}
 impl TouchDeviceOsu {
     /// The acronym of [`TouchDeviceOsu`]
     pub const fn acronym() -> Acronym {
@@ -2527,6 +2573,7 @@ impl TouchDeviceOsu {
                 Acronym::from_str_unchecked("AT"),
                 Acronym::from_str_unchecked("CN"),
                 Acronym::from_str_unchecked("AP"),
+                Acronym::from_str_unchecked("BM"),
             ]
         }
         .into_iter()
@@ -5166,6 +5213,7 @@ pub(crate) mod intermode {
         Autoplay,
         BarrelRoll,
         Blinds,
+        Bloom,
         Bubbles,
         Cinema,
         Classic,
@@ -5240,6 +5288,7 @@ impl GameModIntermode {
                 Self::Autoplay => Acronym::from_str_unchecked("AT"),
                 Self::BarrelRoll => Acronym::from_str_unchecked("BR"),
                 Self::Blinds => Acronym::from_str_unchecked("BL"),
+                Self::Bloom => Acronym::from_str_unchecked("BM"),
                 Self::Bubbles => Acronym::from_str_unchecked("BU"),
                 Self::Cinema => Acronym::from_str_unchecked("CN"),
                 Self::Classic => Acronym::from_str_unchecked("CL"),
@@ -5315,6 +5364,7 @@ impl GameModIntermode {
             Self::Autoplay => Some(2048),
             Self::BarrelRoll => None,
             Self::Blinds => None,
+            Self::Bloom => None,
             Self::Bubbles => None,
             Self::Cinema => Some(4194304),
             Self::Classic => None,
@@ -5387,6 +5437,7 @@ impl GameModIntermode {
             Self::Autoplay => GameModKind::Automation,
             Self::BarrelRoll => GameModKind::Fun,
             Self::Blinds => GameModKind::DifficultyIncrease,
+            Self::Bloom => GameModKind::Fun,
             Self::Bubbles => GameModKind::Fun,
             Self::Cinema => GameModKind::Automation,
             Self::Classic => GameModKind::Conversion,
@@ -5459,6 +5510,7 @@ impl GameModIntermode {
             "AT" => Self::Autoplay,
             "BR" => Self::BarrelRoll,
             "BL" => Self::Blinds,
+            "BM" => Self::Bloom,
             "BU" => Self::Bubbles,
             "CN" => Self::Cinema,
             "CL" => Self::Classic,
@@ -5668,6 +5720,7 @@ impl From<&GameMod> for GameModOrder {
                 GameMod::BubblesOsu(_) => arm!(Osu, BubblesOsu, None, Bubbles),
                 GameMod::SynesthesiaOsu(_) => arm!(Osu, SynesthesiaOsu, None, Synesthesia),
                 GameMod::DepthOsu(_) => arm!(Osu, DepthOsu, None, Depth),
+                GameMod::BloomOsu(_) => arm!(Osu, BloomOsu, None, Bloom),
                 GameMod::TouchDeviceOsu(_) => arm!(Osu, TouchDeviceOsu, Some(3), TouchDevice),
                 GameMod::ScoreV2Osu(_) => arm!(Osu, ScoreV2Osu, Some(30), ScoreV2),
                 GameMod::UnknownOsu(m) => GameModOrder {
@@ -5893,6 +5946,7 @@ pub(crate) mod gamemod {
         BubblesOsu(BubblesOsu),
         SynesthesiaOsu(SynesthesiaOsu),
         DepthOsu(DepthOsu),
+        BloomOsu(BloomOsu),
         TouchDeviceOsu(TouchDeviceOsu),
         ScoreV2Osu(ScoreV2Osu),
         UnknownOsu(UnknownMod),
@@ -6040,6 +6094,7 @@ impl GameMod {
             ("BU", GameMode::Osu) => Self::BubblesOsu(Default::default()),
             ("SY", GameMode::Osu) => Self::SynesthesiaOsu(Default::default()),
             ("DP", GameMode::Osu) => Self::DepthOsu(Default::default()),
+            ("BM", GameMode::Osu) => Self::BloomOsu(Default::default()),
             ("TD", GameMode::Osu) => Self::TouchDeviceOsu(Default::default()),
             ("SV2", GameMode::Osu) => Self::ScoreV2Osu(Default::default()),
             ("EZ", GameMode::Taiko) => Self::EasyTaiko(Default::default()),
@@ -6193,6 +6248,7 @@ impl GameMod {
             Self::BubblesOsu(_) => BubblesOsu::acronym(),
             Self::SynesthesiaOsu(_) => SynesthesiaOsu::acronym(),
             Self::DepthOsu(_) => DepthOsu::acronym(),
+            Self::BloomOsu(_) => BloomOsu::acronym(),
             Self::TouchDeviceOsu(_) => TouchDeviceOsu::acronym(),
             Self::ScoreV2Osu(_) => ScoreV2Osu::acronym(),
             Self::EasyTaiko(_) => EasyTaiko::acronym(),
@@ -6339,6 +6395,7 @@ impl GameMod {
             Self::BubblesOsu(_) => BubblesOsu::incompatible_mods().collect(),
             Self::SynesthesiaOsu(_) => SynesthesiaOsu::incompatible_mods().collect(),
             Self::DepthOsu(_) => DepthOsu::incompatible_mods().collect(),
+            Self::BloomOsu(_) => BloomOsu::incompatible_mods().collect(),
             Self::TouchDeviceOsu(_) => TouchDeviceOsu::incompatible_mods().collect(),
             Self::ScoreV2Osu(_) => ScoreV2Osu::incompatible_mods().collect(),
             Self::EasyTaiko(_) => EasyTaiko::incompatible_mods().collect(),
@@ -6488,6 +6545,7 @@ impl GameMod {
             Self::BubblesOsu(_) => BubblesOsu::description(),
             Self::SynesthesiaOsu(_) => SynesthesiaOsu::description(),
             Self::DepthOsu(_) => DepthOsu::description(),
+            Self::BloomOsu(_) => BloomOsu::description(),
             Self::TouchDeviceOsu(_) => TouchDeviceOsu::description(),
             Self::ScoreV2Osu(_) => ScoreV2Osu::description(),
             Self::EasyTaiko(_) => EasyTaiko::description(),
@@ -6631,6 +6689,7 @@ impl GameMod {
             Self::BubblesOsu(_) => BubblesOsu::kind(),
             Self::SynesthesiaOsu(_) => SynesthesiaOsu::kind(),
             Self::DepthOsu(_) => DepthOsu::kind(),
+            Self::BloomOsu(_) => BloomOsu::kind(),
             Self::TouchDeviceOsu(_) => TouchDeviceOsu::kind(),
             Self::ScoreV2Osu(_) => ScoreV2Osu::kind(),
             Self::EasyTaiko(_) => EasyTaiko::kind(),
@@ -6858,6 +6917,7 @@ impl GameMod {
             | Self::BubblesOsu(_)
             | Self::SynesthesiaOsu(_)
             | Self::DepthOsu(_)
+            | Self::BloomOsu(_)
             | Self::TouchDeviceOsu(_)
             | Self::ScoreV2Osu(_)
             | Self::UnknownOsu(_) => GameMode::Osu,
@@ -7004,6 +7064,7 @@ impl GameMod {
             Self::BubblesOsu(_) => GameModIntermode::Bubbles,
             Self::SynesthesiaOsu(_) => GameModIntermode::Synesthesia,
             Self::DepthOsu(_) => GameModIntermode::Depth,
+            Self::BloomOsu(_) => GameModIntermode::Bloom,
             Self::TouchDeviceOsu(_) => GameModIntermode::TouchDevice,
             Self::ScoreV2Osu(_) => GameModIntermode::ScoreV2,
             Self::EasyTaiko(_) => GameModIntermode::Easy,
@@ -7301,15 +7362,18 @@ const _: () = {
                     f.write_str("SuddenDeathOsu")
                 }
                 fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
+                    const FIELDS: &'static [&'static str] = &["fail_on_slider_tail", "restart"];
+                    let mut fail_on_slider_tail = None;
                     let mut restart = None;
                     while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
                         match key.as_str() {
+                            "fail_on_slider_tail" => fail_on_slider_tail = Some(map.next_value()?),
                             "restart" => restart = Some(map.next_value()?),
                             _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
                         }
                     }
                     Ok(Self::Value {
+                        fail_on_slider_tail: fail_on_slider_tail.unwrap_or_default(),
                         restart: restart.unwrap_or_default(),
                     })
                 }
@@ -7319,8 +7383,12 @@ const _: () = {
     }
     impl Serialize for SuddenDeathOsu {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-            let field_count = self.restart.is_some() as usize;
+            let field_count =
+                self.fail_on_slider_tail.is_some() as usize + self.restart.is_some() as usize;
             let mut map = s.serialize_map(Some(field_count))?;
+            if let Some(ref x) = self.fail_on_slider_tail {
+                map.serialize_entry("fail_on_slider_tail", x)?;
+            }
             if let Some(ref x) = self.restart {
                 map.serialize_entry("restart", x)?;
             }
@@ -8794,6 +8862,51 @@ const _: () = {
             }
             if let Some(ref x) = self.show_approach_circles {
                 map.serialize_entry("show_approach_circles", x)?;
+            }
+            map.end()
+        }
+    }
+    impl<'de> Deserialize<'de> for BloomOsu {
+        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            struct BloomOsuVisitor;
+            impl<'de> Visitor<'de> for BloomOsuVisitor {
+                type Value = BloomOsu;
+                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+                    f.write_str("BloomOsu")
+                }
+                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                    const FIELDS: &'static [&'static str] =
+                        &["max_size_combo_count", "max_cursor_size"];
+                    let mut max_size_combo_count = None;
+                    let mut max_cursor_size = None;
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                        match key.as_str() {
+                            "max_size_combo_count" => {
+                                max_size_combo_count = Some(map.next_value()?)
+                            }
+                            "max_cursor_size" => max_cursor_size = Some(map.next_value()?),
+                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
+                        }
+                    }
+                    Ok(Self::Value {
+                        max_size_combo_count: max_size_combo_count.unwrap_or_default(),
+                        max_cursor_size: max_cursor_size.unwrap_or_default(),
+                    })
+                }
+            }
+            d.deserialize_map(BloomOsuVisitor)
+        }
+    }
+    impl Serialize for BloomOsu {
+        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+            let field_count = self.max_size_combo_count.is_some() as usize
+                + self.max_cursor_size.is_some() as usize;
+            let mut map = s.serialize_map(Some(field_count))?;
+            if let Some(ref x) = self.max_size_combo_count {
+                map.serialize_entry("max_size_combo_count", x)?;
+            }
+            if let Some(ref x) = self.max_cursor_size {
+                map.serialize_entry("max_cursor_size", x)?;
             }
             map.end()
         }
@@ -12144,6 +12257,7 @@ const _: () = {
                 ("BU", GameMode::Osu) => GameMod::BubblesOsu(Deserialize::deserialize(d)?),
                 ("SY", GameMode::Osu) => GameMod::SynesthesiaOsu(Deserialize::deserialize(d)?),
                 ("DP", GameMode::Osu) => GameMod::DepthOsu(Deserialize::deserialize(d)?),
+                ("BM", GameMode::Osu) => GameMod::BloomOsu(Deserialize::deserialize(d)?),
                 ("TD", GameMode::Osu) => GameMod::TouchDeviceOsu(Deserialize::deserialize(d)?),
                 ("SV2", GameMode::Osu) => GameMod::ScoreV2Osu(Deserialize::deserialize(d)?),
                 ("EZ", GameMode::Taiko) => GameMod::EasyTaiko(Deserialize::deserialize(d)?),
@@ -12303,7 +12417,7 @@ const _: () = {
                     }
                 }
                 Self::SuddenDeathOsu(m) => {
-                    let has_some = m.restart.is_some();
+                    let has_some = m.fail_on_slider_tail.is_some() || m.restart.is_some();
                     if has_some {
                         s.serialize_entry("settings", m)?;
                     }
@@ -12467,6 +12581,12 @@ const _: () = {
                 }
                 Self::DepthOsu(m) => {
                     let has_some = m.max_depth.is_some() || m.show_approach_circles.is_some();
+                    if has_some {
+                        s.serialize_entry("settings", m)?;
+                    }
+                }
+                Self::BloomOsu(m) => {
+                    let has_some = m.max_size_combo_count.is_some() || m.max_cursor_size.is_some();
                     if has_some {
                         s.serialize_entry("settings", m)?;
                     }
@@ -12845,6 +12965,7 @@ const _: () = {
                 ),
                 "AT" => try_deser!(AutoplayOsu, AutoplayTaiko, AutoplayCatch, AutoplayMania,),
                 "BL" => try_deser!(BlindsOsu, Skip_, Skip_, Skip_,),
+                "BM" => try_deser!(BloomOsu, Skip_, Skip_, Skip_,),
                 "BR" => try_deser!(BarrelRollOsu, Skip_, Skip_, Skip_,),
                 "BU" => try_deser!(BubblesOsu, Skip_, Skip_, Skip_,),
                 "CL" => try_deser!(ClassicOsu, ClassicTaiko, ClassicCatch, ClassicMania,),
@@ -12958,6 +13079,7 @@ macro_rules! mods_inner {
     ( < $( ! $mode:ident )? AS ) => { mods_inner!(> $( $mode )? AdaptiveSpeed ) };
     ( < $( ! $mode:ident )? AT ) => { mods_inner!(> $( $mode )? Autoplay ) };
     ( < $( ! $mode:ident )? BL ) => { mods_inner!(> $( $mode )? Blinds ) };
+    ( < $( ! $mode:ident )? BM ) => { mods_inner!(> $( $mode )? Bloom ) };
     ( < $( ! $mode:ident )? BR ) => { mods_inner!(> $( $mode )? BarrelRoll ) };
     ( < $( ! $mode:ident )? BU ) => { mods_inner!(> $( $mode )? Bubbles ) };
     ( < $( ! $mode:ident )? CL ) => { mods_inner!(> $( $mode )? Classic ) };
