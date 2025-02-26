@@ -144,6 +144,7 @@ pub mod macros;
 
 mod acronym;
 mod intermode;
+mod kind;
 mod legacy;
 mod mod_manual;
 mod mode;
@@ -174,7 +175,8 @@ pub use self::{mode::GameMode, mods::GameMods};
 #[doc(inline)]
 pub use self::{
     acronym::Acronym,
-    generated_mods::{GameMod, GameModIntermode, GameModKind},
+    generated_mods::{GameMod, GameModIntermode},
     intermode::GameModsIntermode,
+    kind::GameModKind,
     legacy::GameModsLegacy,
 };

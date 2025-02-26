@@ -17,8 +17,8 @@ fn main() -> GenResult {
     specify_preamble(&mut writer, URL)?;
     println!("Defining gamemod structs...");
     define_gamemod_structs(&rulesets, &mut writer, &mut itoa_buf)?;
-    println!("Defining GameModKind...");
-    define_gamemod_kind(&rulesets, &mut writer)?;
+    println!("Checking GameModKind...");
+    check_gamemod_kind(&rulesets);
     println!("Defining GameModIntermode...");
     define_gamemod_intermode(&rulesets, &mut writer, &mut itoa_buf)?;
     println!("Defining GameModOrder...");

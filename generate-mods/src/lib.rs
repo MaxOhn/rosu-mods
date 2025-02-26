@@ -85,7 +85,7 @@ pub fn define_gamemod_structs(
         };\
         pub use gamemod::GameMod;\
         pub use intermode::GameModIntermode;\
-        pub use kind::GameModKind;\
+        use crate::GameModKind;\
         /// Types for (de)serialization through `rkyv`.\n\
         #[cfg(feature = \"rkyv\")]\
         #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = \"rkyv\")))]\
@@ -93,7 +93,7 @@ pub fn define_gamemod_structs(
         pub mod rkyv {\
             pub use super::gamemod::{ArchivedGameMod, GameModResolver};\
             pub use super::intermode::GameModIntermodeResolver;\
-            pub use super::kind::GameModKindResolver;\
+            pub use crate::kind::GameModKindResolver;\
             pub use super::all_structs::{",
     )?;
     writer.write(&*archives)?;
@@ -111,8 +111,7 @@ pub fn define_gamemod_structs(
     Ok(())
 }
 
-pub fn define_gamemod_kind(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
-    // hard-coded to simplify Ord implementation
+pub fn check_gamemod_kind(rulesets: &[RulesetMods]) {
     let expected = [
         "DifficultyReduction",
         "DifficultyIncrease",
@@ -129,37 +128,6 @@ pub fn define_gamemod_kind(rulesets: &[RulesetMods], writer: &mut Writer) -> Gen
             }
         }
     }
-
-    writer.write(
-        "mod kind {\
-            /// The different types of a [`GameMod`]\n\
-            ///\n\
-            /// [`GameMod`]: super::GameMod\n\
-            #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]\
-            #[cfg_attr(feature = \"serde\", derive(serde::Serialize))]\
-            #[cfg_attr(\
-                feature = \"rkyv\",\
-                derive(\
-                    rkyv::Archive,\
-                    rkyv::Serialize,\
-                    rkyv::Deserialize,\
-                    rkyv::Portable,\
-                    rkyv::bytecheck::CheckBytes,\
-                ),\
-                bytecheck(crate = rkyv::bytecheck),\
-                rkyv(as = Self),\
-                repr(u8),\
-            )]\
-            pub enum GameModKind {\
-                DifficultyReduction,\
-                DifficultyIncrease,\
-                Conversion,\
-                Automation,\
-                Fun,\
-                System,\
-            }\
-        }",
-    )
 }
 
 pub fn define_gamemod_intermode(

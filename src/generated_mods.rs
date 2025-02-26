@@ -1169,6 +1169,7 @@ mod all_structs {
         pub acronym: crate::Acronym,
     }
 }
+use crate::GameModKind;
 pub use all_structs::{
     AccuracyChallengeCatch, AccuracyChallengeMania, AccuracyChallengeOsu, AccuracyChallengeTaiko,
     AdaptiveSpeedMania, AdaptiveSpeedOsu, AdaptiveSpeedTaiko, AlternateOsu, ApproachDifferentOsu,
@@ -1196,7 +1197,6 @@ pub use all_structs::{
 };
 pub use gamemod::GameMod;
 pub use intermode::GameModIntermode;
-pub use kind::GameModKind;
 /// Types for (de)serialization through `rkyv`.
 #[cfg(feature = "rkyv")]
 #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "rkyv")))]
@@ -1265,7 +1265,7 @@ pub mod rkyv {
     };
     pub use super::gamemod::{ArchivedGameMod, GameModResolver};
     pub use super::intermode::GameModIntermodeResolver;
-    pub use super::kind::GameModKindResolver;
+    pub use crate::kind::GameModKindResolver;
 }
 impl EasyOsu {
     /// The acronym of [`EasyOsu`]
@@ -5181,22 +5181,6 @@ impl Default for UnknownMod {
         Self {
             acronym: Self::UNKNOWN_ACRONYM,
         }
-    }
-}
-mod kind {
-    /// The different types of a [`GameMod`]
-    ///
-    /// [`GameMod`]: super::GameMod
-    #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-    #[cfg_attr(feature = "serde", derive(serde::Serialize))]
-    #[cfg_attr(feature = "rkyv",derive(rkyv::Archive,rkyv::Serialize,rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self),repr(u8),)]
-    pub enum GameModKind {
-        DifficultyReduction,
-        DifficultyIncrease,
-        Conversion,
-        Automation,
-        Fun,
-        System,
     }
 }
 pub(crate) mod intermode {
