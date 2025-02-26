@@ -190,10 +190,10 @@ impl GameModsIntermode {
     /// let mut mods: GameModsIntermode = mods!(HD HR WG DT BR);
     ///
     /// mods.remove_all([GameModIntermode::Hidden, GameModIntermode::Easy]);
-    /// assert_eq!(mods.to_string(), "HRDTBRWG");
+    /// assert_eq!(mods.to_string(), "DTHRBRWG");
     ///
     /// mods.remove_all(mods!(NF WG));
-    /// assert_eq!(mods.to_string(), "HRDTBR")
+    /// assert_eq!(mods.to_string(), "DTHRBR")
     /// ```
     pub fn remove_all<I, M>(&mut self, mods: I)
     where

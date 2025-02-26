@@ -977,19 +977,19 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
 ///     Some(GameMod::FloatingFruitsCatch(Default::default()))
 /// );
 ///
-/// // `FI` is not a `Catch` mod so it's deserialized as `UnknownCatch`
-/// assert_eq!(
-///     iter.next(),
-///     Some(GameMod::UnknownCatch(UnknownMod {
-///         acronym: Acronym::from_str("FI").unwrap()
-///     }))
-/// );
-///
 /// // For `NS` we did deserialize a field
 /// assert_eq!(
 ///     iter.next(),
 ///     Some(GameMod::NoScopeCatch(NoScopeCatch {
 ///         hidden_combo_count: Some(5.0)
+///     }))
+/// );
+///
+/// // `FI` is not a `Catch` mod so it's deserialized as `UnknownCatch`
+/// assert_eq!(
+///     iter.next(),
+///     Some(GameMod::UnknownCatch(UnknownMod {
+///         acronym: Acronym::from_str("FI").unwrap()
 ///     }))
 /// );
 ///
