@@ -149,6 +149,7 @@ mod legacy;
 mod mod_manual;
 mod mode;
 mod mods;
+mod order;
 mod util;
 
 /// Error types

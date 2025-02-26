@@ -7,9 +7,10 @@ use std::{
 };
 
 use crate::{
-    generated_mods::{GameMod, GameModIntermode, GameModOrder},
+    generated_mods::{GameMod, GameModIntermode},
     intersection::{GameModsIntersection, IntersectionInner},
     iter::{GameModsIter, GameModsIterMut, IntoGameModsIter},
+    order::GameModOrder,
     Acronym, GameMode, GameModsIntermode, GameModsLegacy,
 };
 
@@ -867,6 +868,6 @@ mod tests {
 
         mods.sanitize();
 
-        assert_eq!(mods.to_string(), "HDFL");
+        assert_eq!(mods.to_string(), "BLHD");
     }
 }

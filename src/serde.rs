@@ -14,7 +14,8 @@ use serde::de::{
 };
 
 use crate::{
-    generated_mods::{GameMod, GameModOrder, UnknownMod},
+    generated_mods::{GameMod, UnknownMod},
+    order::GameModOrder,
     Acronym, GameModIntermode, GameMode, GameMods, GameModsIntermode,
 };
 

@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn full_intermode() {
         let mods = mods!(HD DT DT HR TC);
-        assert_eq!(mods.to_string(), "HDHRDTTC");
+        assert_eq!(mods.to_string(), "DTHDHRTC");
     }
 
     #[test]

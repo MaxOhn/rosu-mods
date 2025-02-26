@@ -3,7 +3,10 @@ use std::{
     collections::{btree_map::Iter as TreeIter, btree_set::Iter as SetIter},
 };
 
-use crate::generated_mods::{GameMod, GameModIntermode, GameModOrder};
+use crate::{
+    generated_mods::{GameMod, GameModIntermode},
+    order::GameModOrder,
+};
 
 pub(super) enum IntersectionInner<I, A> {
     Stitch(Stitch<I>),

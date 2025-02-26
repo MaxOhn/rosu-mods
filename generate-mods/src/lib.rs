@@ -26,10 +26,7 @@ pub fn specify_preamble(writer: &mut Writer, url: &str) -> GenResult {
         //! This file was generated automatically.\n\n\
         #![allow(clippy::all, clippy::pedantic)]\n\n\
         use std::{\
-            borrow::Borrow,\
-            cmp::Ordering,\
-            num::NonZeroU8,\
-            fmt::{Display, Formatter, Result as FmtResult},\
+            cmp::Ordering, fmt::{Display, Formatter, Result as FmtResult},\
         };",
     )?;
 
@@ -299,12 +296,9 @@ pub fn define_gamemod_intermode(
         }\
         impl Ord for GameModIntermode {\
             fn cmp(&self, other: &Self) -> Ordering {\
-                match (self.bits(), other.bits()) {\
-                    (Some(self_bits), Some(other_bits)) => self_bits.cmp(&other_bits),\
-                    (Some(_), None) => Ordering::Less,\
-                    (None, Some(_)) => Ordering::Greater,\
-                    (None, None) => self.acronym().as_str().cmp(other.acronym().as_str()),\
-                }\
+                // <https://github.com/ppy/osu/blob/91bc23e39eb1048d7b75acf669bd46e9ef9a4f9e/osu.Game/Rulesets/Mods/ModExtensions.cs#L33-L35>\n\
+                self.kind().cmp(&other.kind())\
+                    .then_with(|| self.acronym().as_str().cmp(&other.acronym().as_str()))\
             }\
         }\
         impl Display for GameModIntermode {\
@@ -320,125 +314,6 @@ pub fn define_gamemod_intermode(
         impl From<GameMod> for GameModIntermode {\
             fn from(gamemod: GameMod) -> Self {\
                 gamemod.intermode()\
-            }\
-        }",
-    )
-}
-
-pub fn define_gamemod_order(
-    rulesets: &[RulesetMods],
-    writer: &mut Writer,
-    itoa_buf: &mut Buffer,
-) -> GenResult {
-    writer.write(
-        "#[derive(Copy, Clone, PartialEq, Eq)]\
-        pub(crate) struct GameModOrder {\
-            mode: GameMode,\
-            index: Option<NonZeroU8>,\
-            intermode: GameModIntermode,\
-        }\
-        impl From<&GameMod> for GameModOrder {\
-            fn from(gamemod: &GameMod) -> Self {\
-                const fn inner(gamemod: &GameMod) -> GameModOrder {\
-                    macro_rules! arm {\
-                        ($mode:ident, $gamemod:ident, Some($discriminant:literal), $intermode:ident) => {\
-                            arm!(\
-                                $mode,\
-                                $gamemod,\
-                                Some(unsafe { NonZeroU8::new_unchecked($discriminant) }),\
-                                $intermode,\
-                            )\
-                        };\
-                        ($mode:ident, $gamemod:ident, $index:expr, $intermode:ident $(,)?) => {\
-                            GameModOrder {\
-                                mode: GameMode::$mode,\
-                                index: $index,\
-                                intermode: GameModIntermode::$intermode,\
-                            }\
-                        };\
-                    }\
-                    match gamemod {",
-    )?;
-
-    for ruleset in rulesets {
-        let ruleset_str = ruleset.name.as_capitalized_str();
-
-        for gamemod in ruleset.mods.iter() {
-            writer.write("GameMod::")?;
-            writer.write(&gamemod.name)?;
-            writer.write("(_) => arm!(")?;
-            writer.write(ruleset_str)?;
-            writer.write(b',')?;
-            writer.write(&gamemod.name)?;
-            writer.write(b',')?;
-
-            match gamemod.discriminant() {
-                Some(discriminant) => {
-                    writer.write("Some(")?;
-                    writer.write(itoa_buf.format(discriminant))?;
-                    writer.write(b')')?;
-                }
-                None => {
-                    writer.write("None")?;
-                }
-            }
-
-            let intermode = &gamemod.name[..gamemod.name.len() - ruleset_str.len()];
-            writer.write(b',')?;
-            writer.write(intermode)?;
-            writer.write("),")?;
-        }
-
-        writer.write("GameMod::Unknown")?;
-        writer.write(ruleset_str)?;
-        writer.write(
-            "(m) => GameModOrder {\
-                mode: GameMode::",
-        )?;
-        writer.write(ruleset_str)?;
-        writer.write(
-            ",\
-                index: None,\
-                intermode: GameModIntermode::Unknown(*m),\
-            },",
-        )?;
-    }
-
-    writer.write(
-        "\
-                    }\
-                }\
-                inner(gamemod)\
-            }\
-        }\
-        impl PartialOrd for GameModOrder {\
-            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {\
-                Some(self.cmp(other))\
-            }\
-        }\
-        impl Ord for GameModOrder {\
-            fn cmp(&self, other: &Self) -> Ordering {\
-                self.mode.cmp(&other.mode)\
-                    .then_with(|| match (self.index, other.index) {\
-                        (Some(self_idx), Some(other_idx)) => self_idx.cmp(&other_idx),\
-                        (Some(_), None) => Ordering::Less,\
-                        (None, Some(_)) => Ordering::Greater,\
-                        (None, None) => self\
-                            .intermode\
-                            .acronym()\
-                            .as_str()\
-                            .cmp(other.intermode.acronym().as_str()),\
-                    })\
-            }\
-        }\
-        impl PartialEq<GameModIntermode> for GameModOrder {\
-            fn eq(&self, other: &GameModIntermode) -> bool {\
-                self.intermode.eq(other)\
-            }\
-        }\
-        impl Borrow<GameModIntermode> for GameModOrder {\
-            fn borrow(&self) -> &GameModIntermode {\
-                &self.intermode\
             }\
         }",
     )

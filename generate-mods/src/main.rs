@@ -21,8 +21,6 @@ fn main() -> GenResult {
     check_gamemod_kind(&rulesets);
     println!("Defining GameModIntermode...");
     define_gamemod_intermode(&rulesets, &mut writer, &mut itoa_buf)?;
-    println!("Defining GameModOrder...");
-    define_gamemod_order(&rulesets, &mut writer, &mut itoa_buf)?;
     println!("Defining GameMod...");
     define_gamemod_enum(&rulesets, &mut writer)?;
     println!("Defining GameMod methods...");
