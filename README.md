@@ -42,11 +42,11 @@ mods.insert(GameMod::AccuracyChallengeMania(AccuracyChallengeMania {
     ..Default::default()
 }));
 
-assert_eq!(mods.to_string(), "HRACAC");
+assert_eq!(mods.to_string(), "ACHRAC");
 
 let mut iter = mods.into_iter();
-assert_eq!(iter.next(), Some(GameMod::HardRockTaiko(Default::default())));
 assert_eq!(iter.next(), Some(GameMod::AccuracyChallengeTaiko(Default::default())));
+assert_eq!(iter.next(), Some(GameMod::HardRockTaiko(Default::default())));
 assert_eq!(iter.next(), Some(GameMod::AccuracyChallengeMania(AccuracyChallengeMania {
     restart: Some(true),
     minimum_accuracy: None,
@@ -73,12 +73,12 @@ let mut mods: GameModsIntermode = rosu_mods::mods!(WG FI);
 // Let's add some more mods
 mods.extend([GameModIntermode::Easy, GameModIntermode::HardRock]);
 
-assert_eq!(mods.to_string(), "EZHRFIWG");
+assert_eq!(mods.to_string(), "EZFIHRWG");
 
 let mut iter = mods.into_iter();
 assert_eq!(iter.next(), Some(GameModIntermode::Easy));
-assert_eq!(iter.next(), Some(GameModIntermode::HardRock));
 assert_eq!(iter.next(), Some(GameModIntermode::FadeIn));
+assert_eq!(iter.next(), Some(GameModIntermode::HardRock));
 assert_eq!(iter.next(), Some(GameModIntermode::Wiggle));
 assert_eq!(iter.next(), None);
 ```
