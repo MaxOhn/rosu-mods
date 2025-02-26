@@ -130,7 +130,7 @@ const _: () = {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
             struct AcronymVisitor;
 
-            impl<'de> Visitor<'de> for AcronymVisitor {
+            impl Visitor<'_> for AcronymVisitor {
                 type Value = Acronym;
 
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {

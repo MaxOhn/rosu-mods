@@ -33,7 +33,7 @@ pub(crate) struct GameModSettingsSeed<'a> {
     pub(crate) mode: GameMode,
 }
 
-impl<'a, 'de> DeserializeSeed<'de> for GameModSettingsSeed<'a> {
+impl<'de> DeserializeSeed<'de> for GameModSettingsSeed<'_> {
     type Value = <Self as Visitor<'de>>::Value;
 
     fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<Self::Value, D::Error> {
@@ -649,7 +649,7 @@ impl<'de> Deserialize<'de> for Value<'de> {
             }
 
             fn visit_f32<E: DeError>(self, v: f32) -> Result<Self::Value, E> {
-                self.visit_f64(v as f64)
+                self.visit_f64(f64::from(v))
             }
 
             fn visit_f64<E: DeError>(self, v: f64) -> Result<Self::Value, E> {
@@ -701,10 +701,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
     {
         match self {
             Value::Bool(v) => visitor.visit_bool(*v),
-            Value::Number(v) => Err(DeError::invalid_type(
-                Unexpected::Float(f64::from(*v)),
-                &visitor,
-            )),
+            Value::Number(v) => Err(DeError::invalid_type(Unexpected::Float(*v), &visitor)),
             Value::Str(v) => Err(DeError::invalid_type(Unexpected::Str(v.as_str()), &visitor)),
         }
     }
@@ -796,10 +793,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
     {
         match self {
             Value::Bool(v) => Err(DeError::invalid_type(Unexpected::Bool(*v), &visitor)),
-            Value::Number(v) => Err(DeError::invalid_type(
-                Unexpected::Float(f64::from(*v)),
-                &visitor,
-            )),
+            Value::Number(v) => Err(DeError::invalid_type(Unexpected::Float(*v), &visitor)),
             Value::Str(v) => visitor.visit_borrowed_str(v.as_str()),
         }
     }
@@ -1318,7 +1312,7 @@ impl<'de> Deserialize<'de> for GameModField {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
         struct GameModFieldVisitor;
 
-        impl<'de> Visitor<'de> for GameModFieldVisitor {
+        impl Visitor<'_> for GameModFieldVisitor {
             type Value = GameModField;
 
             fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {

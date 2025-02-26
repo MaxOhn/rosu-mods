@@ -60,7 +60,7 @@ const _: () = {
 
     struct ModeVisitor;
 
-    impl<'de> Visitor<'de> for ModeVisitor {
+    impl Visitor<'_> for ModeVisitor {
         type Value = GameMode;
 
         fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
