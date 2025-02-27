@@ -520,7 +520,9 @@ impl Setting {
     pub fn write(&self, writer: &mut Writer) -> GenResult {
         writer.write("/// ")?;
         writer.write(&self.description)?;
-        writer.write("\npub ")?;
+        writer.write("\n")?;
+        self.kind.rkyv_cfg_attr(writer)?;
+        writer.write("pub ")?;
         writer.write(&self.name)?;
         writer.write(": Option<")?;
         self.kind.write(writer)?;
@@ -542,9 +544,30 @@ enum SettingType {
 impl SettingType {
     pub fn write(self, writer: &mut Writer) -> GenResult {
         match self {
-            SettingType::Bool => writer.write("bool"),
-            SettingType::Number => writer.write("f64"),
-            SettingType::String => writer.write("String"),
+            Self::Bool => writer.write("bool"),
+            Self::Number => writer.write("f64"),
+            Self::String => writer.write("String"),
         }
+    }
+    fn rkyv_cfg_attr(self, writer: &mut Writer) -> GenResult {
+        let niching = match self {
+            Self::Bool => "Bool",
+            Self::Number => "NaN",
+            Self::String => return Ok(()),
+        };
+
+        writer.write(
+            "\
+            #[cfg_attr(\
+                feature = \"rkyv\", \
+                rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::",
+        )?;
+        writer.write(niching)?;
+
+        writer.write(
+            "\
+                >)\
+            )]",
+        )
     }
 }
