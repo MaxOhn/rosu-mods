@@ -722,7 +722,7 @@ const _: () = {
         ser::{Serialize, Serializer},
     };
 
-    use crate::serde::{GameModRaw, MaybeOwnedStr, BITFLAGS_U32};
+    use crate::serde::{GameModRaw, GameModRawSeed, MaybeOwnedStr, BITFLAGS_U32};
 
     impl<'de> Deserialize<'de> for GameModsIntermode {
         fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
@@ -757,8 +757,11 @@ const _: () = {
 
                 fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
                     let mut inner = BTreeSet::new();
+                    let seed = GameModRawSeed {
+                        deny_unknown_fields: true,
+                    };
 
-                    while let Some(raw) = seq.next_element::<GameModRaw<'_>>()? {
+                    while let Some(raw) = seq.next_element_seed(seed)? {
                         fn try_acronym_to_gamemod<E: DeError>(
                             acronym: &MaybeOwnedStr<'_>,
                         ) -> Result<GameModIntermode, E> {

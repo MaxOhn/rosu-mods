@@ -198,38 +198,32 @@ impl GameMod {
     }
 
     pub fn impl_serde(&self, writer: &mut Writer) -> GenResult {
-        writer.write("impl<'de> Deserialize<'de> for ")?;
-        writer.write(&self.name)?;
         writer.write(
-            " {\
-            fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {\
-                struct ",
+            "\
+            impl<'de> Visitor<'de> for GameModVisitor<",
         )?;
         writer.write(&self.name)?;
         writer.write(
-            "Visitor;\
-                impl<'de> Visitor<'de> for ",
+            "> {\
+                type Value = DeserializedGameMod<'de, ",
         )?;
         writer.write(&self.name)?;
         writer.write(
-            "Visitor {\
-                    type Value = ",
+            "\
+                >;\
+                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {\
+                    f.write_str(\"",
         )?;
         writer.write(&self.name)?;
         writer.write(
-            ";\
-                    fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {\
-                        f.write_str(\"",
-        )?;
-        writer.write(&self.name)?;
-        writer.write(
-            "\")\
-                    }\
-                    fn visit_map<A: MapAccess<'de>>(\
-                        self,\
-                        mut map: A\
-                    ) -> Result<Self::Value, A::Error> {\
-                        const FIELDS: &'static [&'static str] = &[",
+            "\
+                    \")\
+                }\
+                fn visit_map<A: MapAccess<'de>>(\
+                    self,\
+                    mut map: A\
+                ) -> Result<Self::Value, A::Error> {\
+                    const FIELDS: &'static [&'static str] = &[",
         )?;
 
         for setting in self.settings.iter() {
@@ -238,7 +232,11 @@ impl GameMod {
             writer.write_raw(b"\",")?;
         }
 
-        writer.write("];")?;
+        writer.write(
+            "\
+                    ];\
+                    let mut unknown_key__ = None;",
+        )?;
 
         for setting in self.settings.iter() {
             writer.write("let mut ")?;
@@ -248,8 +246,8 @@ impl GameMod {
 
         writer.write(
             "\
-                        while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {\
-                            match key.as_str() {",
+                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {\
+                        match key.as_str() {",
         )?;
 
         for setting in self.settings.iter() {
@@ -262,11 +260,16 @@ impl GameMod {
 
         writer.write(
             "\
-                                _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),\
+                            _ => {\
+                                unknown_key__ = Some(key);\
+                                let _: IgnoredAny = map.next_value()?;\
                             }\
                         }\
-                        Ok(Self::Value {",
+                    }\
+                    let gamemod = ",
         )?;
+        writer.write(&self.name)?;
+        writer.write(" {")?;
 
         for setting in self.settings.iter() {
             writer.write(&setting.name)?;
@@ -277,17 +280,10 @@ impl GameMod {
 
         writer.write(
             "\
-                        })\
-                    }\
+                    };\
+                    Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))\
                 }\
-                d.deserialize_map(",
-        )?;
-        writer.write(&self.name)?;
-        writer.write(
-            "\
-                Visitor)\
-            }\
-        }",
+            }",
         )?;
 
         writer.write("impl Serialize for ")?;
