@@ -7,9 +7,10 @@ use std::{
 };
 
 use crate::{
-    generated_mods::{GameMod, GameModIntermode, GameModOrder},
+    generated_mods::{GameMod, GameModIntermode},
     intersection::{GameModsIntersection, IntersectionInner},
     iter::{GameModsIter, GameModsIterMut, IntoGameModsIter},
+    order::GameModOrder,
     Acronym, GameMode, GameModsIntermode, GameModsLegacy,
 };
 
@@ -318,10 +319,10 @@ impl GameMods {
     ///     GameMod::HiddenOsu(Default::default()),
     ///     GameMod::EasyOsu(Default::default())
     /// ].iter());
-    /// assert_eq!(mods.to_string(), "HRDTBRWG");
+    /// assert_eq!(mods.to_string(), "DTHRBRWG");
     ///
     /// mods.remove_all(mods!(Osu: NF WG).iter());
-    /// assert_eq!(mods.to_string(), "HRDTBR")
+    /// assert_eq!(mods.to_string(), "DTHRBR")
     /// ```
     pub fn remove_all<'m, I>(&mut self, mods: I)
     where
@@ -350,7 +351,7 @@ impl GameMods {
     ///    GameMod::BarrelRollOsu(Default::default()),
     ///  ].into_iter().collect();
     ///
-    /// assert_eq!(mods.to_string(), "HDHRDTBRWGHR");
+    /// assert_eq!(mods.to_string(), "DTHDHRBRWGHR");
     /// mods.remove_all_intermode(mods!(HD HR WG));
     /// assert_eq!(mods.to_string(), "DTBRHR");
     /// ```
@@ -867,6 +868,6 @@ mod tests {
 
         mods.sanitize();
 
-        assert_eq!(mods.to_string(), "HDFL");
+        assert_eq!(mods.to_string(), "BLHD");
     }
 }

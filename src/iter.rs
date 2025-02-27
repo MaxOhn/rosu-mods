@@ -7,9 +7,9 @@ use std::{
     iter::{Copied, FusedIterator},
 };
 
-use crate::legacy::GameModsLegacy;
+use crate::{legacy::GameModsLegacy, order::GameModOrder};
 
-use super::{generated_mods::GameModOrder, GameMod, GameModIntermode};
+use super::{GameMod, GameModIntermode};
 
 macro_rules! mods_iter {
     (

@@ -16,7 +16,7 @@
 /// assert_eq!(mods.to_string(), "HRNC");
 ///
 /// let mods: GameModsIntermode = mods!(DT HR TC);
-/// assert_eq!(mods.to_string(), "HRDTTC");
+/// assert_eq!(mods.to_string(), "DTHRTC");
 /// ```
 ///
 /// [`GameMods`]: crate::GameMods
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn full_intermode() {
         let mods = mods!(HD DT DT HR TC);
-        assert_eq!(mods.to_string(), "HDHRDTTC");
+        assert_eq!(mods.to_string(), "DTHDHRTC");
     }
 
     #[test]
