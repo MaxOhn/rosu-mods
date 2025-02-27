@@ -24,6 +24,7 @@ mod all_structs {
     )]
     pub struct EasyOsu {
         /// Number of extra lives
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub retries: Option<f64>,
     }
     /// You can't fail, no matter what.
@@ -38,8 +39,10 @@ mod all_structs {
     )]
     pub struct HalfTimeOsu {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Whoaaaaa...
@@ -50,6 +53,7 @@ mod all_structs {
     )]
     pub struct DaycoreOsu {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Everything just got a bit harder...
@@ -64,8 +68,10 @@ mod all_structs {
     )]
     pub struct SuddenDeathOsu {
         ///
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub fail_on_slider_tail: Option<bool>,
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// SS or quit.
@@ -76,6 +82,7 @@ mod all_structs {
     )]
     pub struct PerfectOsu {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Zoooooooooom...
@@ -86,8 +93,10 @@ mod all_structs {
     )]
     pub struct DoubleTimeOsu {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Uguuuuuuuu...
@@ -98,6 +107,7 @@ mod all_structs {
     )]
     pub struct NightcoreOsu {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Play with no approach circles and fading circles/sliders.
@@ -108,6 +118,7 @@ mod all_structs {
     )]
     pub struct HiddenOsu {
         /// The main object body will not fade when enabled.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub only_fade_approach_circles: Option<bool>,
     }
     /// Restricted view area.
@@ -118,10 +129,13 @@ mod all_structs {
     )]
     pub struct FlashlightOsu {
         /// Milliseconds until the flashlight reaches the cursor
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub follow_delay: Option<f64>,
         /// Multiplier applied to the default flashlight size.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub combo_based_size: Option<bool>,
     }
     /// Play with blinds on your screen.
@@ -140,10 +154,12 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeOsu {
         /// Trigger a failure if your accuracy goes below this value.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Practice keeping up with the beat of the song.
@@ -154,8 +170,10 @@ mod all_structs {
     )]
     pub struct TargetPracticeOsu {
         /// Use a custom seed instead of a random one
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub seed: Option<f64>,
         /// Whether a metronome beat should play in the background
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub metronome: Option<bool>,
     }
     /// Override a beatmap's difficulty settings.
@@ -166,14 +184,19 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustOsu {
         /// Override a beatmap's set CS.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub circle_size: Option<f64>,
         /// Override a beatmap's set AR.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub approach_rate: Option<f64>,
         /// Override a beatmap's set HP.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub extended_limits: Option<bool>,
     }
     /// Feeling nostalgic?
@@ -184,14 +207,19 @@ mod all_structs {
     )]
     pub struct ClassicOsu {
         /// Scores sliders proportionally to the number of ticks hit.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub no_slider_head_accuracy: Option<bool>,
         /// Applies note lock to the full hit window.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub classic_note_lock: Option<bool>,
         /// Always plays a slider's tail sample regardless of whether it was hit or not.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub always_play_tail_sample: Option<bool>,
         /// Make hit circles fade out into a miss, rather than after it.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub fade_hit_circle_early: Option<bool>,
         /// More closely resembles the original HP drain mechanics.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub classic_health: Option<bool>,
     }
     /// It never gets boring!
@@ -202,8 +230,10 @@ mod all_structs {
     )]
     pub struct RandomOsu {
         /// How sharp angles should be
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub angle_sharpness: Option<f64>,
         /// Use a custom seed instead of a random one
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub seed: Option<f64>,
     }
     /// Flip objects on the chosen axes.
@@ -256,6 +286,7 @@ mod all_structs {
     )]
     pub struct WiggleOsu {
         /// Multiplier applied to the wiggling strength.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub strength: Option<f64>,
     }
     /// Circles spin in. No approach circles.
@@ -270,6 +301,7 @@ mod all_structs {
     )]
     pub struct GrowOsu {
         /// The initial size multiplier applied to all objects.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub start_scale: Option<f64>,
     }
     /// Hit them at the right size!
@@ -280,6 +312,7 @@ mod all_structs {
     )]
     pub struct DeflateOsu {
         /// The initial size multiplier applied to all objects.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub start_scale: Option<f64>,
     }
     /// Can you keep up?
@@ -290,10 +323,13 @@ mod all_structs {
     )]
     pub struct WindUpOsu {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Sloooow doooown...
@@ -304,10 +340,13 @@ mod all_structs {
     )]
     pub struct WindDownOsu {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Put your faith in the approach circles...
@@ -322,6 +361,7 @@ mod all_structs {
     )]
     pub struct BarrelRollOsu {
         /// Rotations per minute
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub spin_speed: Option<f64>,
         /// The direction of rotation
         pub direction: Option<String>,
@@ -334,6 +374,7 @@ mod all_structs {
     )]
     pub struct ApproachDifferentOsu {
         /// Change the initial size of the approach circle, relative to hit circles.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub scale: Option<f64>,
         /// Change the animation style of the approach circles.
         pub style: Option<String>,
@@ -346,12 +387,16 @@ mod all_structs {
     )]
     pub struct MutedOsu {
         /// Increase volume as combo builds.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub inverse_muting: Option<bool>,
         /// Add a metronome beat to help you keep track of the rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub affects_hit_sounds: Option<bool>,
     }
     /// Where's the cursor?
@@ -362,6 +407,7 @@ mod all_structs {
     )]
     pub struct NoScopeOsu {
         /// The combo count at which the cursor becomes completely hidden
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub hidden_combo_count: Option<f64>,
     }
     /// No need to chase the circles – your cursor is a magnet!
@@ -372,6 +418,7 @@ mod all_structs {
     )]
     pub struct MagnetisedOsu {
         /// How strong the pull is.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub attraction_strength: Option<f64>,
     }
     /// Hit objects run away!
@@ -382,6 +429,7 @@ mod all_structs {
     )]
     pub struct RepelOsu {
         /// How strong the repulsion is.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub repulsion_strength: Option<f64>,
     }
     /// Let track speed adapt to you.
@@ -392,8 +440,10 @@ mod all_structs {
     )]
     pub struct AdaptiveSpeedOsu {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Burn the notes into your memory.
@@ -416,8 +466,10 @@ mod all_structs {
     )]
     pub struct DepthOsu {
         /// How far away objects appear.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub max_depth: Option<f64>,
         /// Whether approach circles should be visible.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub show_approach_circles: Option<bool>,
     }
     /// The cursor blooms into.. a larger cursor!
@@ -428,8 +480,10 @@ mod all_structs {
     )]
     pub struct BloomOsu {
         /// The combo count at which the cursor reaches its maximum size
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub max_size_combo_count: Option<f64>,
         /// The multiplier applied to cursor size when combo reaches maximum
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub max_cursor_size: Option<f64>,
     }
     /// Automatically applied to plays on devices with a touchscreen.
@@ -456,8 +510,10 @@ mod all_structs {
     )]
     pub struct HalfTimeTaiko {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Whoaaaaa...
@@ -468,6 +524,7 @@ mod all_structs {
     )]
     pub struct DaycoreTaiko {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Everything just got a bit harder...
@@ -482,6 +539,7 @@ mod all_structs {
     )]
     pub struct SuddenDeathTaiko {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// SS or quit.
@@ -492,6 +550,7 @@ mod all_structs {
     )]
     pub struct PerfectTaiko {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Zoooooooooom...
@@ -502,8 +561,10 @@ mod all_structs {
     )]
     pub struct DoubleTimeTaiko {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Uguuuuuuuu...
@@ -514,6 +575,7 @@ mod all_structs {
     )]
     pub struct NightcoreTaiko {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Beats fade out before you hit them!
@@ -528,8 +590,10 @@ mod all_structs {
     )]
     pub struct FlashlightTaiko {
         /// Multiplier applied to the default flashlight size.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub combo_based_size: Option<bool>,
     }
     /// Fail if your accuracy drops too low!
@@ -540,10 +604,12 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeTaiko {
         /// Trigger a failure if your accuracy goes below this value.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Shuffle around the colours!
@@ -554,6 +620,7 @@ mod all_structs {
     )]
     pub struct RandomTaiko {
         /// Use a custom seed instead of a random one
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub seed: Option<f64>,
     }
     /// Override a beatmap's difficulty settings.
@@ -564,12 +631,16 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustTaiko {
         /// Adjust a beatmap's set scroll speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub scroll_speed: Option<f64>,
         /// Override a beatmap's set HP.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub extended_limits: Option<bool>,
     }
     /// Feeling nostalgic?
@@ -608,10 +679,13 @@ mod all_structs {
     )]
     pub struct WindUpTaiko {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Sloooow doooown...
@@ -622,10 +696,13 @@ mod all_structs {
     )]
     pub struct WindDownTaiko {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Can you still feel the rhythm without music?
@@ -636,12 +713,16 @@ mod all_structs {
     )]
     pub struct MutedTaiko {
         /// Increase volume as combo builds.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub inverse_muting: Option<bool>,
         /// Add a metronome beat to help you keep track of the rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub affects_hit_sounds: Option<bool>,
     }
     /// Let track speed adapt to you.
@@ -652,8 +733,10 @@ mod all_structs {
     )]
     pub struct AdaptiveSpeedTaiko {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
@@ -668,6 +751,7 @@ mod all_structs {
     )]
     pub struct EasyCatch {
         /// Number of extra lives
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub retries: Option<f64>,
     }
     /// You can't fail, no matter what.
@@ -682,8 +766,10 @@ mod all_structs {
     )]
     pub struct HalfTimeCatch {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Whoaaaaa...
@@ -694,6 +780,7 @@ mod all_structs {
     )]
     pub struct DaycoreCatch {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Everything just got a bit harder...
@@ -708,6 +795,7 @@ mod all_structs {
     )]
     pub struct SuddenDeathCatch {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// SS or quit.
@@ -718,6 +806,7 @@ mod all_structs {
     )]
     pub struct PerfectCatch {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Zoooooooooom...
@@ -728,8 +817,10 @@ mod all_structs {
     )]
     pub struct DoubleTimeCatch {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Uguuuuuuuu...
@@ -740,6 +831,7 @@ mod all_structs {
     )]
     pub struct NightcoreCatch {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Play with fading fruits.
@@ -754,8 +846,10 @@ mod all_structs {
     )]
     pub struct FlashlightCatch {
         /// Multiplier applied to the default flashlight size.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub combo_based_size: Option<bool>,
     }
     /// Fail if your accuracy drops too low!
@@ -766,10 +860,12 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeCatch {
         /// Trigger a failure if your accuracy goes below this value.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Override a beatmap's difficulty settings.
@@ -780,16 +876,22 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustCatch {
         /// Override a beatmap's set CS.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub circle_size: Option<f64>,
         /// Override a beatmap's set AR.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub approach_rate: Option<f64>,
         /// Adjust the patterns as if Hard Rock is enabled.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub hard_rock_offsets: Option<bool>,
         /// Override a beatmap's set HP.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub extended_limits: Option<bool>,
     }
     /// Feeling nostalgic?
@@ -820,10 +922,13 @@ mod all_structs {
     )]
     pub struct WindUpCatch {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Sloooow doooown...
@@ -834,10 +939,13 @@ mod all_structs {
     )]
     pub struct WindDownCatch {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// The fruits are... floating?
@@ -852,12 +960,16 @@ mod all_structs {
     )]
     pub struct MutedCatch {
         /// Increase volume as combo builds.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub inverse_muting: Option<bool>,
         /// Add a metronome beat to help you keep track of the rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub affects_hit_sounds: Option<bool>,
     }
     /// Where's the catcher?
@@ -868,6 +980,7 @@ mod all_structs {
     )]
     pub struct NoScopeCatch {
         /// The combo count at which the cursor becomes completely hidden
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub hidden_combo_count: Option<f64>,
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
@@ -882,6 +995,7 @@ mod all_structs {
     )]
     pub struct EasyMania {
         /// Number of extra lives
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub retries: Option<f64>,
     }
     /// You can't fail, no matter what.
@@ -896,8 +1010,10 @@ mod all_structs {
     )]
     pub struct HalfTimeMania {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Whoaaaaa...
@@ -908,6 +1024,7 @@ mod all_structs {
     )]
     pub struct DaycoreMania {
         /// The actual decrease to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// No more timing the end of hold notes.
@@ -926,6 +1043,7 @@ mod all_structs {
     )]
     pub struct SuddenDeathMania {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// SS or quit.
@@ -936,6 +1054,7 @@ mod all_structs {
     )]
     pub struct PerfectMania {
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Zoooooooooom...
@@ -946,8 +1065,10 @@ mod all_structs {
     )]
     pub struct DoubleTimeMania {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Uguuuuuuuu...
@@ -958,6 +1079,7 @@ mod all_structs {
     )]
     pub struct NightcoreMania {
         /// The actual increase to apply
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
     }
     /// Keys appear out of nowhere!
@@ -976,6 +1098,7 @@ mod all_structs {
     )]
     pub struct CoverMania {
         /// The proportion of playfield height that notes will be hidden for.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub coverage: Option<f64>,
         /// The direction on which the cover is applied
         pub direction: Option<String>,
@@ -988,8 +1111,10 @@ mod all_structs {
     )]
     pub struct FlashlightMania {
         /// Multiplier applied to the default flashlight size.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub size_multiplier: Option<f64>,
         /// Decrease the flashlight size as combo increases.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub combo_based_size: Option<bool>,
     }
     /// Fail if your accuracy drops too low!
@@ -1000,10 +1125,12 @@ mod all_structs {
     )]
     pub struct AccuracyChallengeMania {
         /// Trigger a failure if your accuracy goes below this value.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub minimum_accuracy: Option<f64>,
         /// The mode of accuracy that will trigger failure.
         pub accuracy_judge_mode: Option<String>,
         /// Automatically restarts when failed.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
     }
     /// Shuffle around the keys!
@@ -1014,6 +1141,7 @@ mod all_structs {
     )]
     pub struct RandomMania {
         /// Use a custom seed instead of a random one
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub seed: Option<f64>,
     }
     /// Double the stages, double the fun!
@@ -1032,10 +1160,13 @@ mod all_structs {
     )]
     pub struct DifficultyAdjustMania {
         /// Override a beatmap's set HP.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub overall_difficulty: Option<f64>,
         /// Adjust difficulty beyond sane limits.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub extended_limits: Option<bool>,
     }
     /// Feeling nostalgic?
@@ -1110,10 +1241,13 @@ mod all_structs {
     )]
     pub struct WindUpMania {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Sloooow doooown...
@@ -1124,10 +1258,13 @@ mod all_structs {
     )]
     pub struct WindDownMania {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// The final speed to ramp to
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub final_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Can you still feel the rhythm without music?
@@ -1138,12 +1275,16 @@ mod all_structs {
     )]
     pub struct MutedMania {
         /// Increase volume as combo builds.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub inverse_muting: Option<bool>,
         /// Add a metronome beat to help you keep track of the rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub enable_metronome: Option<bool>,
         /// The combo count at which point the track reaches its final volume.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub mute_combo_count: Option<f64>,
         /// Hit sounds are also muted alongside the track.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub affects_hit_sounds: Option<bool>,
     }
     /// Let track speed adapt to you.
@@ -1154,8 +1295,10 @@ mod all_structs {
     )]
     pub struct AdaptiveSpeedMania {
         /// The starting speed of the track
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub initial_rate: Option<f64>,
         /// Should pitch be adjusted with speed
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
