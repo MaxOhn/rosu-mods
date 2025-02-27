@@ -7160,38 +7160,40 @@ impl PartialOrd for GameMod {
 const _: () = {
     use serde::{
         de::{
-            value::MapAccessDeserializer, Deserializer, Error as DeError, IgnoredAny, MapAccess,
-            Visitor,
+            value::MapAccessDeserializer, DeserializeSeed, Deserializer, Error as DeError,
+            IgnoredAny, MapAccess, Visitor,
         },
         ser::{Serialize, SerializeMap, Serializer},
         Deserialize,
     };
 
-    use crate::serde::{GameModRaw, GameModSettings, GameModSettingsSeed, MaybeOwnedStr};
+    use crate::serde::{
+        DeserializedGameMod, GameModRaw, GameModRawSeed, GameModSettings, GameModSettingsSeed,
+        GameModVisitor, MaybeOwnedStr,
+    };
 
-    impl<'de> Deserialize<'de> for EasyOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct EasyOsuVisitor;
-            impl<'de> Visitor<'de> for EasyOsuVisitor {
-                type Value = EasyOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("EasyOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["retries"];
-                    let mut retries = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "retries" => retries = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<EasyOsu> {
+        type Value = DeserializedGameMod<'de, EasyOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("EasyOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["retries"];
+            let mut unknown_key__ = None;
+            let mut retries = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "retries" => retries = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        retries: retries.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(EasyOsuVisitor)
+            let gamemod = EasyOsu {
+                retries: retries.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for EasyOsu {
@@ -7204,25 +7206,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoFailOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoFailOsuVisitor;
-            impl<'de> Visitor<'de> for NoFailOsuVisitor {
-                type Value = NoFailOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoFailOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoFailOsu> {
+        type Value = DeserializedGameMod<'de, NoFailOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoFailOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(NoFailOsuVisitor)
+            let gamemod = NoFailOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoFailOsu {
@@ -7232,32 +7233,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HalfTimeOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HalfTimeOsuVisitor;
-            impl<'de> Visitor<'de> for HalfTimeOsuVisitor {
-                type Value = HalfTimeOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HalfTimeOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HalfTimeOsu> {
+        type Value = DeserializedGameMod<'de, HalfTimeOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HalfTimeOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(HalfTimeOsuVisitor)
+            let gamemod = HalfTimeOsu {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HalfTimeOsu {
@@ -7274,29 +7274,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DaycoreOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DaycoreOsuVisitor;
-            impl<'de> Visitor<'de> for DaycoreOsuVisitor {
-                type Value = DaycoreOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DaycoreOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DaycoreOsu> {
+        type Value = DeserializedGameMod<'de, DaycoreOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DaycoreOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DaycoreOsuVisitor)
+            let gamemod = DaycoreOsu {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DaycoreOsu {
@@ -7309,25 +7308,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HardRockOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HardRockOsuVisitor;
-            impl<'de> Visitor<'de> for HardRockOsuVisitor {
-                type Value = HardRockOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HardRockOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HardRockOsu> {
+        type Value = DeserializedGameMod<'de, HardRockOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HardRockOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HardRockOsuVisitor)
+            let gamemod = HardRockOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HardRockOsu {
@@ -7337,32 +7335,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SuddenDeathOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SuddenDeathOsuVisitor;
-            impl<'de> Visitor<'de> for SuddenDeathOsuVisitor {
-                type Value = SuddenDeathOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SuddenDeathOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["fail_on_slider_tail", "restart"];
-                    let mut fail_on_slider_tail = None;
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "fail_on_slider_tail" => fail_on_slider_tail = Some(map.next_value()?),
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SuddenDeathOsu> {
+        type Value = DeserializedGameMod<'de, SuddenDeathOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SuddenDeathOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["fail_on_slider_tail", "restart"];
+            let mut unknown_key__ = None;
+            let mut fail_on_slider_tail = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "fail_on_slider_tail" => fail_on_slider_tail = Some(map.next_value()?),
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        fail_on_slider_tail: fail_on_slider_tail.unwrap_or_default(),
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(SuddenDeathOsuVisitor)
+            let gamemod = SuddenDeathOsu {
+                fail_on_slider_tail: fail_on_slider_tail.unwrap_or_default(),
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SuddenDeathOsu {
@@ -7379,29 +7376,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for PerfectOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct PerfectOsuVisitor;
-            impl<'de> Visitor<'de> for PerfectOsuVisitor {
-                type Value = PerfectOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("PerfectOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<PerfectOsu> {
+        type Value = DeserializedGameMod<'de, PerfectOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("PerfectOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(PerfectOsuVisitor)
+            let gamemod = PerfectOsu {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for PerfectOsu {
@@ -7414,32 +7410,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DoubleTimeOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DoubleTimeOsuVisitor;
-            impl<'de> Visitor<'de> for DoubleTimeOsuVisitor {
-                type Value = DoubleTimeOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DoubleTimeOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DoubleTimeOsu> {
+        type Value = DeserializedGameMod<'de, DoubleTimeOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DoubleTimeOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DoubleTimeOsuVisitor)
+            let gamemod = DoubleTimeOsu {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DoubleTimeOsu {
@@ -7456,29 +7451,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NightcoreOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NightcoreOsuVisitor;
-            impl<'de> Visitor<'de> for NightcoreOsuVisitor {
-                type Value = NightcoreOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NightcoreOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NightcoreOsu> {
+        type Value = DeserializedGameMod<'de, NightcoreOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NightcoreOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(NightcoreOsuVisitor)
+            let gamemod = NightcoreOsu {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NightcoreOsu {
@@ -7491,31 +7485,30 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HiddenOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HiddenOsuVisitor;
-            impl<'de> Visitor<'de> for HiddenOsuVisitor {
-                type Value = HiddenOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HiddenOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["only_fade_approach_circles"];
-                    let mut only_fade_approach_circles = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "only_fade_approach_circles" => {
-                                only_fade_approach_circles = Some(map.next_value()?)
-                            }
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HiddenOsu> {
+        type Value = DeserializedGameMod<'de, HiddenOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HiddenOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["only_fade_approach_circles"];
+            let mut unknown_key__ = None;
+            let mut only_fade_approach_circles = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "only_fade_approach_circles" => {
+                        only_fade_approach_circles = Some(map.next_value()?)
                     }
-                    Ok(Self::Value {
-                        only_fade_approach_circles: only_fade_approach_circles.unwrap_or_default(),
-                    })
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
+                    }
                 }
             }
-            d.deserialize_map(HiddenOsuVisitor)
+            let gamemod = HiddenOsu {
+                only_fade_approach_circles: only_fade_approach_circles.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HiddenOsu {
@@ -7528,36 +7521,35 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FlashlightOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FlashlightOsuVisitor;
-            impl<'de> Visitor<'de> for FlashlightOsuVisitor {
-                type Value = FlashlightOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FlashlightOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["follow_delay", "size_multiplier", "combo_based_size"];
-                    let mut follow_delay = None;
-                    let mut size_multiplier = None;
-                    let mut combo_based_size = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "follow_delay" => follow_delay = Some(map.next_value()?),
-                            "size_multiplier" => size_multiplier = Some(map.next_value()?),
-                            "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FlashlightOsu> {
+        type Value = DeserializedGameMod<'de, FlashlightOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FlashlightOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] =
+                &["follow_delay", "size_multiplier", "combo_based_size"];
+            let mut unknown_key__ = None;
+            let mut follow_delay = None;
+            let mut size_multiplier = None;
+            let mut combo_based_size = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "follow_delay" => follow_delay = Some(map.next_value()?),
+                    "size_multiplier" => size_multiplier = Some(map.next_value()?),
+                    "combo_based_size" => combo_based_size = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        follow_delay: follow_delay.unwrap_or_default(),
-                        size_multiplier: size_multiplier.unwrap_or_default(),
-                        combo_based_size: combo_based_size.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(FlashlightOsuVisitor)
+            let gamemod = FlashlightOsu {
+                follow_delay: follow_delay.unwrap_or_default(),
+                size_multiplier: size_multiplier.unwrap_or_default(),
+                combo_based_size: combo_based_size.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FlashlightOsu {
@@ -7578,25 +7570,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for BlindsOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct BlindsOsuVisitor;
-            impl<'de> Visitor<'de> for BlindsOsuVisitor {
-                type Value = BlindsOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("BlindsOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<BlindsOsu> {
+        type Value = DeserializedGameMod<'de, BlindsOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("BlindsOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(BlindsOsuVisitor)
+            let gamemod = BlindsOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for BlindsOsu {
@@ -7606,25 +7597,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for StrictTrackingOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct StrictTrackingOsuVisitor;
-            impl<'de> Visitor<'de> for StrictTrackingOsuVisitor {
-                type Value = StrictTrackingOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("StrictTrackingOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<StrictTrackingOsu> {
+        type Value = DeserializedGameMod<'de, StrictTrackingOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("StrictTrackingOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(StrictTrackingOsuVisitor)
+            let gamemod = StrictTrackingOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for StrictTrackingOsu {
@@ -7634,36 +7624,35 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AccuracyChallengeOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AccuracyChallengeOsuVisitor;
-            impl<'de> Visitor<'de> for AccuracyChallengeOsuVisitor {
-                type Value = AccuracyChallengeOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AccuracyChallengeOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
-                    let mut minimum_accuracy = None;
-                    let mut accuracy_judge_mode = None;
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
-                            "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AccuracyChallengeOsu> {
+        type Value = DeserializedGameMod<'de, AccuracyChallengeOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AccuracyChallengeOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] =
+                &["minimum_accuracy", "accuracy_judge_mode", "restart"];
+            let mut unknown_key__ = None;
+            let mut minimum_accuracy = None;
+            let mut accuracy_judge_mode = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
+                    "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        minimum_accuracy: minimum_accuracy.unwrap_or_default(),
-                        accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AccuracyChallengeOsuVisitor)
+            let gamemod = AccuracyChallengeOsu {
+                minimum_accuracy: minimum_accuracy.unwrap_or_default(),
+                accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AccuracyChallengeOsu {
@@ -7684,32 +7673,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for TargetPracticeOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct TargetPracticeOsuVisitor;
-            impl<'de> Visitor<'de> for TargetPracticeOsuVisitor {
-                type Value = TargetPracticeOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("TargetPracticeOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["seed", "metronome"];
-                    let mut seed = None;
-                    let mut metronome = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "seed" => seed = Some(map.next_value()?),
-                            "metronome" => metronome = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<TargetPracticeOsu> {
+        type Value = DeserializedGameMod<'de, TargetPracticeOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TargetPracticeOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["seed", "metronome"];
+            let mut unknown_key__ = None;
+            let mut seed = None;
+            let mut metronome = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "seed" => seed = Some(map.next_value()?),
+                    "metronome" => metronome = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        seed: seed.unwrap_or_default(),
-                        metronome: metronome.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(TargetPracticeOsuVisitor)
+            let gamemod = TargetPracticeOsu {
+                seed: seed.unwrap_or_default(),
+                metronome: metronome.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for TargetPracticeOsu {
@@ -7725,47 +7713,46 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DifficultyAdjustOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DifficultyAdjustOsuVisitor;
-            impl<'de> Visitor<'de> for DifficultyAdjustOsuVisitor {
-                type Value = DifficultyAdjustOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DifficultyAdjustOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "circle_size",
-                        "approach_rate",
-                        "drain_rate",
-                        "overall_difficulty",
-                        "extended_limits",
-                    ];
-                    let mut circle_size = None;
-                    let mut approach_rate = None;
-                    let mut drain_rate = None;
-                    let mut overall_difficulty = None;
-                    let mut extended_limits = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "circle_size" => circle_size = Some(map.next_value()?),
-                            "approach_rate" => approach_rate = Some(map.next_value()?),
-                            "drain_rate" => drain_rate = Some(map.next_value()?),
-                            "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
-                            "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DifficultyAdjustOsu> {
+        type Value = DeserializedGameMod<'de, DifficultyAdjustOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DifficultyAdjustOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "circle_size",
+                "approach_rate",
+                "drain_rate",
+                "overall_difficulty",
+                "extended_limits",
+            ];
+            let mut unknown_key__ = None;
+            let mut circle_size = None;
+            let mut approach_rate = None;
+            let mut drain_rate = None;
+            let mut overall_difficulty = None;
+            let mut extended_limits = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "circle_size" => circle_size = Some(map.next_value()?),
+                    "approach_rate" => approach_rate = Some(map.next_value()?),
+                    "drain_rate" => drain_rate = Some(map.next_value()?),
+                    "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
+                    "extended_limits" => extended_limits = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        circle_size: circle_size.unwrap_or_default(),
-                        approach_rate: approach_rate.unwrap_or_default(),
-                        drain_rate: drain_rate.unwrap_or_default(),
-                        overall_difficulty: overall_difficulty.unwrap_or_default(),
-                        extended_limits: extended_limits.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DifficultyAdjustOsuVisitor)
+            let gamemod = DifficultyAdjustOsu {
+                circle_size: circle_size.unwrap_or_default(),
+                approach_rate: approach_rate.unwrap_or_default(),
+                drain_rate: drain_rate.unwrap_or_default(),
+                overall_difficulty: overall_difficulty.unwrap_or_default(),
+                extended_limits: extended_limits.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DifficultyAdjustOsu {
@@ -7794,53 +7781,46 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ClassicOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ClassicOsuVisitor;
-            impl<'de> Visitor<'de> for ClassicOsuVisitor {
-                type Value = ClassicOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ClassicOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "no_slider_head_accuracy",
-                        "classic_note_lock",
-                        "always_play_tail_sample",
-                        "fade_hit_circle_early",
-                        "classic_health",
-                    ];
-                    let mut no_slider_head_accuracy = None;
-                    let mut classic_note_lock = None;
-                    let mut always_play_tail_sample = None;
-                    let mut fade_hit_circle_early = None;
-                    let mut classic_health = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "no_slider_head_accuracy" => {
-                                no_slider_head_accuracy = Some(map.next_value()?)
-                            }
-                            "classic_note_lock" => classic_note_lock = Some(map.next_value()?),
-                            "always_play_tail_sample" => {
-                                always_play_tail_sample = Some(map.next_value()?)
-                            }
-                            "fade_hit_circle_early" => {
-                                fade_hit_circle_early = Some(map.next_value()?)
-                            }
-                            "classic_health" => classic_health = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ClassicOsu> {
+        type Value = DeserializedGameMod<'de, ClassicOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ClassicOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "no_slider_head_accuracy",
+                "classic_note_lock",
+                "always_play_tail_sample",
+                "fade_hit_circle_early",
+                "classic_health",
+            ];
+            let mut unknown_key__ = None;
+            let mut no_slider_head_accuracy = None;
+            let mut classic_note_lock = None;
+            let mut always_play_tail_sample = None;
+            let mut fade_hit_circle_early = None;
+            let mut classic_health = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "no_slider_head_accuracy" => no_slider_head_accuracy = Some(map.next_value()?),
+                    "classic_note_lock" => classic_note_lock = Some(map.next_value()?),
+                    "always_play_tail_sample" => always_play_tail_sample = Some(map.next_value()?),
+                    "fade_hit_circle_early" => fade_hit_circle_early = Some(map.next_value()?),
+                    "classic_health" => classic_health = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        no_slider_head_accuracy: no_slider_head_accuracy.unwrap_or_default(),
-                        classic_note_lock: classic_note_lock.unwrap_or_default(),
-                        always_play_tail_sample: always_play_tail_sample.unwrap_or_default(),
-                        fade_hit_circle_early: fade_hit_circle_early.unwrap_or_default(),
-                        classic_health: classic_health.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(ClassicOsuVisitor)
+            let gamemod = ClassicOsu {
+                no_slider_head_accuracy: no_slider_head_accuracy.unwrap_or_default(),
+                classic_note_lock: classic_note_lock.unwrap_or_default(),
+                always_play_tail_sample: always_play_tail_sample.unwrap_or_default(),
+                fade_hit_circle_early: fade_hit_circle_early.unwrap_or_default(),
+                classic_health: classic_health.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ClassicOsu {
@@ -7869,32 +7849,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RandomOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RandomOsuVisitor;
-            impl<'de> Visitor<'de> for RandomOsuVisitor {
-                type Value = RandomOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RandomOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["angle_sharpness", "seed"];
-                    let mut angle_sharpness = None;
-                    let mut seed = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "angle_sharpness" => angle_sharpness = Some(map.next_value()?),
-                            "seed" => seed = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RandomOsu> {
+        type Value = DeserializedGameMod<'de, RandomOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RandomOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["angle_sharpness", "seed"];
+            let mut unknown_key__ = None;
+            let mut angle_sharpness = None;
+            let mut seed = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "angle_sharpness" => angle_sharpness = Some(map.next_value()?),
+                    "seed" => seed = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        angle_sharpness: angle_sharpness.unwrap_or_default(),
-                        seed: seed.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(RandomOsuVisitor)
+            let gamemod = RandomOsu {
+                angle_sharpness: angle_sharpness.unwrap_or_default(),
+                seed: seed.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RandomOsu {
@@ -7911,29 +7890,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MirrorOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MirrorOsuVisitor;
-            impl<'de> Visitor<'de> for MirrorOsuVisitor {
-                type Value = MirrorOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MirrorOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["reflection"];
-                    let mut reflection = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "reflection" => reflection = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MirrorOsu> {
+        type Value = DeserializedGameMod<'de, MirrorOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MirrorOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["reflection"];
+            let mut unknown_key__ = None;
+            let mut reflection = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "reflection" => reflection = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        reflection: reflection.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(MirrorOsuVisitor)
+            let gamemod = MirrorOsu {
+                reflection: reflection.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MirrorOsu {
@@ -7946,25 +7924,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AlternateOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AlternateOsuVisitor;
-            impl<'de> Visitor<'de> for AlternateOsuVisitor {
-                type Value = AlternateOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AlternateOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AlternateOsu> {
+        type Value = DeserializedGameMod<'de, AlternateOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AlternateOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(AlternateOsuVisitor)
+            let gamemod = AlternateOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AlternateOsu {
@@ -7974,25 +7951,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SingleTapOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SingleTapOsuVisitor;
-            impl<'de> Visitor<'de> for SingleTapOsuVisitor {
-                type Value = SingleTapOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SingleTapOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SingleTapOsu> {
+        type Value = DeserializedGameMod<'de, SingleTapOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SingleTapOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SingleTapOsuVisitor)
+            let gamemod = SingleTapOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SingleTapOsu {
@@ -8002,25 +7978,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AutoplayOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AutoplayOsuVisitor;
-            impl<'de> Visitor<'de> for AutoplayOsuVisitor {
-                type Value = AutoplayOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AutoplayOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AutoplayOsu> {
+        type Value = DeserializedGameMod<'de, AutoplayOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AutoplayOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(AutoplayOsuVisitor)
+            let gamemod = AutoplayOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AutoplayOsu {
@@ -8030,25 +8005,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for CinemaOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct CinemaOsuVisitor;
-            impl<'de> Visitor<'de> for CinemaOsuVisitor {
-                type Value = CinemaOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("CinemaOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<CinemaOsu> {
+        type Value = DeserializedGameMod<'de, CinemaOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("CinemaOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(CinemaOsuVisitor)
+            let gamemod = CinemaOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for CinemaOsu {
@@ -8058,25 +8032,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RelaxOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RelaxOsuVisitor;
-            impl<'de> Visitor<'de> for RelaxOsuVisitor {
-                type Value = RelaxOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RelaxOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RelaxOsu> {
+        type Value = DeserializedGameMod<'de, RelaxOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RelaxOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(RelaxOsuVisitor)
+            let gamemod = RelaxOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RelaxOsu {
@@ -8086,25 +8059,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AutopilotOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AutopilotOsuVisitor;
-            impl<'de> Visitor<'de> for AutopilotOsuVisitor {
-                type Value = AutopilotOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AutopilotOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AutopilotOsu> {
+        type Value = DeserializedGameMod<'de, AutopilotOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AutopilotOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(AutopilotOsuVisitor)
+            let gamemod = AutopilotOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AutopilotOsu {
@@ -8114,25 +8086,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SpunOutOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SpunOutOsuVisitor;
-            impl<'de> Visitor<'de> for SpunOutOsuVisitor {
-                type Value = SpunOutOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SpunOutOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SpunOutOsu> {
+        type Value = DeserializedGameMod<'de, SpunOutOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SpunOutOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SpunOutOsuVisitor)
+            let gamemod = SpunOutOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SpunOutOsu {
@@ -8142,25 +8113,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for TransformOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct TransformOsuVisitor;
-            impl<'de> Visitor<'de> for TransformOsuVisitor {
-                type Value = TransformOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("TransformOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<TransformOsu> {
+        type Value = DeserializedGameMod<'de, TransformOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TransformOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(TransformOsuVisitor)
+            let gamemod = TransformOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for TransformOsu {
@@ -8170,29 +8140,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WiggleOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WiggleOsuVisitor;
-            impl<'de> Visitor<'de> for WiggleOsuVisitor {
-                type Value = WiggleOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WiggleOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["strength"];
-                    let mut strength = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "strength" => strength = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WiggleOsu> {
+        type Value = DeserializedGameMod<'de, WiggleOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WiggleOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["strength"];
+            let mut unknown_key__ = None;
+            let mut strength = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "strength" => strength = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        strength: strength.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WiggleOsuVisitor)
+            let gamemod = WiggleOsu {
+                strength: strength.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WiggleOsu {
@@ -8205,25 +8174,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SpinInOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SpinInOsuVisitor;
-            impl<'de> Visitor<'de> for SpinInOsuVisitor {
-                type Value = SpinInOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SpinInOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SpinInOsu> {
+        type Value = DeserializedGameMod<'de, SpinInOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SpinInOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SpinInOsuVisitor)
+            let gamemod = SpinInOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SpinInOsu {
@@ -8233,29 +8201,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for GrowOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct GrowOsuVisitor;
-            impl<'de> Visitor<'de> for GrowOsuVisitor {
-                type Value = GrowOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("GrowOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["start_scale"];
-                    let mut start_scale = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "start_scale" => start_scale = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<GrowOsu> {
+        type Value = DeserializedGameMod<'de, GrowOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("GrowOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["start_scale"];
+            let mut unknown_key__ = None;
+            let mut start_scale = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "start_scale" => start_scale = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        start_scale: start_scale.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(GrowOsuVisitor)
+            let gamemod = GrowOsu {
+                start_scale: start_scale.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for GrowOsu {
@@ -8268,29 +8235,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DeflateOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DeflateOsuVisitor;
-            impl<'de> Visitor<'de> for DeflateOsuVisitor {
-                type Value = DeflateOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DeflateOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["start_scale"];
-                    let mut start_scale = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "start_scale" => start_scale = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DeflateOsu> {
+        type Value = DeserializedGameMod<'de, DeflateOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DeflateOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["start_scale"];
+            let mut unknown_key__ = None;
+            let mut start_scale = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "start_scale" => start_scale = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        start_scale: start_scale.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DeflateOsuVisitor)
+            let gamemod = DeflateOsu {
+                start_scale: start_scale.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DeflateOsu {
@@ -8303,36 +8269,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindUpOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindUpOsuVisitor;
-            impl<'de> Visitor<'de> for WindUpOsuVisitor {
-                type Value = WindUpOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindUpOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindUpOsu> {
+        type Value = DeserializedGameMod<'de, WindUpOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindUpOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindUpOsuVisitor)
+            let gamemod = WindUpOsu {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindUpOsu {
@@ -8353,36 +8317,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindDownOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindDownOsuVisitor;
-            impl<'de> Visitor<'de> for WindDownOsuVisitor {
-                type Value = WindDownOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindDownOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindDownOsu> {
+        type Value = DeserializedGameMod<'de, WindDownOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindDownOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindDownOsuVisitor)
+            let gamemod = WindDownOsu {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindDownOsu {
@@ -8403,25 +8365,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for TraceableOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct TraceableOsuVisitor;
-            impl<'de> Visitor<'de> for TraceableOsuVisitor {
-                type Value = TraceableOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("TraceableOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<TraceableOsu> {
+        type Value = DeserializedGameMod<'de, TraceableOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TraceableOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(TraceableOsuVisitor)
+            let gamemod = TraceableOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for TraceableOsu {
@@ -8431,32 +8392,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for BarrelRollOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct BarrelRollOsuVisitor;
-            impl<'de> Visitor<'de> for BarrelRollOsuVisitor {
-                type Value = BarrelRollOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("BarrelRollOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["spin_speed", "direction"];
-                    let mut spin_speed = None;
-                    let mut direction = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "spin_speed" => spin_speed = Some(map.next_value()?),
-                            "direction" => direction = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<BarrelRollOsu> {
+        type Value = DeserializedGameMod<'de, BarrelRollOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("BarrelRollOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["spin_speed", "direction"];
+            let mut unknown_key__ = None;
+            let mut spin_speed = None;
+            let mut direction = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "spin_speed" => spin_speed = Some(map.next_value()?),
+                    "direction" => direction = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        spin_speed: spin_speed.unwrap_or_default(),
-                        direction: direction.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(BarrelRollOsuVisitor)
+            let gamemod = BarrelRollOsu {
+                spin_speed: spin_speed.unwrap_or_default(),
+                direction: direction.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for BarrelRollOsu {
@@ -8473,32 +8433,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ApproachDifferentOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ApproachDifferentOsuVisitor;
-            impl<'de> Visitor<'de> for ApproachDifferentOsuVisitor {
-                type Value = ApproachDifferentOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ApproachDifferentOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["scale", "style"];
-                    let mut scale = None;
-                    let mut style = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "scale" => scale = Some(map.next_value()?),
-                            "style" => style = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ApproachDifferentOsu> {
+        type Value = DeserializedGameMod<'de, ApproachDifferentOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ApproachDifferentOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["scale", "style"];
+            let mut unknown_key__ = None;
+            let mut scale = None;
+            let mut style = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "scale" => scale = Some(map.next_value()?),
+                    "style" => style = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        scale: scale.unwrap_or_default(),
-                        style: style.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(ApproachDifferentOsuVisitor)
+            let gamemod = ApproachDifferentOsu {
+                scale: scale.unwrap_or_default(),
+                style: style.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ApproachDifferentOsu {
@@ -8514,43 +8473,42 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MutedOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MutedOsuVisitor;
-            impl<'de> Visitor<'de> for MutedOsuVisitor {
-                type Value = MutedOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MutedOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "inverse_muting",
-                        "enable_metronome",
-                        "mute_combo_count",
-                        "affects_hit_sounds",
-                    ];
-                    let mut inverse_muting = None;
-                    let mut enable_metronome = None;
-                    let mut mute_combo_count = None;
-                    let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "inverse_muting" => inverse_muting = Some(map.next_value()?),
-                            "enable_metronome" => enable_metronome = Some(map.next_value()?),
-                            "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
-                            "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MutedOsu> {
+        type Value = DeserializedGameMod<'de, MutedOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MutedOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "inverse_muting",
+                "enable_metronome",
+                "mute_combo_count",
+                "affects_hit_sounds",
+            ];
+            let mut unknown_key__ = None;
+            let mut inverse_muting = None;
+            let mut enable_metronome = None;
+            let mut mute_combo_count = None;
+            let mut affects_hit_sounds = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "inverse_muting" => inverse_muting = Some(map.next_value()?),
+                    "enable_metronome" => enable_metronome = Some(map.next_value()?),
+                    "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
+                    "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        inverse_muting: inverse_muting.unwrap_or_default(),
-                        enable_metronome: enable_metronome.unwrap_or_default(),
-                        mute_combo_count: mute_combo_count.unwrap_or_default(),
-                        affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(MutedOsuVisitor)
+            let gamemod = MutedOsu {
+                inverse_muting: inverse_muting.unwrap_or_default(),
+                enable_metronome: enable_metronome.unwrap_or_default(),
+                mute_combo_count: mute_combo_count.unwrap_or_default(),
+                affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MutedOsu {
@@ -8575,29 +8533,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoScopeOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoScopeOsuVisitor;
-            impl<'de> Visitor<'de> for NoScopeOsuVisitor {
-                type Value = NoScopeOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoScopeOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
-                    let mut hidden_combo_count = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoScopeOsu> {
+        type Value = DeserializedGameMod<'de, NoScopeOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoScopeOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
+            let mut unknown_key__ = None;
+            let mut hidden_combo_count = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        hidden_combo_count: hidden_combo_count.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(NoScopeOsuVisitor)
+            let gamemod = NoScopeOsu {
+                hidden_combo_count: hidden_combo_count.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoScopeOsu {
@@ -8610,29 +8567,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MagnetisedOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MagnetisedOsuVisitor;
-            impl<'de> Visitor<'de> for MagnetisedOsuVisitor {
-                type Value = MagnetisedOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MagnetisedOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["attraction_strength"];
-                    let mut attraction_strength = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "attraction_strength" => attraction_strength = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MagnetisedOsu> {
+        type Value = DeserializedGameMod<'de, MagnetisedOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MagnetisedOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["attraction_strength"];
+            let mut unknown_key__ = None;
+            let mut attraction_strength = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "attraction_strength" => attraction_strength = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        attraction_strength: attraction_strength.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(MagnetisedOsuVisitor)
+            let gamemod = MagnetisedOsu {
+                attraction_strength: attraction_strength.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MagnetisedOsu {
@@ -8645,29 +8601,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RepelOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RepelOsuVisitor;
-            impl<'de> Visitor<'de> for RepelOsuVisitor {
-                type Value = RepelOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RepelOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["repulsion_strength"];
-                    let mut repulsion_strength = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "repulsion_strength" => repulsion_strength = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RepelOsu> {
+        type Value = DeserializedGameMod<'de, RepelOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RepelOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["repulsion_strength"];
+            let mut unknown_key__ = None;
+            let mut repulsion_strength = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "repulsion_strength" => repulsion_strength = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        repulsion_strength: repulsion_strength.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(RepelOsuVisitor)
+            let gamemod = RepelOsu {
+                repulsion_strength: repulsion_strength.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RepelOsu {
@@ -8680,32 +8635,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AdaptiveSpeedOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AdaptiveSpeedOsuVisitor;
-            impl<'de> Visitor<'de> for AdaptiveSpeedOsuVisitor {
-                type Value = AdaptiveSpeedOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AdaptiveSpeedOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AdaptiveSpeedOsu> {
+        type Value = DeserializedGameMod<'de, AdaptiveSpeedOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AdaptiveSpeedOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AdaptiveSpeedOsuVisitor)
+            let gamemod = AdaptiveSpeedOsu {
+                initial_rate: initial_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AdaptiveSpeedOsu {
@@ -8722,25 +8676,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FreezeFrameOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FreezeFrameOsuVisitor;
-            impl<'de> Visitor<'de> for FreezeFrameOsuVisitor {
-                type Value = FreezeFrameOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FreezeFrameOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FreezeFrameOsu> {
+        type Value = DeserializedGameMod<'de, FreezeFrameOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FreezeFrameOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(FreezeFrameOsuVisitor)
+            let gamemod = FreezeFrameOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FreezeFrameOsu {
@@ -8750,25 +8703,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for BubblesOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct BubblesOsuVisitor;
-            impl<'de> Visitor<'de> for BubblesOsuVisitor {
-                type Value = BubblesOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("BubblesOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<BubblesOsu> {
+        type Value = DeserializedGameMod<'de, BubblesOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("BubblesOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(BubblesOsuVisitor)
+            let gamemod = BubblesOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for BubblesOsu {
@@ -8778,25 +8730,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SynesthesiaOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SynesthesiaOsuVisitor;
-            impl<'de> Visitor<'de> for SynesthesiaOsuVisitor {
-                type Value = SynesthesiaOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SynesthesiaOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SynesthesiaOsu> {
+        type Value = DeserializedGameMod<'de, SynesthesiaOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SynesthesiaOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SynesthesiaOsuVisitor)
+            let gamemod = SynesthesiaOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SynesthesiaOsu {
@@ -8806,34 +8757,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DepthOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DepthOsuVisitor;
-            impl<'de> Visitor<'de> for DepthOsuVisitor {
-                type Value = DepthOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DepthOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["max_depth", "show_approach_circles"];
-                    let mut max_depth = None;
-                    let mut show_approach_circles = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "max_depth" => max_depth = Some(map.next_value()?),
-                            "show_approach_circles" => {
-                                show_approach_circles = Some(map.next_value()?)
-                            }
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DepthOsu> {
+        type Value = DeserializedGameMod<'de, DepthOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DepthOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["max_depth", "show_approach_circles"];
+            let mut unknown_key__ = None;
+            let mut max_depth = None;
+            let mut show_approach_circles = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "max_depth" => max_depth = Some(map.next_value()?),
+                    "show_approach_circles" => show_approach_circles = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        max_depth: max_depth.unwrap_or_default(),
-                        show_approach_circles: show_approach_circles.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DepthOsuVisitor)
+            let gamemod = DepthOsu {
+                max_depth: max_depth.unwrap_or_default(),
+                show_approach_circles: show_approach_circles.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DepthOsu {
@@ -8850,35 +8798,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for BloomOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct BloomOsuVisitor;
-            impl<'de> Visitor<'de> for BloomOsuVisitor {
-                type Value = BloomOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("BloomOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["max_size_combo_count", "max_cursor_size"];
-                    let mut max_size_combo_count = None;
-                    let mut max_cursor_size = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "max_size_combo_count" => {
-                                max_size_combo_count = Some(map.next_value()?)
-                            }
-                            "max_cursor_size" => max_cursor_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<BloomOsu> {
+        type Value = DeserializedGameMod<'de, BloomOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("BloomOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["max_size_combo_count", "max_cursor_size"];
+            let mut unknown_key__ = None;
+            let mut max_size_combo_count = None;
+            let mut max_cursor_size = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "max_size_combo_count" => max_size_combo_count = Some(map.next_value()?),
+                    "max_cursor_size" => max_cursor_size = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        max_size_combo_count: max_size_combo_count.unwrap_or_default(),
-                        max_cursor_size: max_cursor_size.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(BloomOsuVisitor)
+            let gamemod = BloomOsu {
+                max_size_combo_count: max_size_combo_count.unwrap_or_default(),
+                max_cursor_size: max_cursor_size.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for BloomOsu {
@@ -8895,25 +8839,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for TouchDeviceOsu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct TouchDeviceOsuVisitor;
-            impl<'de> Visitor<'de> for TouchDeviceOsuVisitor {
-                type Value = TouchDeviceOsu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("TouchDeviceOsu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<TouchDeviceOsu> {
+        type Value = DeserializedGameMod<'de, TouchDeviceOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TouchDeviceOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(TouchDeviceOsuVisitor)
+            let gamemod = TouchDeviceOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for TouchDeviceOsu {
@@ -8923,25 +8866,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ScoreV2Osu {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ScoreV2OsuVisitor;
-            impl<'de> Visitor<'de> for ScoreV2OsuVisitor {
-                type Value = ScoreV2Osu;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ScoreV2Osu")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ScoreV2Osu> {
+        type Value = DeserializedGameMod<'de, ScoreV2Osu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ScoreV2Osu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ScoreV2OsuVisitor)
+            let gamemod = ScoreV2Osu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ScoreV2Osu {
@@ -8951,25 +8893,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for EasyTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct EasyTaikoVisitor;
-            impl<'de> Visitor<'de> for EasyTaikoVisitor {
-                type Value = EasyTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("EasyTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<EasyTaiko> {
+        type Value = DeserializedGameMod<'de, EasyTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("EasyTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(EasyTaikoVisitor)
+            let gamemod = EasyTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for EasyTaiko {
@@ -8979,25 +8920,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoFailTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoFailTaikoVisitor;
-            impl<'de> Visitor<'de> for NoFailTaikoVisitor {
-                type Value = NoFailTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoFailTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoFailTaiko> {
+        type Value = DeserializedGameMod<'de, NoFailTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoFailTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(NoFailTaikoVisitor)
+            let gamemod = NoFailTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoFailTaiko {
@@ -9007,32 +8947,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HalfTimeTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HalfTimeTaikoVisitor;
-            impl<'de> Visitor<'de> for HalfTimeTaikoVisitor {
-                type Value = HalfTimeTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HalfTimeTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HalfTimeTaiko> {
+        type Value = DeserializedGameMod<'de, HalfTimeTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HalfTimeTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(HalfTimeTaikoVisitor)
+            let gamemod = HalfTimeTaiko {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HalfTimeTaiko {
@@ -9049,29 +8988,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DaycoreTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DaycoreTaikoVisitor;
-            impl<'de> Visitor<'de> for DaycoreTaikoVisitor {
-                type Value = DaycoreTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DaycoreTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DaycoreTaiko> {
+        type Value = DeserializedGameMod<'de, DaycoreTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DaycoreTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DaycoreTaikoVisitor)
+            let gamemod = DaycoreTaiko {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DaycoreTaiko {
@@ -9084,25 +9022,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HardRockTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HardRockTaikoVisitor;
-            impl<'de> Visitor<'de> for HardRockTaikoVisitor {
-                type Value = HardRockTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HardRockTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HardRockTaiko> {
+        type Value = DeserializedGameMod<'de, HardRockTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HardRockTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HardRockTaikoVisitor)
+            let gamemod = HardRockTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HardRockTaiko {
@@ -9112,29 +9049,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SuddenDeathTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SuddenDeathTaikoVisitor;
-            impl<'de> Visitor<'de> for SuddenDeathTaikoVisitor {
-                type Value = SuddenDeathTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SuddenDeathTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SuddenDeathTaiko> {
+        type Value = DeserializedGameMod<'de, SuddenDeathTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SuddenDeathTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(SuddenDeathTaikoVisitor)
+            let gamemod = SuddenDeathTaiko {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SuddenDeathTaiko {
@@ -9147,29 +9083,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for PerfectTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct PerfectTaikoVisitor;
-            impl<'de> Visitor<'de> for PerfectTaikoVisitor {
-                type Value = PerfectTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("PerfectTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<PerfectTaiko> {
+        type Value = DeserializedGameMod<'de, PerfectTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("PerfectTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(PerfectTaikoVisitor)
+            let gamemod = PerfectTaiko {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for PerfectTaiko {
@@ -9182,32 +9117,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DoubleTimeTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DoubleTimeTaikoVisitor;
-            impl<'de> Visitor<'de> for DoubleTimeTaikoVisitor {
-                type Value = DoubleTimeTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DoubleTimeTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DoubleTimeTaiko> {
+        type Value = DeserializedGameMod<'de, DoubleTimeTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DoubleTimeTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DoubleTimeTaikoVisitor)
+            let gamemod = DoubleTimeTaiko {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DoubleTimeTaiko {
@@ -9224,29 +9158,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NightcoreTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NightcoreTaikoVisitor;
-            impl<'de> Visitor<'de> for NightcoreTaikoVisitor {
-                type Value = NightcoreTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NightcoreTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NightcoreTaiko> {
+        type Value = DeserializedGameMod<'de, NightcoreTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NightcoreTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(NightcoreTaikoVisitor)
+            let gamemod = NightcoreTaiko {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NightcoreTaiko {
@@ -9259,25 +9192,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HiddenTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HiddenTaikoVisitor;
-            impl<'de> Visitor<'de> for HiddenTaikoVisitor {
-                type Value = HiddenTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HiddenTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HiddenTaiko> {
+        type Value = DeserializedGameMod<'de, HiddenTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HiddenTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HiddenTaikoVisitor)
+            let gamemod = HiddenTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HiddenTaiko {
@@ -9287,33 +9219,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FlashlightTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FlashlightTaikoVisitor;
-            impl<'de> Visitor<'de> for FlashlightTaikoVisitor {
-                type Value = FlashlightTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FlashlightTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["size_multiplier", "combo_based_size"];
-                    let mut size_multiplier = None;
-                    let mut combo_based_size = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "size_multiplier" => size_multiplier = Some(map.next_value()?),
-                            "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FlashlightTaiko> {
+        type Value = DeserializedGameMod<'de, FlashlightTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FlashlightTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["size_multiplier", "combo_based_size"];
+            let mut unknown_key__ = None;
+            let mut size_multiplier = None;
+            let mut combo_based_size = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "size_multiplier" => size_multiplier = Some(map.next_value()?),
+                    "combo_based_size" => combo_based_size = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        size_multiplier: size_multiplier.unwrap_or_default(),
-                        combo_based_size: combo_based_size.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(FlashlightTaikoVisitor)
+            let gamemod = FlashlightTaiko {
+                size_multiplier: size_multiplier.unwrap_or_default(),
+                combo_based_size: combo_based_size.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FlashlightTaiko {
@@ -9330,36 +9260,35 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AccuracyChallengeTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AccuracyChallengeTaikoVisitor;
-            impl<'de> Visitor<'de> for AccuracyChallengeTaikoVisitor {
-                type Value = AccuracyChallengeTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AccuracyChallengeTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
-                    let mut minimum_accuracy = None;
-                    let mut accuracy_judge_mode = None;
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
-                            "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AccuracyChallengeTaiko> {
+        type Value = DeserializedGameMod<'de, AccuracyChallengeTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AccuracyChallengeTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] =
+                &["minimum_accuracy", "accuracy_judge_mode", "restart"];
+            let mut unknown_key__ = None;
+            let mut minimum_accuracy = None;
+            let mut accuracy_judge_mode = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
+                    "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        minimum_accuracy: minimum_accuracy.unwrap_or_default(),
-                        accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AccuracyChallengeTaikoVisitor)
+            let gamemod = AccuracyChallengeTaiko {
+                minimum_accuracy: minimum_accuracy.unwrap_or_default(),
+                accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AccuracyChallengeTaiko {
@@ -9380,29 +9309,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RandomTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RandomTaikoVisitor;
-            impl<'de> Visitor<'de> for RandomTaikoVisitor {
-                type Value = RandomTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RandomTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["seed"];
-                    let mut seed = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "seed" => seed = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RandomTaiko> {
+        type Value = DeserializedGameMod<'de, RandomTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RandomTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["seed"];
+            let mut unknown_key__ = None;
+            let mut seed = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "seed" => seed = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        seed: seed.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(RandomTaikoVisitor)
+            let gamemod = RandomTaiko {
+                seed: seed.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RandomTaiko {
@@ -9415,43 +9343,42 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DifficultyAdjustTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DifficultyAdjustTaikoVisitor;
-            impl<'de> Visitor<'de> for DifficultyAdjustTaikoVisitor {
-                type Value = DifficultyAdjustTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DifficultyAdjustTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "scroll_speed",
-                        "drain_rate",
-                        "overall_difficulty",
-                        "extended_limits",
-                    ];
-                    let mut scroll_speed = None;
-                    let mut drain_rate = None;
-                    let mut overall_difficulty = None;
-                    let mut extended_limits = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "scroll_speed" => scroll_speed = Some(map.next_value()?),
-                            "drain_rate" => drain_rate = Some(map.next_value()?),
-                            "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
-                            "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DifficultyAdjustTaiko> {
+        type Value = DeserializedGameMod<'de, DifficultyAdjustTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DifficultyAdjustTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "scroll_speed",
+                "drain_rate",
+                "overall_difficulty",
+                "extended_limits",
+            ];
+            let mut unknown_key__ = None;
+            let mut scroll_speed = None;
+            let mut drain_rate = None;
+            let mut overall_difficulty = None;
+            let mut extended_limits = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "scroll_speed" => scroll_speed = Some(map.next_value()?),
+                    "drain_rate" => drain_rate = Some(map.next_value()?),
+                    "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
+                    "extended_limits" => extended_limits = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        scroll_speed: scroll_speed.unwrap_or_default(),
-                        drain_rate: drain_rate.unwrap_or_default(),
-                        overall_difficulty: overall_difficulty.unwrap_or_default(),
-                        extended_limits: extended_limits.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DifficultyAdjustTaikoVisitor)
+            let gamemod = DifficultyAdjustTaiko {
+                scroll_speed: scroll_speed.unwrap_or_default(),
+                drain_rate: drain_rate.unwrap_or_default(),
+                overall_difficulty: overall_difficulty.unwrap_or_default(),
+                extended_limits: extended_limits.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DifficultyAdjustTaiko {
@@ -9476,25 +9403,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ClassicTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ClassicTaikoVisitor;
-            impl<'de> Visitor<'de> for ClassicTaikoVisitor {
-                type Value = ClassicTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ClassicTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ClassicTaiko> {
+        type Value = DeserializedGameMod<'de, ClassicTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ClassicTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ClassicTaikoVisitor)
+            let gamemod = ClassicTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ClassicTaiko {
@@ -9504,25 +9430,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SwapTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SwapTaikoVisitor;
-            impl<'de> Visitor<'de> for SwapTaikoVisitor {
-                type Value = SwapTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SwapTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SwapTaiko> {
+        type Value = DeserializedGameMod<'de, SwapTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SwapTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SwapTaikoVisitor)
+            let gamemod = SwapTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SwapTaiko {
@@ -9532,25 +9457,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SingleTapTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SingleTapTaikoVisitor;
-            impl<'de> Visitor<'de> for SingleTapTaikoVisitor {
-                type Value = SingleTapTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SingleTapTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SingleTapTaiko> {
+        type Value = DeserializedGameMod<'de, SingleTapTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SingleTapTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SingleTapTaikoVisitor)
+            let gamemod = SingleTapTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SingleTapTaiko {
@@ -9560,25 +9484,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ConstantSpeedTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ConstantSpeedTaikoVisitor;
-            impl<'de> Visitor<'de> for ConstantSpeedTaikoVisitor {
-                type Value = ConstantSpeedTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ConstantSpeedTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ConstantSpeedTaiko> {
+        type Value = DeserializedGameMod<'de, ConstantSpeedTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ConstantSpeedTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ConstantSpeedTaikoVisitor)
+            let gamemod = ConstantSpeedTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ConstantSpeedTaiko {
@@ -9588,25 +9511,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AutoplayTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AutoplayTaikoVisitor;
-            impl<'de> Visitor<'de> for AutoplayTaikoVisitor {
-                type Value = AutoplayTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AutoplayTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AutoplayTaiko> {
+        type Value = DeserializedGameMod<'de, AutoplayTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AutoplayTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(AutoplayTaikoVisitor)
+            let gamemod = AutoplayTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AutoplayTaiko {
@@ -9616,25 +9538,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for CinemaTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct CinemaTaikoVisitor;
-            impl<'de> Visitor<'de> for CinemaTaikoVisitor {
-                type Value = CinemaTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("CinemaTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<CinemaTaiko> {
+        type Value = DeserializedGameMod<'de, CinemaTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("CinemaTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(CinemaTaikoVisitor)
+            let gamemod = CinemaTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for CinemaTaiko {
@@ -9644,25 +9565,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RelaxTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RelaxTaikoVisitor;
-            impl<'de> Visitor<'de> for RelaxTaikoVisitor {
-                type Value = RelaxTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RelaxTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RelaxTaiko> {
+        type Value = DeserializedGameMod<'de, RelaxTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RelaxTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(RelaxTaikoVisitor)
+            let gamemod = RelaxTaiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RelaxTaiko {
@@ -9672,36 +9592,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindUpTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindUpTaikoVisitor;
-            impl<'de> Visitor<'de> for WindUpTaikoVisitor {
-                type Value = WindUpTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindUpTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindUpTaiko> {
+        type Value = DeserializedGameMod<'de, WindUpTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindUpTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindUpTaikoVisitor)
+            let gamemod = WindUpTaiko {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindUpTaiko {
@@ -9722,36 +9640,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindDownTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindDownTaikoVisitor;
-            impl<'de> Visitor<'de> for WindDownTaikoVisitor {
-                type Value = WindDownTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindDownTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindDownTaiko> {
+        type Value = DeserializedGameMod<'de, WindDownTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindDownTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindDownTaikoVisitor)
+            let gamemod = WindDownTaiko {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindDownTaiko {
@@ -9772,43 +9688,42 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MutedTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MutedTaikoVisitor;
-            impl<'de> Visitor<'de> for MutedTaikoVisitor {
-                type Value = MutedTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MutedTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "inverse_muting",
-                        "enable_metronome",
-                        "mute_combo_count",
-                        "affects_hit_sounds",
-                    ];
-                    let mut inverse_muting = None;
-                    let mut enable_metronome = None;
-                    let mut mute_combo_count = None;
-                    let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "inverse_muting" => inverse_muting = Some(map.next_value()?),
-                            "enable_metronome" => enable_metronome = Some(map.next_value()?),
-                            "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
-                            "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MutedTaiko> {
+        type Value = DeserializedGameMod<'de, MutedTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MutedTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "inverse_muting",
+                "enable_metronome",
+                "mute_combo_count",
+                "affects_hit_sounds",
+            ];
+            let mut unknown_key__ = None;
+            let mut inverse_muting = None;
+            let mut enable_metronome = None;
+            let mut mute_combo_count = None;
+            let mut affects_hit_sounds = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "inverse_muting" => inverse_muting = Some(map.next_value()?),
+                    "enable_metronome" => enable_metronome = Some(map.next_value()?),
+                    "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
+                    "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        inverse_muting: inverse_muting.unwrap_or_default(),
-                        enable_metronome: enable_metronome.unwrap_or_default(),
-                        mute_combo_count: mute_combo_count.unwrap_or_default(),
-                        affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(MutedTaikoVisitor)
+            let gamemod = MutedTaiko {
+                inverse_muting: inverse_muting.unwrap_or_default(),
+                enable_metronome: enable_metronome.unwrap_or_default(),
+                mute_combo_count: mute_combo_count.unwrap_or_default(),
+                affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MutedTaiko {
@@ -9833,32 +9748,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AdaptiveSpeedTaiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AdaptiveSpeedTaikoVisitor;
-            impl<'de> Visitor<'de> for AdaptiveSpeedTaikoVisitor {
-                type Value = AdaptiveSpeedTaiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AdaptiveSpeedTaiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AdaptiveSpeedTaiko> {
+        type Value = DeserializedGameMod<'de, AdaptiveSpeedTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AdaptiveSpeedTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AdaptiveSpeedTaikoVisitor)
+            let gamemod = AdaptiveSpeedTaiko {
+                initial_rate: initial_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AdaptiveSpeedTaiko {
@@ -9875,25 +9789,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ScoreV2Taiko {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ScoreV2TaikoVisitor;
-            impl<'de> Visitor<'de> for ScoreV2TaikoVisitor {
-                type Value = ScoreV2Taiko;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ScoreV2Taiko")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ScoreV2Taiko> {
+        type Value = DeserializedGameMod<'de, ScoreV2Taiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ScoreV2Taiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ScoreV2TaikoVisitor)
+            let gamemod = ScoreV2Taiko {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ScoreV2Taiko {
@@ -9903,29 +9816,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for EasyCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct EasyCatchVisitor;
-            impl<'de> Visitor<'de> for EasyCatchVisitor {
-                type Value = EasyCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("EasyCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["retries"];
-                    let mut retries = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "retries" => retries = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<EasyCatch> {
+        type Value = DeserializedGameMod<'de, EasyCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("EasyCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["retries"];
+            let mut unknown_key__ = None;
+            let mut retries = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "retries" => retries = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        retries: retries.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(EasyCatchVisitor)
+            let gamemod = EasyCatch {
+                retries: retries.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for EasyCatch {
@@ -9938,25 +9850,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoFailCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoFailCatchVisitor;
-            impl<'de> Visitor<'de> for NoFailCatchVisitor {
-                type Value = NoFailCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoFailCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoFailCatch> {
+        type Value = DeserializedGameMod<'de, NoFailCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoFailCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(NoFailCatchVisitor)
+            let gamemod = NoFailCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoFailCatch {
@@ -9966,32 +9877,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HalfTimeCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HalfTimeCatchVisitor;
-            impl<'de> Visitor<'de> for HalfTimeCatchVisitor {
-                type Value = HalfTimeCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HalfTimeCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HalfTimeCatch> {
+        type Value = DeserializedGameMod<'de, HalfTimeCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HalfTimeCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(HalfTimeCatchVisitor)
+            let gamemod = HalfTimeCatch {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HalfTimeCatch {
@@ -10008,29 +9918,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DaycoreCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DaycoreCatchVisitor;
-            impl<'de> Visitor<'de> for DaycoreCatchVisitor {
-                type Value = DaycoreCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DaycoreCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DaycoreCatch> {
+        type Value = DeserializedGameMod<'de, DaycoreCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DaycoreCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DaycoreCatchVisitor)
+            let gamemod = DaycoreCatch {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DaycoreCatch {
@@ -10043,25 +9952,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HardRockCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HardRockCatchVisitor;
-            impl<'de> Visitor<'de> for HardRockCatchVisitor {
-                type Value = HardRockCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HardRockCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HardRockCatch> {
+        type Value = DeserializedGameMod<'de, HardRockCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HardRockCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HardRockCatchVisitor)
+            let gamemod = HardRockCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HardRockCatch {
@@ -10071,29 +9979,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SuddenDeathCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SuddenDeathCatchVisitor;
-            impl<'de> Visitor<'de> for SuddenDeathCatchVisitor {
-                type Value = SuddenDeathCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SuddenDeathCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SuddenDeathCatch> {
+        type Value = DeserializedGameMod<'de, SuddenDeathCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SuddenDeathCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(SuddenDeathCatchVisitor)
+            let gamemod = SuddenDeathCatch {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SuddenDeathCatch {
@@ -10106,29 +10013,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for PerfectCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct PerfectCatchVisitor;
-            impl<'de> Visitor<'de> for PerfectCatchVisitor {
-                type Value = PerfectCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("PerfectCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<PerfectCatch> {
+        type Value = DeserializedGameMod<'de, PerfectCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("PerfectCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(PerfectCatchVisitor)
+            let gamemod = PerfectCatch {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for PerfectCatch {
@@ -10141,32 +10047,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DoubleTimeCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DoubleTimeCatchVisitor;
-            impl<'de> Visitor<'de> for DoubleTimeCatchVisitor {
-                type Value = DoubleTimeCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DoubleTimeCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DoubleTimeCatch> {
+        type Value = DeserializedGameMod<'de, DoubleTimeCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DoubleTimeCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DoubleTimeCatchVisitor)
+            let gamemod = DoubleTimeCatch {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DoubleTimeCatch {
@@ -10183,29 +10088,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NightcoreCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NightcoreCatchVisitor;
-            impl<'de> Visitor<'de> for NightcoreCatchVisitor {
-                type Value = NightcoreCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NightcoreCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NightcoreCatch> {
+        type Value = DeserializedGameMod<'de, NightcoreCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NightcoreCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(NightcoreCatchVisitor)
+            let gamemod = NightcoreCatch {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NightcoreCatch {
@@ -10218,25 +10122,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HiddenCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HiddenCatchVisitor;
-            impl<'de> Visitor<'de> for HiddenCatchVisitor {
-                type Value = HiddenCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HiddenCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HiddenCatch> {
+        type Value = DeserializedGameMod<'de, HiddenCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HiddenCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HiddenCatchVisitor)
+            let gamemod = HiddenCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HiddenCatch {
@@ -10246,33 +10149,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FlashlightCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FlashlightCatchVisitor;
-            impl<'de> Visitor<'de> for FlashlightCatchVisitor {
-                type Value = FlashlightCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FlashlightCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["size_multiplier", "combo_based_size"];
-                    let mut size_multiplier = None;
-                    let mut combo_based_size = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "size_multiplier" => size_multiplier = Some(map.next_value()?),
-                            "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FlashlightCatch> {
+        type Value = DeserializedGameMod<'de, FlashlightCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FlashlightCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["size_multiplier", "combo_based_size"];
+            let mut unknown_key__ = None;
+            let mut size_multiplier = None;
+            let mut combo_based_size = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "size_multiplier" => size_multiplier = Some(map.next_value()?),
+                    "combo_based_size" => combo_based_size = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        size_multiplier: size_multiplier.unwrap_or_default(),
-                        combo_based_size: combo_based_size.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(FlashlightCatchVisitor)
+            let gamemod = FlashlightCatch {
+                size_multiplier: size_multiplier.unwrap_or_default(),
+                combo_based_size: combo_based_size.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FlashlightCatch {
@@ -10289,36 +10190,35 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AccuracyChallengeCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AccuracyChallengeCatchVisitor;
-            impl<'de> Visitor<'de> for AccuracyChallengeCatchVisitor {
-                type Value = AccuracyChallengeCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AccuracyChallengeCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
-                    let mut minimum_accuracy = None;
-                    let mut accuracy_judge_mode = None;
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
-                            "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AccuracyChallengeCatch> {
+        type Value = DeserializedGameMod<'de, AccuracyChallengeCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AccuracyChallengeCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] =
+                &["minimum_accuracy", "accuracy_judge_mode", "restart"];
+            let mut unknown_key__ = None;
+            let mut minimum_accuracy = None;
+            let mut accuracy_judge_mode = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
+                    "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        minimum_accuracy: minimum_accuracy.unwrap_or_default(),
-                        accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AccuracyChallengeCatchVisitor)
+            let gamemod = AccuracyChallengeCatch {
+                minimum_accuracy: minimum_accuracy.unwrap_or_default(),
+                accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AccuracyChallengeCatch {
@@ -10339,51 +10239,50 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DifficultyAdjustCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DifficultyAdjustCatchVisitor;
-            impl<'de> Visitor<'de> for DifficultyAdjustCatchVisitor {
-                type Value = DifficultyAdjustCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DifficultyAdjustCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "circle_size",
-                        "approach_rate",
-                        "hard_rock_offsets",
-                        "drain_rate",
-                        "overall_difficulty",
-                        "extended_limits",
-                    ];
-                    let mut circle_size = None;
-                    let mut approach_rate = None;
-                    let mut hard_rock_offsets = None;
-                    let mut drain_rate = None;
-                    let mut overall_difficulty = None;
-                    let mut extended_limits = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "circle_size" => circle_size = Some(map.next_value()?),
-                            "approach_rate" => approach_rate = Some(map.next_value()?),
-                            "hard_rock_offsets" => hard_rock_offsets = Some(map.next_value()?),
-                            "drain_rate" => drain_rate = Some(map.next_value()?),
-                            "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
-                            "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DifficultyAdjustCatch> {
+        type Value = DeserializedGameMod<'de, DifficultyAdjustCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DifficultyAdjustCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "circle_size",
+                "approach_rate",
+                "hard_rock_offsets",
+                "drain_rate",
+                "overall_difficulty",
+                "extended_limits",
+            ];
+            let mut unknown_key__ = None;
+            let mut circle_size = None;
+            let mut approach_rate = None;
+            let mut hard_rock_offsets = None;
+            let mut drain_rate = None;
+            let mut overall_difficulty = None;
+            let mut extended_limits = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "circle_size" => circle_size = Some(map.next_value()?),
+                    "approach_rate" => approach_rate = Some(map.next_value()?),
+                    "hard_rock_offsets" => hard_rock_offsets = Some(map.next_value()?),
+                    "drain_rate" => drain_rate = Some(map.next_value()?),
+                    "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
+                    "extended_limits" => extended_limits = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        circle_size: circle_size.unwrap_or_default(),
-                        approach_rate: approach_rate.unwrap_or_default(),
-                        hard_rock_offsets: hard_rock_offsets.unwrap_or_default(),
-                        drain_rate: drain_rate.unwrap_or_default(),
-                        overall_difficulty: overall_difficulty.unwrap_or_default(),
-                        extended_limits: extended_limits.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DifficultyAdjustCatchVisitor)
+            let gamemod = DifficultyAdjustCatch {
+                circle_size: circle_size.unwrap_or_default(),
+                approach_rate: approach_rate.unwrap_or_default(),
+                hard_rock_offsets: hard_rock_offsets.unwrap_or_default(),
+                drain_rate: drain_rate.unwrap_or_default(),
+                overall_difficulty: overall_difficulty.unwrap_or_default(),
+                extended_limits: extended_limits.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DifficultyAdjustCatch {
@@ -10416,25 +10315,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ClassicCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ClassicCatchVisitor;
-            impl<'de> Visitor<'de> for ClassicCatchVisitor {
-                type Value = ClassicCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ClassicCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ClassicCatch> {
+        type Value = DeserializedGameMod<'de, ClassicCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ClassicCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ClassicCatchVisitor)
+            let gamemod = ClassicCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ClassicCatch {
@@ -10444,25 +10342,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MirrorCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MirrorCatchVisitor;
-            impl<'de> Visitor<'de> for MirrorCatchVisitor {
-                type Value = MirrorCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MirrorCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MirrorCatch> {
+        type Value = DeserializedGameMod<'de, MirrorCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MirrorCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(MirrorCatchVisitor)
+            let gamemod = MirrorCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MirrorCatch {
@@ -10472,25 +10369,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AutoplayCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AutoplayCatchVisitor;
-            impl<'de> Visitor<'de> for AutoplayCatchVisitor {
-                type Value = AutoplayCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AutoplayCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AutoplayCatch> {
+        type Value = DeserializedGameMod<'de, AutoplayCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AutoplayCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(AutoplayCatchVisitor)
+            let gamemod = AutoplayCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AutoplayCatch {
@@ -10500,25 +10396,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for CinemaCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct CinemaCatchVisitor;
-            impl<'de> Visitor<'de> for CinemaCatchVisitor {
-                type Value = CinemaCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("CinemaCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<CinemaCatch> {
+        type Value = DeserializedGameMod<'de, CinemaCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("CinemaCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(CinemaCatchVisitor)
+            let gamemod = CinemaCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for CinemaCatch {
@@ -10528,25 +10423,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RelaxCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RelaxCatchVisitor;
-            impl<'de> Visitor<'de> for RelaxCatchVisitor {
-                type Value = RelaxCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RelaxCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RelaxCatch> {
+        type Value = DeserializedGameMod<'de, RelaxCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RelaxCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(RelaxCatchVisitor)
+            let gamemod = RelaxCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RelaxCatch {
@@ -10556,36 +10450,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindUpCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindUpCatchVisitor;
-            impl<'de> Visitor<'de> for WindUpCatchVisitor {
-                type Value = WindUpCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindUpCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindUpCatch> {
+        type Value = DeserializedGameMod<'de, WindUpCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindUpCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindUpCatchVisitor)
+            let gamemod = WindUpCatch {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindUpCatch {
@@ -10606,36 +10498,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindDownCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindDownCatchVisitor;
-            impl<'de> Visitor<'de> for WindDownCatchVisitor {
-                type Value = WindDownCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindDownCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindDownCatch> {
+        type Value = DeserializedGameMod<'de, WindDownCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindDownCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindDownCatchVisitor)
+            let gamemod = WindDownCatch {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindDownCatch {
@@ -10656,25 +10546,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FloatingFruitsCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FloatingFruitsCatchVisitor;
-            impl<'de> Visitor<'de> for FloatingFruitsCatchVisitor {
-                type Value = FloatingFruitsCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FloatingFruitsCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FloatingFruitsCatch> {
+        type Value = DeserializedGameMod<'de, FloatingFruitsCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FloatingFruitsCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(FloatingFruitsCatchVisitor)
+            let gamemod = FloatingFruitsCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FloatingFruitsCatch {
@@ -10684,43 +10573,42 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MutedCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MutedCatchVisitor;
-            impl<'de> Visitor<'de> for MutedCatchVisitor {
-                type Value = MutedCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MutedCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "inverse_muting",
-                        "enable_metronome",
-                        "mute_combo_count",
-                        "affects_hit_sounds",
-                    ];
-                    let mut inverse_muting = None;
-                    let mut enable_metronome = None;
-                    let mut mute_combo_count = None;
-                    let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "inverse_muting" => inverse_muting = Some(map.next_value()?),
-                            "enable_metronome" => enable_metronome = Some(map.next_value()?),
-                            "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
-                            "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MutedCatch> {
+        type Value = DeserializedGameMod<'de, MutedCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MutedCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "inverse_muting",
+                "enable_metronome",
+                "mute_combo_count",
+                "affects_hit_sounds",
+            ];
+            let mut unknown_key__ = None;
+            let mut inverse_muting = None;
+            let mut enable_metronome = None;
+            let mut mute_combo_count = None;
+            let mut affects_hit_sounds = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "inverse_muting" => inverse_muting = Some(map.next_value()?),
+                    "enable_metronome" => enable_metronome = Some(map.next_value()?),
+                    "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
+                    "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        inverse_muting: inverse_muting.unwrap_or_default(),
-                        enable_metronome: enable_metronome.unwrap_or_default(),
-                        mute_combo_count: mute_combo_count.unwrap_or_default(),
-                        affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(MutedCatchVisitor)
+            let gamemod = MutedCatch {
+                inverse_muting: inverse_muting.unwrap_or_default(),
+                enable_metronome: enable_metronome.unwrap_or_default(),
+                mute_combo_count: mute_combo_count.unwrap_or_default(),
+                affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MutedCatch {
@@ -10745,29 +10633,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoScopeCatch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoScopeCatchVisitor;
-            impl<'de> Visitor<'de> for NoScopeCatchVisitor {
-                type Value = NoScopeCatch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoScopeCatch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
-                    let mut hidden_combo_count = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoScopeCatch> {
+        type Value = DeserializedGameMod<'de, NoScopeCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoScopeCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["hidden_combo_count"];
+            let mut unknown_key__ = None;
+            let mut hidden_combo_count = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "hidden_combo_count" => hidden_combo_count = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        hidden_combo_count: hidden_combo_count.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(NoScopeCatchVisitor)
+            let gamemod = NoScopeCatch {
+                hidden_combo_count: hidden_combo_count.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoScopeCatch {
@@ -10780,25 +10667,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ScoreV2Catch {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ScoreV2CatchVisitor;
-            impl<'de> Visitor<'de> for ScoreV2CatchVisitor {
-                type Value = ScoreV2Catch;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ScoreV2Catch")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ScoreV2Catch> {
+        type Value = DeserializedGameMod<'de, ScoreV2Catch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ScoreV2Catch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ScoreV2CatchVisitor)
+            let gamemod = ScoreV2Catch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ScoreV2Catch {
@@ -10808,29 +10694,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for EasyMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct EasyManiaVisitor;
-            impl<'de> Visitor<'de> for EasyManiaVisitor {
-                type Value = EasyMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("EasyMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["retries"];
-                    let mut retries = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "retries" => retries = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<EasyMania> {
+        type Value = DeserializedGameMod<'de, EasyMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("EasyMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["retries"];
+            let mut unknown_key__ = None;
+            let mut retries = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "retries" => retries = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        retries: retries.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(EasyManiaVisitor)
+            let gamemod = EasyMania {
+                retries: retries.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for EasyMania {
@@ -10843,25 +10728,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoFailMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoFailManiaVisitor;
-            impl<'de> Visitor<'de> for NoFailManiaVisitor {
-                type Value = NoFailMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoFailMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoFailMania> {
+        type Value = DeserializedGameMod<'de, NoFailMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoFailMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(NoFailManiaVisitor)
+            let gamemod = NoFailMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoFailMania {
@@ -10871,32 +10755,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HalfTimeMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HalfTimeManiaVisitor;
-            impl<'de> Visitor<'de> for HalfTimeManiaVisitor {
-                type Value = HalfTimeMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HalfTimeMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HalfTimeMania> {
+        type Value = DeserializedGameMod<'de, HalfTimeMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HalfTimeMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(HalfTimeManiaVisitor)
+            let gamemod = HalfTimeMania {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HalfTimeMania {
@@ -10913,29 +10796,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DaycoreMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DaycoreManiaVisitor;
-            impl<'de> Visitor<'de> for DaycoreManiaVisitor {
-                type Value = DaycoreMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DaycoreMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DaycoreMania> {
+        type Value = DeserializedGameMod<'de, DaycoreMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DaycoreMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DaycoreManiaVisitor)
+            let gamemod = DaycoreMania {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DaycoreMania {
@@ -10948,25 +10830,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NoReleaseMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NoReleaseManiaVisitor;
-            impl<'de> Visitor<'de> for NoReleaseManiaVisitor {
-                type Value = NoReleaseMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NoReleaseMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NoReleaseMania> {
+        type Value = DeserializedGameMod<'de, NoReleaseMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NoReleaseMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(NoReleaseManiaVisitor)
+            let gamemod = NoReleaseMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NoReleaseMania {
@@ -10976,25 +10857,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HardRockMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HardRockManiaVisitor;
-            impl<'de> Visitor<'de> for HardRockManiaVisitor {
-                type Value = HardRockMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HardRockMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HardRockMania> {
+        type Value = DeserializedGameMod<'de, HardRockMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HardRockMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HardRockManiaVisitor)
+            let gamemod = HardRockMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HardRockMania {
@@ -11004,29 +10884,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SuddenDeathMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SuddenDeathManiaVisitor;
-            impl<'de> Visitor<'de> for SuddenDeathManiaVisitor {
-                type Value = SuddenDeathMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SuddenDeathMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SuddenDeathMania> {
+        type Value = DeserializedGameMod<'de, SuddenDeathMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SuddenDeathMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(SuddenDeathManiaVisitor)
+            let gamemod = SuddenDeathMania {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SuddenDeathMania {
@@ -11039,29 +10918,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for PerfectMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct PerfectManiaVisitor;
-            impl<'de> Visitor<'de> for PerfectManiaVisitor {
-                type Value = PerfectMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("PerfectMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["restart"];
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<PerfectMania> {
+        type Value = DeserializedGameMod<'de, PerfectMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("PerfectMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["restart"];
+            let mut unknown_key__ = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(PerfectManiaVisitor)
+            let gamemod = PerfectMania {
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for PerfectMania {
@@ -11074,32 +10952,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DoubleTimeMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DoubleTimeManiaVisitor;
-            impl<'de> Visitor<'de> for DoubleTimeManiaVisitor {
-                type Value = DoubleTimeMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DoubleTimeMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
-                    let mut speed_change = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DoubleTimeMania> {
+        type Value = DeserializedGameMod<'de, DoubleTimeMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DoubleTimeMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DoubleTimeManiaVisitor)
+            let gamemod = DoubleTimeMania {
+                speed_change: speed_change.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DoubleTimeMania {
@@ -11116,29 +10993,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NightcoreMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NightcoreManiaVisitor;
-            impl<'de> Visitor<'de> for NightcoreManiaVisitor {
-                type Value = NightcoreMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NightcoreMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["speed_change"];
-                    let mut speed_change = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "speed_change" => speed_change = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NightcoreMania> {
+        type Value = DeserializedGameMod<'de, NightcoreMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NightcoreMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["speed_change"];
+            let mut unknown_key__ = None;
+            let mut speed_change = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "speed_change" => speed_change = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        speed_change: speed_change.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(NightcoreManiaVisitor)
+            let gamemod = NightcoreMania {
+                speed_change: speed_change.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NightcoreMania {
@@ -11151,25 +11027,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FadeInMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FadeInManiaVisitor;
-            impl<'de> Visitor<'de> for FadeInManiaVisitor {
-                type Value = FadeInMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FadeInMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FadeInMania> {
+        type Value = DeserializedGameMod<'de, FadeInMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FadeInMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(FadeInManiaVisitor)
+            let gamemod = FadeInMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FadeInMania {
@@ -11179,25 +11054,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HiddenMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HiddenManiaVisitor;
-            impl<'de> Visitor<'de> for HiddenManiaVisitor {
-                type Value = HiddenMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HiddenMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HiddenMania> {
+        type Value = DeserializedGameMod<'de, HiddenMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HiddenMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HiddenManiaVisitor)
+            let gamemod = HiddenMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HiddenMania {
@@ -11207,32 +11081,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for CoverMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct CoverManiaVisitor;
-            impl<'de> Visitor<'de> for CoverManiaVisitor {
-                type Value = CoverMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("CoverMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["coverage", "direction"];
-                    let mut coverage = None;
-                    let mut direction = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "coverage" => coverage = Some(map.next_value()?),
-                            "direction" => direction = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<CoverMania> {
+        type Value = DeserializedGameMod<'de, CoverMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("CoverMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["coverage", "direction"];
+            let mut unknown_key__ = None;
+            let mut coverage = None;
+            let mut direction = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "coverage" => coverage = Some(map.next_value()?),
+                    "direction" => direction = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        coverage: coverage.unwrap_or_default(),
-                        direction: direction.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(CoverManiaVisitor)
+            let gamemod = CoverMania {
+                coverage: coverage.unwrap_or_default(),
+                direction: direction.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for CoverMania {
@@ -11248,33 +11121,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FlashlightMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FlashlightManiaVisitor;
-            impl<'de> Visitor<'de> for FlashlightManiaVisitor {
-                type Value = FlashlightMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FlashlightMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["size_multiplier", "combo_based_size"];
-                    let mut size_multiplier = None;
-                    let mut combo_based_size = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "size_multiplier" => size_multiplier = Some(map.next_value()?),
-                            "combo_based_size" => combo_based_size = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FlashlightMania> {
+        type Value = DeserializedGameMod<'de, FlashlightMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FlashlightMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["size_multiplier", "combo_based_size"];
+            let mut unknown_key__ = None;
+            let mut size_multiplier = None;
+            let mut combo_based_size = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "size_multiplier" => size_multiplier = Some(map.next_value()?),
+                    "combo_based_size" => combo_based_size = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        size_multiplier: size_multiplier.unwrap_or_default(),
-                        combo_based_size: combo_based_size.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(FlashlightManiaVisitor)
+            let gamemod = FlashlightMania {
+                size_multiplier: size_multiplier.unwrap_or_default(),
+                combo_based_size: combo_based_size.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FlashlightMania {
@@ -11291,36 +11162,35 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AccuracyChallengeMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AccuracyChallengeManiaVisitor;
-            impl<'de> Visitor<'de> for AccuracyChallengeManiaVisitor {
-                type Value = AccuracyChallengeMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AccuracyChallengeMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["minimum_accuracy", "accuracy_judge_mode", "restart"];
-                    let mut minimum_accuracy = None;
-                    let mut accuracy_judge_mode = None;
-                    let mut restart = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
-                            "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
-                            "restart" => restart = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AccuracyChallengeMania> {
+        type Value = DeserializedGameMod<'de, AccuracyChallengeMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AccuracyChallengeMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] =
+                &["minimum_accuracy", "accuracy_judge_mode", "restart"];
+            let mut unknown_key__ = None;
+            let mut minimum_accuracy = None;
+            let mut accuracy_judge_mode = None;
+            let mut restart = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "minimum_accuracy" => minimum_accuracy = Some(map.next_value()?),
+                    "accuracy_judge_mode" => accuracy_judge_mode = Some(map.next_value()?),
+                    "restart" => restart = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        minimum_accuracy: minimum_accuracy.unwrap_or_default(),
-                        accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
-                        restart: restart.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AccuracyChallengeManiaVisitor)
+            let gamemod = AccuracyChallengeMania {
+                minimum_accuracy: minimum_accuracy.unwrap_or_default(),
+                accuracy_judge_mode: accuracy_judge_mode.unwrap_or_default(),
+                restart: restart.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AccuracyChallengeMania {
@@ -11341,29 +11211,28 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for RandomMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct RandomManiaVisitor;
-            impl<'de> Visitor<'de> for RandomManiaVisitor {
-                type Value = RandomMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("RandomMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["seed"];
-                    let mut seed = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "seed" => seed = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<RandomMania> {
+        type Value = DeserializedGameMod<'de, RandomMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("RandomMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["seed"];
+            let mut unknown_key__ = None;
+            let mut seed = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "seed" => seed = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        seed: seed.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(RandomManiaVisitor)
+            let gamemod = RandomMania {
+                seed: seed.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for RandomMania {
@@ -11376,25 +11245,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DualStagesMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DualStagesManiaVisitor;
-            impl<'de> Visitor<'de> for DualStagesManiaVisitor {
-                type Value = DualStagesMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DualStagesMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DualStagesMania> {
+        type Value = DeserializedGameMod<'de, DualStagesMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DualStagesMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(DualStagesManiaVisitor)
+            let gamemod = DualStagesMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DualStagesMania {
@@ -11404,25 +11272,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MirrorMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MirrorManiaVisitor;
-            impl<'de> Visitor<'de> for MirrorManiaVisitor {
-                type Value = MirrorMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MirrorMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MirrorMania> {
+        type Value = DeserializedGameMod<'de, MirrorMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MirrorMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(MirrorManiaVisitor)
+            let gamemod = MirrorMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MirrorMania {
@@ -11432,36 +11299,35 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for DifficultyAdjustMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct DifficultyAdjustManiaVisitor;
-            impl<'de> Visitor<'de> for DifficultyAdjustManiaVisitor {
-                type Value = DifficultyAdjustMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("DifficultyAdjustMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["drain_rate", "overall_difficulty", "extended_limits"];
-                    let mut drain_rate = None;
-                    let mut overall_difficulty = None;
-                    let mut extended_limits = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "drain_rate" => drain_rate = Some(map.next_value()?),
-                            "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
-                            "extended_limits" => extended_limits = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<DifficultyAdjustMania> {
+        type Value = DeserializedGameMod<'de, DifficultyAdjustMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("DifficultyAdjustMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] =
+                &["drain_rate", "overall_difficulty", "extended_limits"];
+            let mut unknown_key__ = None;
+            let mut drain_rate = None;
+            let mut overall_difficulty = None;
+            let mut extended_limits = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "drain_rate" => drain_rate = Some(map.next_value()?),
+                    "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
+                    "extended_limits" => extended_limits = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        drain_rate: drain_rate.unwrap_or_default(),
-                        overall_difficulty: overall_difficulty.unwrap_or_default(),
-                        extended_limits: extended_limits.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(DifficultyAdjustManiaVisitor)
+            let gamemod = DifficultyAdjustMania {
+                drain_rate: drain_rate.unwrap_or_default(),
+                overall_difficulty: overall_difficulty.unwrap_or_default(),
+                extended_limits: extended_limits.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for DifficultyAdjustMania {
@@ -11482,25 +11348,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ClassicMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ClassicManiaVisitor;
-            impl<'de> Visitor<'de> for ClassicManiaVisitor {
-                type Value = ClassicMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ClassicMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ClassicMania> {
+        type Value = DeserializedGameMod<'de, ClassicMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ClassicMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ClassicManiaVisitor)
+            let gamemod = ClassicMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ClassicMania {
@@ -11510,25 +11375,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for InvertMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct InvertManiaVisitor;
-            impl<'de> Visitor<'de> for InvertManiaVisitor {
-                type Value = InvertMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("InvertMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<InvertMania> {
+        type Value = DeserializedGameMod<'de, InvertMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("InvertMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(InvertManiaVisitor)
+            let gamemod = InvertMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for InvertMania {
@@ -11538,25 +11402,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ConstantSpeedMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ConstantSpeedManiaVisitor;
-            impl<'de> Visitor<'de> for ConstantSpeedManiaVisitor {
-                type Value = ConstantSpeedMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ConstantSpeedMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ConstantSpeedMania> {
+        type Value = DeserializedGameMod<'de, ConstantSpeedMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ConstantSpeedMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ConstantSpeedManiaVisitor)
+            let gamemod = ConstantSpeedMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ConstantSpeedMania {
@@ -11566,25 +11429,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for HoldOffMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct HoldOffManiaVisitor;
-            impl<'de> Visitor<'de> for HoldOffManiaVisitor {
-                type Value = HoldOffMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("HoldOffMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<HoldOffMania> {
+        type Value = DeserializedGameMod<'de, HoldOffMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("HoldOffMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(HoldOffManiaVisitor)
+            let gamemod = HoldOffMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for HoldOffMania {
@@ -11594,25 +11456,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for OneKeyMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct OneKeyManiaVisitor;
-            impl<'de> Visitor<'de> for OneKeyManiaVisitor {
-                type Value = OneKeyMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("OneKeyMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<OneKeyMania> {
+        type Value = DeserializedGameMod<'de, OneKeyMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("OneKeyMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(OneKeyManiaVisitor)
+            let gamemod = OneKeyMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for OneKeyMania {
@@ -11622,25 +11483,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for TwoKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct TwoKeysManiaVisitor;
-            impl<'de> Visitor<'de> for TwoKeysManiaVisitor {
-                type Value = TwoKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("TwoKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<TwoKeysMania> {
+        type Value = DeserializedGameMod<'de, TwoKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TwoKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(TwoKeysManiaVisitor)
+            let gamemod = TwoKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for TwoKeysMania {
@@ -11650,25 +11510,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ThreeKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ThreeKeysManiaVisitor;
-            impl<'de> Visitor<'de> for ThreeKeysManiaVisitor {
-                type Value = ThreeKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ThreeKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ThreeKeysMania> {
+        type Value = DeserializedGameMod<'de, ThreeKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ThreeKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ThreeKeysManiaVisitor)
+            let gamemod = ThreeKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ThreeKeysMania {
@@ -11678,25 +11537,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FourKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FourKeysManiaVisitor;
-            impl<'de> Visitor<'de> for FourKeysManiaVisitor {
-                type Value = FourKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FourKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FourKeysMania> {
+        type Value = DeserializedGameMod<'de, FourKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FourKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(FourKeysManiaVisitor)
+            let gamemod = FourKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FourKeysMania {
@@ -11706,25 +11564,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for FiveKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct FiveKeysManiaVisitor;
-            impl<'de> Visitor<'de> for FiveKeysManiaVisitor {
-                type Value = FiveKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("FiveKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<FiveKeysMania> {
+        type Value = DeserializedGameMod<'de, FiveKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("FiveKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(FiveKeysManiaVisitor)
+            let gamemod = FiveKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for FiveKeysMania {
@@ -11734,25 +11591,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SixKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SixKeysManiaVisitor;
-            impl<'de> Visitor<'de> for SixKeysManiaVisitor {
-                type Value = SixKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SixKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SixKeysMania> {
+        type Value = DeserializedGameMod<'de, SixKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SixKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SixKeysManiaVisitor)
+            let gamemod = SixKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SixKeysMania {
@@ -11762,25 +11618,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for SevenKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct SevenKeysManiaVisitor;
-            impl<'de> Visitor<'de> for SevenKeysManiaVisitor {
-                type Value = SevenKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("SevenKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<SevenKeysMania> {
+        type Value = DeserializedGameMod<'de, SevenKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SevenKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(SevenKeysManiaVisitor)
+            let gamemod = SevenKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for SevenKeysMania {
@@ -11790,25 +11645,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for EightKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct EightKeysManiaVisitor;
-            impl<'de> Visitor<'de> for EightKeysManiaVisitor {
-                type Value = EightKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("EightKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<EightKeysMania> {
+        type Value = DeserializedGameMod<'de, EightKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("EightKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(EightKeysManiaVisitor)
+            let gamemod = EightKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for EightKeysMania {
@@ -11818,25 +11672,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for NineKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct NineKeysManiaVisitor;
-            impl<'de> Visitor<'de> for NineKeysManiaVisitor {
-                type Value = NineKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("NineKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<NineKeysMania> {
+        type Value = DeserializedGameMod<'de, NineKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("NineKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(NineKeysManiaVisitor)
+            let gamemod = NineKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for NineKeysMania {
@@ -11846,25 +11699,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for TenKeysMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct TenKeysManiaVisitor;
-            impl<'de> Visitor<'de> for TenKeysManiaVisitor {
-                type Value = TenKeysMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("TenKeysMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<TenKeysMania> {
+        type Value = DeserializedGameMod<'de, TenKeysMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TenKeysMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(TenKeysManiaVisitor)
+            let gamemod = TenKeysMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for TenKeysMania {
@@ -11874,25 +11726,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AutoplayMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AutoplayManiaVisitor;
-            impl<'de> Visitor<'de> for AutoplayManiaVisitor {
-                type Value = AutoplayMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AutoplayMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AutoplayMania> {
+        type Value = DeserializedGameMod<'de, AutoplayMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AutoplayMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(AutoplayManiaVisitor)
+            let gamemod = AutoplayMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AutoplayMania {
@@ -11902,25 +11753,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for CinemaMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct CinemaManiaVisitor;
-            impl<'de> Visitor<'de> for CinemaManiaVisitor {
-                type Value = CinemaMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("CinemaMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<CinemaMania> {
+        type Value = DeserializedGameMod<'de, CinemaMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("CinemaMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(CinemaManiaVisitor)
+            let gamemod = CinemaMania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for CinemaMania {
@@ -11930,36 +11780,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindUpMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindUpManiaVisitor;
-            impl<'de> Visitor<'de> for WindUpManiaVisitor {
-                type Value = WindUpMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindUpMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindUpMania> {
+        type Value = DeserializedGameMod<'de, WindUpMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindUpMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindUpManiaVisitor)
+            let gamemod = WindUpMania {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindUpMania {
@@ -11980,36 +11828,34 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for WindDownMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct WindDownManiaVisitor;
-            impl<'de> Visitor<'de> for WindDownManiaVisitor {
-                type Value = WindDownMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("WindDownMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] =
-                        &["initial_rate", "final_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut final_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "final_rate" => final_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<WindDownMania> {
+        type Value = DeserializedGameMod<'de, WindDownMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("WindDownMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "final_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut final_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "final_rate" => final_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        final_rate: final_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(WindDownManiaVisitor)
+            let gamemod = WindDownMania {
+                initial_rate: initial_rate.unwrap_or_default(),
+                final_rate: final_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for WindDownMania {
@@ -12030,43 +11876,42 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for MutedMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct MutedManiaVisitor;
-            impl<'de> Visitor<'de> for MutedManiaVisitor {
-                type Value = MutedMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("MutedMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[
-                        "inverse_muting",
-                        "enable_metronome",
-                        "mute_combo_count",
-                        "affects_hit_sounds",
-                    ];
-                    let mut inverse_muting = None;
-                    let mut enable_metronome = None;
-                    let mut mute_combo_count = None;
-                    let mut affects_hit_sounds = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "inverse_muting" => inverse_muting = Some(map.next_value()?),
-                            "enable_metronome" => enable_metronome = Some(map.next_value()?),
-                            "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
-                            "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<MutedMania> {
+        type Value = DeserializedGameMod<'de, MutedMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MutedMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "inverse_muting",
+                "enable_metronome",
+                "mute_combo_count",
+                "affects_hit_sounds",
+            ];
+            let mut unknown_key__ = None;
+            let mut inverse_muting = None;
+            let mut enable_metronome = None;
+            let mut mute_combo_count = None;
+            let mut affects_hit_sounds = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "inverse_muting" => inverse_muting = Some(map.next_value()?),
+                    "enable_metronome" => enable_metronome = Some(map.next_value()?),
+                    "mute_combo_count" => mute_combo_count = Some(map.next_value()?),
+                    "affects_hit_sounds" => affects_hit_sounds = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        inverse_muting: inverse_muting.unwrap_or_default(),
-                        enable_metronome: enable_metronome.unwrap_or_default(),
-                        mute_combo_count: mute_combo_count.unwrap_or_default(),
-                        affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(MutedManiaVisitor)
+            let gamemod = MutedMania {
+                inverse_muting: inverse_muting.unwrap_or_default(),
+                enable_metronome: enable_metronome.unwrap_or_default(),
+                mute_combo_count: mute_combo_count.unwrap_or_default(),
+                affects_hit_sounds: affects_hit_sounds.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for MutedMania {
@@ -12091,32 +11936,31 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for AdaptiveSpeedMania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct AdaptiveSpeedManiaVisitor;
-            impl<'de> Visitor<'de> for AdaptiveSpeedManiaVisitor {
-                type Value = AdaptiveSpeedMania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("AdaptiveSpeedMania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
-                    let mut initial_rate = None;
-                    let mut adjust_pitch = None;
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            "initial_rate" => initial_rate = Some(map.next_value()?),
-                            "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<AdaptiveSpeedMania> {
+        type Value = DeserializedGameMod<'de, AdaptiveSpeedMania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("AdaptiveSpeedMania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &["initial_rate", "adjust_pitch"];
+            let mut unknown_key__ = None;
+            let mut initial_rate = None;
+            let mut adjust_pitch = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "initial_rate" => initial_rate = Some(map.next_value()?),
+                    "adjust_pitch" => adjust_pitch = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {
-                        initial_rate: initial_rate.unwrap_or_default(),
-                        adjust_pitch: adjust_pitch.unwrap_or_default(),
-                    })
                 }
             }
-            d.deserialize_map(AdaptiveSpeedManiaVisitor)
+            let gamemod = AdaptiveSpeedMania {
+                initial_rate: initial_rate.unwrap_or_default(),
+                adjust_pitch: adjust_pitch.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for AdaptiveSpeedMania {
@@ -12133,25 +11977,24 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Deserialize<'de> for ScoreV2Mania {
-        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-            struct ScoreV2ManiaVisitor;
-            impl<'de> Visitor<'de> for ScoreV2ManiaVisitor {
-                type Value = ScoreV2Mania;
-                fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                    f.write_str("ScoreV2Mania")
-                }
-                fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                    const FIELDS: &'static [&'static str] = &[];
-                    while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                        match key.as_str() {
-                            _ => return Err(DeError::unknown_field(key.as_str(), FIELDS)),
-                        }
+    impl<'de> Visitor<'de> for GameModVisitor<ScoreV2Mania> {
+        type Value = DeserializedGameMod<'de, ScoreV2Mania>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("ScoreV2Mania")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
                     }
-                    Ok(Self::Value {})
                 }
             }
-            d.deserialize_map(ScoreV2ManiaVisitor)
+            let gamemod = ScoreV2Mania {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
         }
     }
     impl Serialize for ScoreV2Mania {
@@ -12192,170 +12035,420 @@ const _: () = {
         fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
             let d = MapAccessDeserializer::new(map);
             let res = match (self.acronym, self.mode) {
-                ("EZ", GameMode::Osu) => GameMod::EasyOsu(Deserialize::deserialize(d)?),
-                ("NF", GameMode::Osu) => GameMod::NoFailOsu(Deserialize::deserialize(d)?),
-                ("HT", GameMode::Osu) => GameMod::HalfTimeOsu(Deserialize::deserialize(d)?),
-                ("DC", GameMode::Osu) => GameMod::DaycoreOsu(Deserialize::deserialize(d)?),
-                ("HR", GameMode::Osu) => GameMod::HardRockOsu(Deserialize::deserialize(d)?),
-                ("SD", GameMode::Osu) => GameMod::SuddenDeathOsu(Deserialize::deserialize(d)?),
-                ("PF", GameMode::Osu) => GameMod::PerfectOsu(Deserialize::deserialize(d)?),
-                ("DT", GameMode::Osu) => GameMod::DoubleTimeOsu(Deserialize::deserialize(d)?),
-                ("NC", GameMode::Osu) => GameMod::NightcoreOsu(Deserialize::deserialize(d)?),
-                ("HD", GameMode::Osu) => GameMod::HiddenOsu(Deserialize::deserialize(d)?),
-                ("FL", GameMode::Osu) => GameMod::FlashlightOsu(Deserialize::deserialize(d)?),
-                ("BL", GameMode::Osu) => GameMod::BlindsOsu(Deserialize::deserialize(d)?),
-                ("ST", GameMode::Osu) => GameMod::StrictTrackingOsu(Deserialize::deserialize(d)?),
-                ("AC", GameMode::Osu) => {
-                    GameMod::AccuracyChallengeOsu(Deserialize::deserialize(d)?)
-                }
-                ("TP", GameMode::Osu) => GameMod::TargetPracticeOsu(Deserialize::deserialize(d)?),
-                ("DA", GameMode::Osu) => GameMod::DifficultyAdjustOsu(Deserialize::deserialize(d)?),
-                ("CL", GameMode::Osu) => GameMod::ClassicOsu(Deserialize::deserialize(d)?),
-                ("RD", GameMode::Osu) => GameMod::RandomOsu(Deserialize::deserialize(d)?),
-                ("MR", GameMode::Osu) => GameMod::MirrorOsu(Deserialize::deserialize(d)?),
-                ("AL", GameMode::Osu) => GameMod::AlternateOsu(Deserialize::deserialize(d)?),
-                ("SG", GameMode::Osu) => GameMod::SingleTapOsu(Deserialize::deserialize(d)?),
-                ("AT", GameMode::Osu) => GameMod::AutoplayOsu(Deserialize::deserialize(d)?),
-                ("CN", GameMode::Osu) => GameMod::CinemaOsu(Deserialize::deserialize(d)?),
-                ("RX", GameMode::Osu) => GameMod::RelaxOsu(Deserialize::deserialize(d)?),
-                ("AP", GameMode::Osu) => GameMod::AutopilotOsu(Deserialize::deserialize(d)?),
-                ("SO", GameMode::Osu) => GameMod::SpunOutOsu(Deserialize::deserialize(d)?),
-                ("TR", GameMode::Osu) => GameMod::TransformOsu(Deserialize::deserialize(d)?),
-                ("WG", GameMode::Osu) => GameMod::WiggleOsu(Deserialize::deserialize(d)?),
-                ("SI", GameMode::Osu) => GameMod::SpinInOsu(Deserialize::deserialize(d)?),
-                ("GR", GameMode::Osu) => GameMod::GrowOsu(Deserialize::deserialize(d)?),
-                ("DF", GameMode::Osu) => GameMod::DeflateOsu(Deserialize::deserialize(d)?),
-                ("WU", GameMode::Osu) => GameMod::WindUpOsu(Deserialize::deserialize(d)?),
-                ("WD", GameMode::Osu) => GameMod::WindDownOsu(Deserialize::deserialize(d)?),
-                ("TC", GameMode::Osu) => GameMod::TraceableOsu(Deserialize::deserialize(d)?),
-                ("BR", GameMode::Osu) => GameMod::BarrelRollOsu(Deserialize::deserialize(d)?),
-                ("AD", GameMode::Osu) => {
-                    GameMod::ApproachDifferentOsu(Deserialize::deserialize(d)?)
-                }
-                ("MU", GameMode::Osu) => GameMod::MutedOsu(Deserialize::deserialize(d)?),
-                ("NS", GameMode::Osu) => GameMod::NoScopeOsu(Deserialize::deserialize(d)?),
-                ("MG", GameMode::Osu) => GameMod::MagnetisedOsu(Deserialize::deserialize(d)?),
-                ("RP", GameMode::Osu) => GameMod::RepelOsu(Deserialize::deserialize(d)?),
-                ("AS", GameMode::Osu) => GameMod::AdaptiveSpeedOsu(Deserialize::deserialize(d)?),
-                ("FR", GameMode::Osu) => GameMod::FreezeFrameOsu(Deserialize::deserialize(d)?),
-                ("BU", GameMode::Osu) => GameMod::BubblesOsu(Deserialize::deserialize(d)?),
-                ("SY", GameMode::Osu) => GameMod::SynesthesiaOsu(Deserialize::deserialize(d)?),
-                ("DP", GameMode::Osu) => GameMod::DepthOsu(Deserialize::deserialize(d)?),
-                ("BM", GameMode::Osu) => GameMod::BloomOsu(Deserialize::deserialize(d)?),
-                ("TD", GameMode::Osu) => GameMod::TouchDeviceOsu(Deserialize::deserialize(d)?),
-                ("SV2", GameMode::Osu) => GameMod::ScoreV2Osu(Deserialize::deserialize(d)?),
-                ("EZ", GameMode::Taiko) => GameMod::EasyTaiko(Deserialize::deserialize(d)?),
-                ("NF", GameMode::Taiko) => GameMod::NoFailTaiko(Deserialize::deserialize(d)?),
-                ("HT", GameMode::Taiko) => GameMod::HalfTimeTaiko(Deserialize::deserialize(d)?),
-                ("DC", GameMode::Taiko) => GameMod::DaycoreTaiko(Deserialize::deserialize(d)?),
-                ("HR", GameMode::Taiko) => GameMod::HardRockTaiko(Deserialize::deserialize(d)?),
-                ("SD", GameMode::Taiko) => GameMod::SuddenDeathTaiko(Deserialize::deserialize(d)?),
-                ("PF", GameMode::Taiko) => GameMod::PerfectTaiko(Deserialize::deserialize(d)?),
-                ("DT", GameMode::Taiko) => GameMod::DoubleTimeTaiko(Deserialize::deserialize(d)?),
-                ("NC", GameMode::Taiko) => GameMod::NightcoreTaiko(Deserialize::deserialize(d)?),
-                ("HD", GameMode::Taiko) => GameMod::HiddenTaiko(Deserialize::deserialize(d)?),
-                ("FL", GameMode::Taiko) => GameMod::FlashlightTaiko(Deserialize::deserialize(d)?),
-                ("AC", GameMode::Taiko) => {
-                    GameMod::AccuracyChallengeTaiko(Deserialize::deserialize(d)?)
-                }
-                ("RD", GameMode::Taiko) => GameMod::RandomTaiko(Deserialize::deserialize(d)?),
-                ("DA", GameMode::Taiko) => {
-                    GameMod::DifficultyAdjustTaiko(Deserialize::deserialize(d)?)
-                }
-                ("CL", GameMode::Taiko) => GameMod::ClassicTaiko(Deserialize::deserialize(d)?),
-                ("SW", GameMode::Taiko) => GameMod::SwapTaiko(Deserialize::deserialize(d)?),
-                ("SG", GameMode::Taiko) => GameMod::SingleTapTaiko(Deserialize::deserialize(d)?),
-                ("CS", GameMode::Taiko) => {
-                    GameMod::ConstantSpeedTaiko(Deserialize::deserialize(d)?)
-                }
-                ("AT", GameMode::Taiko) => GameMod::AutoplayTaiko(Deserialize::deserialize(d)?),
-                ("CN", GameMode::Taiko) => GameMod::CinemaTaiko(Deserialize::deserialize(d)?),
-                ("RX", GameMode::Taiko) => GameMod::RelaxTaiko(Deserialize::deserialize(d)?),
-                ("WU", GameMode::Taiko) => GameMod::WindUpTaiko(Deserialize::deserialize(d)?),
-                ("WD", GameMode::Taiko) => GameMod::WindDownTaiko(Deserialize::deserialize(d)?),
-                ("MU", GameMode::Taiko) => GameMod::MutedTaiko(Deserialize::deserialize(d)?),
-                ("AS", GameMode::Taiko) => {
-                    GameMod::AdaptiveSpeedTaiko(Deserialize::deserialize(d)?)
-                }
-                ("SV2", GameMode::Taiko) => GameMod::ScoreV2Taiko(Deserialize::deserialize(d)?),
-                ("EZ", GameMode::Catch) => GameMod::EasyCatch(Deserialize::deserialize(d)?),
-                ("NF", GameMode::Catch) => GameMod::NoFailCatch(Deserialize::deserialize(d)?),
-                ("HT", GameMode::Catch) => GameMod::HalfTimeCatch(Deserialize::deserialize(d)?),
-                ("DC", GameMode::Catch) => GameMod::DaycoreCatch(Deserialize::deserialize(d)?),
-                ("HR", GameMode::Catch) => GameMod::HardRockCatch(Deserialize::deserialize(d)?),
-                ("SD", GameMode::Catch) => GameMod::SuddenDeathCatch(Deserialize::deserialize(d)?),
-                ("PF", GameMode::Catch) => GameMod::PerfectCatch(Deserialize::deserialize(d)?),
-                ("DT", GameMode::Catch) => GameMod::DoubleTimeCatch(Deserialize::deserialize(d)?),
-                ("NC", GameMode::Catch) => GameMod::NightcoreCatch(Deserialize::deserialize(d)?),
-                ("HD", GameMode::Catch) => GameMod::HiddenCatch(Deserialize::deserialize(d)?),
-                ("FL", GameMode::Catch) => GameMod::FlashlightCatch(Deserialize::deserialize(d)?),
-                ("AC", GameMode::Catch) => {
-                    GameMod::AccuracyChallengeCatch(Deserialize::deserialize(d)?)
-                }
-                ("DA", GameMode::Catch) => {
-                    GameMod::DifficultyAdjustCatch(Deserialize::deserialize(d)?)
-                }
-                ("CL", GameMode::Catch) => GameMod::ClassicCatch(Deserialize::deserialize(d)?),
-                ("MR", GameMode::Catch) => GameMod::MirrorCatch(Deserialize::deserialize(d)?),
-                ("AT", GameMode::Catch) => GameMod::AutoplayCatch(Deserialize::deserialize(d)?),
-                ("CN", GameMode::Catch) => GameMod::CinemaCatch(Deserialize::deserialize(d)?),
-                ("RX", GameMode::Catch) => GameMod::RelaxCatch(Deserialize::deserialize(d)?),
-                ("WU", GameMode::Catch) => GameMod::WindUpCatch(Deserialize::deserialize(d)?),
-                ("WD", GameMode::Catch) => GameMod::WindDownCatch(Deserialize::deserialize(d)?),
-                ("FF", GameMode::Catch) => {
-                    GameMod::FloatingFruitsCatch(Deserialize::deserialize(d)?)
-                }
-                ("MU", GameMode::Catch) => GameMod::MutedCatch(Deserialize::deserialize(d)?),
-                ("NS", GameMode::Catch) => GameMod::NoScopeCatch(Deserialize::deserialize(d)?),
-                ("SV2", GameMode::Catch) => GameMod::ScoreV2Catch(Deserialize::deserialize(d)?),
-                ("EZ", GameMode::Mania) => GameMod::EasyMania(Deserialize::deserialize(d)?),
-                ("NF", GameMode::Mania) => GameMod::NoFailMania(Deserialize::deserialize(d)?),
-                ("HT", GameMode::Mania) => GameMod::HalfTimeMania(Deserialize::deserialize(d)?),
-                ("DC", GameMode::Mania) => GameMod::DaycoreMania(Deserialize::deserialize(d)?),
-                ("NR", GameMode::Mania) => GameMod::NoReleaseMania(Deserialize::deserialize(d)?),
-                ("HR", GameMode::Mania) => GameMod::HardRockMania(Deserialize::deserialize(d)?),
-                ("SD", GameMode::Mania) => GameMod::SuddenDeathMania(Deserialize::deserialize(d)?),
-                ("PF", GameMode::Mania) => GameMod::PerfectMania(Deserialize::deserialize(d)?),
-                ("DT", GameMode::Mania) => GameMod::DoubleTimeMania(Deserialize::deserialize(d)?),
-                ("NC", GameMode::Mania) => GameMod::NightcoreMania(Deserialize::deserialize(d)?),
-                ("FI", GameMode::Mania) => GameMod::FadeInMania(Deserialize::deserialize(d)?),
-                ("HD", GameMode::Mania) => GameMod::HiddenMania(Deserialize::deserialize(d)?),
-                ("CO", GameMode::Mania) => GameMod::CoverMania(Deserialize::deserialize(d)?),
-                ("FL", GameMode::Mania) => GameMod::FlashlightMania(Deserialize::deserialize(d)?),
-                ("AC", GameMode::Mania) => {
-                    GameMod::AccuracyChallengeMania(Deserialize::deserialize(d)?)
-                }
-                ("RD", GameMode::Mania) => GameMod::RandomMania(Deserialize::deserialize(d)?),
-                ("DS", GameMode::Mania) => GameMod::DualStagesMania(Deserialize::deserialize(d)?),
-                ("MR", GameMode::Mania) => GameMod::MirrorMania(Deserialize::deserialize(d)?),
-                ("DA", GameMode::Mania) => {
-                    GameMod::DifficultyAdjustMania(Deserialize::deserialize(d)?)
-                }
-                ("CL", GameMode::Mania) => GameMod::ClassicMania(Deserialize::deserialize(d)?),
-                ("IN", GameMode::Mania) => GameMod::InvertMania(Deserialize::deserialize(d)?),
-                ("CS", GameMode::Mania) => {
-                    GameMod::ConstantSpeedMania(Deserialize::deserialize(d)?)
-                }
-                ("HO", GameMode::Mania) => GameMod::HoldOffMania(Deserialize::deserialize(d)?),
-                ("1K", GameMode::Mania) => GameMod::OneKeyMania(Deserialize::deserialize(d)?),
-                ("2K", GameMode::Mania) => GameMod::TwoKeysMania(Deserialize::deserialize(d)?),
-                ("3K", GameMode::Mania) => GameMod::ThreeKeysMania(Deserialize::deserialize(d)?),
-                ("4K", GameMode::Mania) => GameMod::FourKeysMania(Deserialize::deserialize(d)?),
-                ("5K", GameMode::Mania) => GameMod::FiveKeysMania(Deserialize::deserialize(d)?),
-                ("6K", GameMode::Mania) => GameMod::SixKeysMania(Deserialize::deserialize(d)?),
-                ("7K", GameMode::Mania) => GameMod::SevenKeysMania(Deserialize::deserialize(d)?),
-                ("8K", GameMode::Mania) => GameMod::EightKeysMania(Deserialize::deserialize(d)?),
-                ("9K", GameMode::Mania) => GameMod::NineKeysMania(Deserialize::deserialize(d)?),
-                ("10K", GameMode::Mania) => GameMod::TenKeysMania(Deserialize::deserialize(d)?),
-                ("AT", GameMode::Mania) => GameMod::AutoplayMania(Deserialize::deserialize(d)?),
-                ("CN", GameMode::Mania) => GameMod::CinemaMania(Deserialize::deserialize(d)?),
-                ("WU", GameMode::Mania) => GameMod::WindUpMania(Deserialize::deserialize(d)?),
-                ("WD", GameMode::Mania) => GameMod::WindDownMania(Deserialize::deserialize(d)?),
-                ("MU", GameMode::Mania) => GameMod::MutedMania(Deserialize::deserialize(d)?),
-                ("AS", GameMode::Mania) => {
-                    GameMod::AdaptiveSpeedMania(Deserialize::deserialize(d)?)
-                }
-                ("SV2", GameMode::Mania) => GameMod::ScoreV2Mania(Deserialize::deserialize(d)?),
+                ("EZ", GameMode::Osu) => GameMod::EasyOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NF", GameMode::Osu) => GameMod::NoFailOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HT", GameMode::Osu) => GameMod::HalfTimeOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DC", GameMode::Osu) => GameMod::DaycoreOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HR", GameMode::Osu) => GameMod::HardRockOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SD", GameMode::Osu) => GameMod::SuddenDeathOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("PF", GameMode::Osu) => GameMod::PerfectOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DT", GameMode::Osu) => GameMod::DoubleTimeOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NC", GameMode::Osu) => GameMod::NightcoreOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HD", GameMode::Osu) => GameMod::HiddenOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FL", GameMode::Osu) => GameMod::FlashlightOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("BL", GameMode::Osu) => GameMod::BlindsOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("ST", GameMode::Osu) => GameMod::StrictTrackingOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AC", GameMode::Osu) => GameMod::AccuracyChallengeOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("TP", GameMode::Osu) => GameMod::TargetPracticeOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DA", GameMode::Osu) => GameMod::DifficultyAdjustOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CL", GameMode::Osu) => GameMod::ClassicOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RD", GameMode::Osu) => GameMod::RandomOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MR", GameMode::Osu) => GameMod::MirrorOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AL", GameMode::Osu) => GameMod::AlternateOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SG", GameMode::Osu) => GameMod::SingleTapOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AT", GameMode::Osu) => GameMod::AutoplayOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CN", GameMode::Osu) => GameMod::CinemaOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RX", GameMode::Osu) => GameMod::RelaxOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AP", GameMode::Osu) => GameMod::AutopilotOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SO", GameMode::Osu) => GameMod::SpunOutOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("TR", GameMode::Osu) => GameMod::TransformOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WG", GameMode::Osu) => GameMod::WiggleOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SI", GameMode::Osu) => GameMod::SpinInOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("GR", GameMode::Osu) => GameMod::GrowOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DF", GameMode::Osu) => GameMod::DeflateOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WU", GameMode::Osu) => GameMod::WindUpOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WD", GameMode::Osu) => GameMod::WindDownOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("TC", GameMode::Osu) => GameMod::TraceableOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("BR", GameMode::Osu) => GameMod::BarrelRollOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AD", GameMode::Osu) => GameMod::ApproachDifferentOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MU", GameMode::Osu) => GameMod::MutedOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NS", GameMode::Osu) => GameMod::NoScopeOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MG", GameMode::Osu) => GameMod::MagnetisedOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RP", GameMode::Osu) => GameMod::RepelOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AS", GameMode::Osu) => GameMod::AdaptiveSpeedOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FR", GameMode::Osu) => GameMod::FreezeFrameOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("BU", GameMode::Osu) => GameMod::BubblesOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SY", GameMode::Osu) => GameMod::SynesthesiaOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DP", GameMode::Osu) => GameMod::DepthOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("BM", GameMode::Osu) => GameMod::BloomOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("TD", GameMode::Osu) => GameMod::TouchDeviceOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SV2", GameMode::Osu) => GameMod::ScoreV2Osu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("EZ", GameMode::Taiko) => GameMod::EasyTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NF", GameMode::Taiko) => GameMod::NoFailTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HT", GameMode::Taiko) => GameMod::HalfTimeTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DC", GameMode::Taiko) => GameMod::DaycoreTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HR", GameMode::Taiko) => GameMod::HardRockTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SD", GameMode::Taiko) => GameMod::SuddenDeathTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("PF", GameMode::Taiko) => GameMod::PerfectTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DT", GameMode::Taiko) => GameMod::DoubleTimeTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NC", GameMode::Taiko) => GameMod::NightcoreTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HD", GameMode::Taiko) => GameMod::HiddenTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FL", GameMode::Taiko) => GameMod::FlashlightTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AC", GameMode::Taiko) => GameMod::AccuracyChallengeTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RD", GameMode::Taiko) => GameMod::RandomTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DA", GameMode::Taiko) => GameMod::DifficultyAdjustTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CL", GameMode::Taiko) => GameMod::ClassicTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SW", GameMode::Taiko) => GameMod::SwapTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SG", GameMode::Taiko) => GameMod::SingleTapTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CS", GameMode::Taiko) => GameMod::ConstantSpeedTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AT", GameMode::Taiko) => GameMod::AutoplayTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CN", GameMode::Taiko) => GameMod::CinemaTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RX", GameMode::Taiko) => GameMod::RelaxTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WU", GameMode::Taiko) => GameMod::WindUpTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WD", GameMode::Taiko) => GameMod::WindDownTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MU", GameMode::Taiko) => GameMod::MutedTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AS", GameMode::Taiko) => GameMod::AdaptiveSpeedTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SV2", GameMode::Taiko) => GameMod::ScoreV2Taiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("EZ", GameMode::Catch) => GameMod::EasyCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NF", GameMode::Catch) => GameMod::NoFailCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HT", GameMode::Catch) => GameMod::HalfTimeCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DC", GameMode::Catch) => GameMod::DaycoreCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HR", GameMode::Catch) => GameMod::HardRockCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SD", GameMode::Catch) => GameMod::SuddenDeathCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("PF", GameMode::Catch) => GameMod::PerfectCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DT", GameMode::Catch) => GameMod::DoubleTimeCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NC", GameMode::Catch) => GameMod::NightcoreCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HD", GameMode::Catch) => GameMod::HiddenCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FL", GameMode::Catch) => GameMod::FlashlightCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AC", GameMode::Catch) => GameMod::AccuracyChallengeCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DA", GameMode::Catch) => GameMod::DifficultyAdjustCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CL", GameMode::Catch) => GameMod::ClassicCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MR", GameMode::Catch) => GameMod::MirrorCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AT", GameMode::Catch) => GameMod::AutoplayCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CN", GameMode::Catch) => GameMod::CinemaCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RX", GameMode::Catch) => GameMod::RelaxCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WU", GameMode::Catch) => GameMod::WindUpCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WD", GameMode::Catch) => GameMod::WindDownCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FF", GameMode::Catch) => GameMod::FloatingFruitsCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MU", GameMode::Catch) => GameMod::MutedCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NS", GameMode::Catch) => GameMod::NoScopeCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SV2", GameMode::Catch) => GameMod::ScoreV2Catch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("EZ", GameMode::Mania) => GameMod::EasyMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NF", GameMode::Mania) => GameMod::NoFailMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HT", GameMode::Mania) => GameMod::HalfTimeMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DC", GameMode::Mania) => GameMod::DaycoreMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NR", GameMode::Mania) => GameMod::NoReleaseMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HR", GameMode::Mania) => GameMod::HardRockMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SD", GameMode::Mania) => GameMod::SuddenDeathMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("PF", GameMode::Mania) => GameMod::PerfectMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DT", GameMode::Mania) => GameMod::DoubleTimeMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("NC", GameMode::Mania) => GameMod::NightcoreMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FI", GameMode::Mania) => GameMod::FadeInMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HD", GameMode::Mania) => GameMod::HiddenMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CO", GameMode::Mania) => GameMod::CoverMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("FL", GameMode::Mania) => GameMod::FlashlightMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AC", GameMode::Mania) => GameMod::AccuracyChallengeMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("RD", GameMode::Mania) => GameMod::RandomMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DS", GameMode::Mania) => GameMod::DualStagesMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MR", GameMode::Mania) => GameMod::MirrorMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("DA", GameMode::Mania) => GameMod::DifficultyAdjustMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CL", GameMode::Mania) => GameMod::ClassicMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("IN", GameMode::Mania) => GameMod::InvertMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CS", GameMode::Mania) => GameMod::ConstantSpeedMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("HO", GameMode::Mania) => GameMod::HoldOffMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("1K", GameMode::Mania) => GameMod::OneKeyMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("2K", GameMode::Mania) => GameMod::TwoKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("3K", GameMode::Mania) => GameMod::ThreeKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("4K", GameMode::Mania) => GameMod::FourKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("5K", GameMode::Mania) => GameMod::FiveKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("6K", GameMode::Mania) => GameMod::SixKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("7K", GameMode::Mania) => GameMod::SevenKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("8K", GameMode::Mania) => GameMod::EightKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("9K", GameMode::Mania) => GameMod::NineKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("10K", GameMode::Mania) => GameMod::TenKeysMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AT", GameMode::Mania) => GameMod::AutoplayMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("CN", GameMode::Mania) => GameMod::CinemaMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WU", GameMode::Mania) => GameMod::WindUpMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("WD", GameMode::Mania) => GameMod::WindDownMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MU", GameMode::Mania) => GameMod::MutedMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("AS", GameMode::Mania) => GameMod::AdaptiveSpeedMania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SV2", GameMode::Mania) => GameMod::ScoreV2Mania(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
                 _ => {
                     let acronym = <Acronym as std::str::FromStr>::from_str(self.acronym)
                         .map_err(DeError::custom)?;
@@ -12892,7 +12985,10 @@ const _: () = {
                     .map(GameModIntermode::from_acronym)
                     .map_err(DeError::custom)
             }
-            match GameModRaw::deserialize(d)? {
+            let raw_seed = GameModRawSeed {
+                deny_unknown_fields: true,
+            };
+            match raw_seed.deserialize(d)? {
                 GameModRaw::Bits(bits) => GameModIntermode::try_from_bits(bits)
                     .ok_or_else(|| DeError::custom("invalid bitflags")),
                 GameModRaw::Acronym(acronym) => try_acronym_to_gamemod(&acronym),
@@ -12906,7 +13002,11 @@ const _: () = {
         }
     }
     impl GameModSettings<'_> {
-        pub(crate) fn try_deserialize(&self, acronym: &str) -> Option<GameMod> {
+        pub(crate) fn try_deserialize(
+            &self,
+            acronym: &str,
+            deny_unknown_fields: bool,
+        ) -> Option<GameMod> {
             macro_rules! try_deser {
                 ( $osu_mod:ident, $taiko_mod:ident, $catch_mod:ident, $mania_mod:ident, ) => {{
                     try_deser!(@ $osu_mod Osu);
@@ -12916,7 +13016,7 @@ const _: () = {
                 }};
                 ( @ Skip_ $mode:ident ) => {};
                 ( @ $name:ident $mode:ident ) => {
-                    if let Ok(m) = $name::deserialize(self) {
+                    if let Ok(m) = DeserializedGameMod::try_deserialize_mod(self, deny_unknown_fields) {
                         return Some(GameMod::$name(m));
                     }
                 };

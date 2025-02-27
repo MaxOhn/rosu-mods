@@ -823,10 +823,16 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
         "use serde::{\
             Deserialize,\
-            de::{value::MapAccessDeserializer, Deserializer, Error as DeError, IgnoredAny, MapAccess, Visitor},\
+            de::{\
+                value::MapAccessDeserializer, Deserializer, Error as DeError, IgnoredAny, \
+                MapAccess, Visitor, DeserializeSeed,\
+            },\
             ser::{Serialize, Serializer, SerializeMap},\
         };\n\n\
-        use crate::serde::{GameModSettings, GameModSettingsSeed, GameModRaw, MaybeOwnedStr};\n\n",
+        use crate::serde::{\
+            GameModSettings, GameModSettingsSeed, GameModRaw, MaybeOwnedStr,\
+            DeserializedGameMod, GameModVisitor, GameModRawSeed,\
+        };\n\n",
     )?;
 
     for ruleset in rulesets.iter() {
@@ -880,7 +886,9 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
             writer.write(ruleset_str)?;
             writer.write(") => GameMod::")?;
             writer.write(&gamemod.name)?;
-            writer.write("(Deserialize::deserialize(d)?),")?;
+            writer.write(
+                "(DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?),",
+            )?;
         }
     }
 
@@ -981,7 +989,8 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                             .map(GameModIntermode::from_acronym)\
                             .map_err(DeError::custom)\
                     }\
-                    match GameModRaw::deserialize(d)? {\
+                    let raw_seed = GameModRawSeed { deny_unknown_fields: true };\
+                    match raw_seed.deserialize(d)? {\
                         GameModRaw::Bits(bits) => GameModIntermode::try_from_bits(bits)\
                             .ok_or_else(|| DeError::custom(\"invalid bitflags\")),\
                         GameModRaw::Acronym(acronym) => try_acronym_to_gamemod(&acronym),\
@@ -999,7 +1008,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
         "\
     impl GameModSettings<'_> {\
-        pub(crate) fn try_deserialize(&self, acronym: &str) -> Option<GameMod> {",
+        pub(crate) fn try_deserialize(&self, acronym: &str, deny_unknown_fields: bool) -> Option<GameMod> {",
     )?;
 
     writer.write_raw(
@@ -1013,7 +1022,7 @@ pub fn impl_serde(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
                 }};
                 ( @ Skip_ $mode:ident ) => {};
                 ( @ $name:ident $mode:ident ) => {
-                    if let Ok(m) = $name::deserialize(self) {
+                    if let Ok(m) = DeserializedGameMod::try_deserialize_mod(self, deny_unknown_fields) {
                         return Some(GameMod::$name(m));
                     }
                 };

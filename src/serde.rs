@@ -4,6 +4,7 @@ use std::{
     collections::BTreeMap,
     error::Error as StdError,
     fmt::{Debug, Display, Formatter, Result as FmtResult},
+    marker::PhantomData,
     slice,
     str::FromStr,
 };
@@ -28,9 +29,75 @@ const MODES: [GameMode; 4] = [
     GameMode::Mania,
 ];
 
+pub(crate) struct GameModVisitor<M>(PhantomData<M>);
+
+impl<M> GameModVisitor<M> {
+    pub(crate) const fn new() -> Self {
+        Self(PhantomData)
+    }
+}
+
+pub(crate) struct DeserializedGameMod<'a, M> {
+    pub(crate) gamemod: M,
+    pub(crate) unknown_key: Option<UnknownKey<'a>>,
+}
+
+impl<'a, M> DeserializedGameMod<'a, M> {
+    pub(crate) fn new(
+        gamemod: M,
+        unknown_key: Option<MaybeOwnedStr<'a>>,
+        expected: &'static [&'static str],
+    ) -> Self {
+        Self {
+            gamemod,
+            unknown_key: UnknownKey::new(unknown_key, expected),
+        }
+    }
+}
+
+impl<'de, M> DeserializedGameMod<'de, M> {
+    pub(crate) fn try_deserialize_mod<D>(d: D, deny_unknown_fields: bool) -> Result<M, D::Error>
+    where
+        GameModVisitor<M>: Visitor<'de, Value = Self>,
+        D: Deserializer<'de>,
+    {
+        match d.deserialize_map(GameModVisitor::<M>::new()) {
+            Ok(Self { gamemod, .. }) if !deny_unknown_fields => Ok(gamemod),
+            Ok(Self {
+                gamemod,
+                unknown_key: None,
+            }) => Ok(gamemod),
+            Ok(Self {
+                unknown_key: Some(key),
+                ..
+            }) => Err(Self::unknown_field(&key)),
+            Err(err) => Err(err),
+        }
+    }
+
+    fn unknown_field<E: DeError>(unknown_key: &UnknownKey<'_>) -> E {
+        DeError::unknown_field(unknown_key.name.as_str(), unknown_key.expected)
+    }
+}
+
+pub(crate) struct UnknownKey<'a> {
+    pub(crate) name: MaybeOwnedStr<'a>,
+    pub(crate) expected: &'static [&'static str],
+}
+
+impl<'a> UnknownKey<'a> {
+    fn new(
+        unknown_key: Option<MaybeOwnedStr<'a>>,
+        expected: &'static [&'static str],
+    ) -> Option<Self> {
+        unknown_key.map(|name| Self { name, expected })
+    }
+}
+
 pub(crate) struct GameModSettingsSeed<'a> {
     pub(crate) acronym: &'a str,
     pub(crate) mode: GameMode,
+    pub(crate) deny_unknown_fields: bool,
 }
 
 impl<'de> DeserializeSeed<'de> for GameModSettingsSeed<'_> {
@@ -96,7 +163,7 @@ impl<'de> DeserializeSeed<'de> for GameModSettingsSeed<'_> {
 ///                 return Err(de::Error::custom("expected `mod` as second field"));
 ///             };
 ///
-///             let seed = GameModSeed::Mode(mode); // <-
+///             let seed = GameModSeed::Mode { mode, deny_unknown_fields: true }; // <-
 ///
 ///             map.next_value_seed(seed)
 ///         }
@@ -140,10 +207,12 @@ impl<'de> DeserializeSeed<'de> for GameModSettingsSeed<'_> {
 /// // `GameMod` variant for the `DA` acronym.
 /// // First it tries `DifficultyAdjustOsu` but sees that it has no
 /// // `scroll_speed` field so it continues on and succeeds for the taiko
-/// // variant.
+/// // variant. Note that if `deny_unknown_fields` was set to `false`, the
+/// // unknown `scroll_speed` field would not have caused an error when
+/// // deserializing the `DifficultyAdjustOsu`.
 ///
 /// fn custom_deser<'de, D: de::Deserializer<'de>>(d: D) -> Result<GameMod, D::Error> {
-///     d.deserialize_map(GameModSeed::GuessMode)
+///     d.deserialize_map(GameModSeed::GuessMode { deny_unknown_fields: true })
 /// }
 ///
 /// let MyStruct(gamemod) = serde_json::from_str(JSON).unwrap();
@@ -159,17 +228,20 @@ impl<'de> DeserializeSeed<'de> for GameModSettingsSeed<'_> {
 #[derive(Copy, Clone)]
 pub enum GameModSeed {
     /// Use a specified [`GameMode`] for deserialization.
-    Mode(GameMode),
+    Mode {
+        mode: GameMode,
+        deny_unknown_fields: bool,
+    },
     /// Try to deserialize for each [`GameMode`] and pick the first one that
     /// doesn't fail.
-    GuessMode,
+    GuessMode { deny_unknown_fields: bool },
 }
 
 impl GameModSeed {
     fn convert_acronym(self, acronym: &str) -> GameMod {
         match self {
-            GameModSeed::Mode(mode) => GameMod::new(acronym, mode),
-            GameModSeed::GuessMode => {
+            Self::Mode { mode, .. } => GameMod::new(acronym, mode),
+            Self::GuessMode { .. } => {
                 // False positive from clippy
                 #[allow(clippy::needless_match)]
                 let unknown = match GameMod::new(acronym, GameMode::Osu) {
@@ -257,14 +329,23 @@ impl<'de> Visitor<'de> for GameModSeed {
         while let Some(field) = map.next_key::<GameModField>()? {
             if field == GameModField::Settings {
                 match self {
-                    GameModSeed::Mode(mode) => {
-                        let seed = GameModSettingsSeed { acronym, mode };
+                    Self::Mode {
+                        mode,
+                        deny_unknown_fields,
+                    } => {
+                        let seed = GameModSettingsSeed {
+                            acronym,
+                            mode,
+                            deny_unknown_fields,
+                        };
                         gamemod = Some(map.next_value_seed(seed)?);
                     }
-                    GameModSeed::GuessMode => {
+                    Self::GuessMode {
+                        deny_unknown_fields,
+                    } => {
                         let settings: GameModSettings<'de> = map.next_value()?;
 
-                        gamemod = match settings.try_deserialize(acronym) {
+                        gamemod = match settings.try_deserialize(acronym, deny_unknown_fields) {
                             gamemod @ Some(_) => gamemod,
                             None => Some(GameMod::UnknownOsu(UnknownMod {
                                 acronym: <Acronym as FromStr>::from_str(acronym)
@@ -957,7 +1038,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
 /// fn custom_deser<'de, D: de::Deserializer<'de>>(d: D) -> Result<GameMods, D::Error> {
 ///     // Here, we're defining that all deserialized mods should belong to the
 ///     // same mode.
-///     d.deserialize_any(GameModsSeed::SameModeForEachMod)
+///     d.deserialize_any(GameModsSeed::SameModeForEachMod { deny_unknown_fields: true })
 /// }
 ///
 /// // Although `FI` is not a `Catch` mod, the mode still has the most
@@ -1009,7 +1090,7 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
 /// const JSON: &str = "1048640";
 ///
 /// fn custom_deser<'de, D: de::Deserializer<'de>>(d: D) -> Result<GameMods, D::Error> {
-///     d.deserialize_any(GameModsSeed::AllowMultipleModes)
+///     d.deserialize_any(GameModsSeed::AllowMultipleModes { deny_unknown_fields: true })
 /// }
 ///
 /// let MyStruct(mods) = serde_json::from_str(JSON).unwrap();
@@ -1032,21 +1113,24 @@ impl<'de> Deserializer<'de> for &'de Value<'_> {
 #[derive(Copy, Clone)]
 pub enum GameModsSeed {
     /// Use a specified [`GameMode`] for deserialization.
-    Mode(GameMode),
+    Mode {
+        mode: GameMode,
+        deny_unknown_fields: bool,
+    },
     /// For each contained [`GameMod`], try to deserialize it for each
     /// [`GameMode`] and pick the first one that doesn't fail.
-    AllowMultipleModes,
+    AllowMultipleModes { deny_unknown_fields: bool },
     /// For each [`GameMode`], deserialize each [`GameMod`] for that mode and
     /// pick the first one for which each [`GameMod`] succeeds deserialization
     /// or alternatively the mode with the least amount of unknown mods.
-    SameModeForEachMod,
+    SameModeForEachMod { deny_unknown_fields: bool },
 }
 
 impl GameModsSeed {
     fn convert_intermode(self, intermode: &GameModsIntermode) -> GameMods {
         match self {
-            GameModsSeed::Mode(mode) => intermode.with_mode(mode),
-            GameModsSeed::SameModeForEachMod => {
+            Self::Mode { mode, .. } => intermode.with_mode(mode),
+            Self::SameModeForEachMod { .. } => {
                 for mode in MODES {
                     if let Some(mods) = intermode.try_with_mode(mode) {
                         return mods;
@@ -1055,7 +1139,7 @@ impl GameModsSeed {
 
                 intermode.with_mode(GameMode::Osu)
             }
-            GameModsSeed::AllowMultipleModes => intermode
+            Self::AllowMultipleModes { .. } => intermode
                 .iter()
                 .map(|gamemod| {
                     let [osu, modes @ ..] = MODES;
@@ -1132,12 +1216,28 @@ impl<'de> Visitor<'de> for GameModsSeed {
         let mut inner = BTreeMap::new();
 
         let seed = match self {
-            GameModsSeed::Mode(mode) => GameModSeed::Mode(mode),
-            GameModsSeed::AllowMultipleModes => GameModSeed::GuessMode,
-            GameModsSeed::SameModeForEachMod => {
+            Self::Mode {
+                mode,
+                deny_unknown_fields,
+            } => GameModSeed::Mode {
+                mode,
+                deny_unknown_fields,
+            },
+            Self::AllowMultipleModes {
+                deny_unknown_fields,
+            } => GameModSeed::GuessMode {
+                deny_unknown_fields,
+            },
+            Self::SameModeForEachMod {
+                deny_unknown_fields,
+            } => {
                 let mut mods_raw = Vec::new();
 
-                while let Some(gamemod) = seq.next_element::<GameModRaw<'de>>()? {
+                let seed = GameModRawSeed {
+                    deny_unknown_fields,
+                };
+
+                while let Some(gamemod) = seq.next_element_seed(seed)? {
                     mods_raw.push(gamemod);
                 }
 
@@ -1154,10 +1254,21 @@ impl<'de> Visitor<'de> for GameModsSeed {
 
     fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
         let seed = match self {
-            GameModsSeed::Mode(mode) => GameModSeed::Mode(mode),
-            GameModsSeed::AllowMultipleModes | GameModsSeed::SameModeForEachMod => {
-                GameModSeed::GuessMode
+            Self::Mode {
+                mode,
+                deny_unknown_fields,
+            } => GameModSeed::Mode {
+                mode,
+                deny_unknown_fields,
+            },
+            Self::AllowMultipleModes {
+                deny_unknown_fields,
             }
+            | Self::SameModeForEachMod {
+                deny_unknown_fields,
+            } => GameModSeed::GuessMode {
+                deny_unknown_fields,
+            },
         };
 
         let gamemod = seed.visit_map(map)?;
@@ -1175,6 +1286,7 @@ pub(crate) enum GameModRaw<'a> {
     Full {
         acronym: MaybeOwnedStr<'a>,
         settings: GameModSettings<'a>,
+        deny_unknown_fields: bool,
     },
 }
 
@@ -1223,9 +1335,14 @@ impl GameModRaw<'_> {
                 .ok_or_else(|| DeError::custom(format!("invalid bits value `{bits}`")))
                 .map(|intermode| GameMod::new(intermode.acronym().as_str(), mode)),
             GameModRaw::Acronym(acronym) => Ok(GameMod::new(acronym.as_str(), mode)),
-            GameModRaw::Full { acronym, settings } => GameModSettingsSeed {
+            GameModRaw::Full {
+                acronym,
+                settings,
+                deny_unknown_fields,
+            } => GameModSettingsSeed {
                 acronym: acronym.as_str(),
                 mode,
+                deny_unknown_fields: *deny_unknown_fields,
             }
             .deserialize(settings)
             .map_err(DeError::custom),
@@ -1233,71 +1350,80 @@ impl GameModRaw<'_> {
     }
 }
 
-impl<'de> Deserialize<'de> for GameModRaw<'de> {
-    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        struct GameModRawVisitor;
+#[derive(Copy, Clone)]
+pub(crate) struct GameModRawSeed {
+    pub(crate) deny_unknown_fields: bool,
+}
 
-        impl<'de> Visitor<'de> for GameModRawVisitor {
-            type Value = GameModRaw<'de>;
+impl<'de> DeserializeSeed<'de> for GameModRawSeed {
+    type Value = GameModRaw<'de>;
 
-            fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-                f.write_str("GameMod")
-            }
+    fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<Self::Value, D::Error> {
+        d.deserialize_any(self)
+    }
+}
 
-            fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
-                let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+impl<'de> Visitor<'de> for GameModRawSeed {
+    type Value = GameModRaw<'de>;
 
-                self.visit_u32(bits)
-            }
+    fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+        f.write_str("GameMod")
+    }
 
-            fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
-                Ok(GameModRaw::Bits(v))
-            }
+    fn visit_i64<E: DeError>(self, v: i64) -> Result<Self::Value, E> {
+        let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
 
-            fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
-                let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
+        self.visit_u32(bits)
+    }
 
-                self.visit_u32(bits)
-            }
+    fn visit_u32<E: DeError>(self, v: u32) -> Result<Self::Value, E> {
+        Ok(GameModRaw::Bits(v))
+    }
 
-            fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
-                Ok(GameModRaw::Acronym(MaybeOwnedStr::Borrowed(v)))
-            }
+    fn visit_u64<E: DeError>(self, v: u64) -> Result<Self::Value, E> {
+        let bits = u32::try_from(v).map_err(|_| DeError::custom(BITFLAGS_U32))?;
 
-            fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
-                self.visit_string(v.to_owned())
-            }
+        self.visit_u32(bits)
+    }
 
-            fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
-                Ok(GameModRaw::Acronym(MaybeOwnedStr::Owned(v)))
-            }
+    fn visit_borrowed_str<E: DeError>(self, v: &'de str) -> Result<Self::Value, E> {
+        Ok(GameModRaw::Acronym(MaybeOwnedStr::Borrowed(v)))
+    }
 
-            fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-                let Some(GameModField::Acronym) = map.next_key()? else {
-                    return Err(DeError::custom(EXPECTED_ACRONYM_FIRST));
-                };
+    fn visit_str<E: DeError>(self, v: &str) -> Result<Self::Value, E> {
+        self.visit_string(v.to_owned())
+    }
 
-                let acronym: MaybeOwnedStr<'de> = map.next_value()?;
+    fn visit_string<E: DeError>(self, v: String) -> Result<Self::Value, E> {
+        Ok(GameModRaw::Acronym(MaybeOwnedStr::Owned(v)))
+    }
 
-                loop {
-                    match map.next_key::<GameModField>()? {
-                        Some(GameModField::Settings) => {
-                            let settings: GameModSettings<'de> = map.next_value()?;
+    fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+        let Some(GameModField::Acronym) = map.next_key()? else {
+            return Err(DeError::custom(EXPECTED_ACRONYM_FIRST));
+        };
 
-                            while map.next_entry::<GameModField, IgnoredAny>()?.is_some() {}
+        let acronym: MaybeOwnedStr<'de> = map.next_value()?;
 
-                            return Ok(GameModRaw::Full { acronym, settings });
-                        }
-                        Some(_) => {
-                            let _: IgnoredAny = map.next_value()?;
-                        }
-                        None => return Ok(GameModRaw::Acronym(acronym)),
-                    }
+        loop {
+            match map.next_key::<GameModField>()? {
+                Some(GameModField::Settings) => {
+                    let settings: GameModSettings<'de> = map.next_value()?;
+
+                    while map.next_entry::<GameModField, IgnoredAny>()?.is_some() {}
+
+                    return Ok(GameModRaw::Full {
+                        acronym,
+                        settings,
+                        deny_unknown_fields: self.deny_unknown_fields,
+                    });
                 }
+                Some(_) => {
+                    let _: IgnoredAny = map.next_value()?;
+                }
+                None => return Ok(GameModRaw::Acronym(acronym)),
             }
         }
-
-        d.deserialize_any(GameModRawVisitor)
     }
 }
 
@@ -1384,7 +1510,9 @@ impl<'de> Deserialize<'de> for MaybeOwnedStr<'de> {
 mod tests {
     use serde_json::Deserializer;
 
-    use crate::generated_mods::{AccuracyChallengeOsu, AccuracyChallengeTaiko};
+    use crate::generated_mods::{
+        AccuracyChallengeOsu, AccuracyChallengeTaiko, DifficultyAdjustTaiko,
+    };
 
     use super::*;
 
@@ -1393,13 +1521,20 @@ mod tests {
         let json = "64";
 
         let mut d = Deserializer::from_str(json);
-        let osu_dt = GameModSeed::GuessMode.deserialize(&mut d).unwrap();
+        let osu_dt = GameModSeed::GuessMode {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(osu_dt, GameMod::DoubleTimeOsu(Default::default()));
 
         let mut d = Deserializer::from_str(json);
-        let taiko_dt = GameModSeed::Mode(GameMode::Taiko)
-            .deserialize(&mut d)
-            .unwrap();
+        let taiko_dt = GameModSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(taiko_dt, GameMod::DoubleTimeTaiko(Default::default()));
     }
 
@@ -1408,11 +1543,18 @@ mod tests {
         let json = "2147483648";
 
         let mut d = Deserializer::from_str(json);
-        let err = GameModSeed::GuessMode.deserialize(&mut d);
+        let err = GameModSeed::GuessMode {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d);
         assert!(err.is_err());
 
         let mut d = Deserializer::from_str(json);
-        let err = GameModSeed::Mode(GameMode::Mania).deserialize(&mut d);
+        let err = GameModSeed::Mode {
+            mode: GameMode::Mania,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d);
         assert!(err.is_err());
     }
 
@@ -1421,19 +1563,29 @@ mod tests {
         let json = r#""AS""#;
 
         let mut d = Deserializer::from_str(json);
-        let osu_as = GameModSeed::GuessMode.deserialize(&mut d).unwrap();
+        let osu_as = GameModSeed::GuessMode {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(osu_as, GameMod::AdaptiveSpeedOsu(Default::default()));
 
         let mut d = Deserializer::from_str(json);
-        let taiko_as = GameModSeed::Mode(GameMode::Taiko)
-            .deserialize(&mut d)
-            .unwrap();
+        let taiko_as = GameModSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(taiko_as, GameMod::AdaptiveSpeedTaiko(Default::default()));
 
         let mut d = Deserializer::from_str(json);
-        let catch_unknown = GameModSeed::Mode(GameMode::Catch)
-            .deserialize(&mut d)
-            .unwrap();
+        let catch_unknown = GameModSeed::Mode {
+            mode: GameMode::Catch,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(
             catch_unknown,
             GameMod::UnknownCatch(UnknownMod {
@@ -1454,7 +1606,11 @@ mod tests {
         }"#;
 
         let mut d = Deserializer::from_str(json);
-        let osu_ac = GameModSeed::GuessMode.deserialize(&mut d).unwrap();
+        let osu_ac = GameModSeed::GuessMode {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(
             osu_ac,
             GameMod::AccuracyChallengeOsu(AccuracyChallengeOsu {
@@ -1465,9 +1621,12 @@ mod tests {
         );
 
         let mut d = Deserializer::from_str(json);
-        let taiko_ac = GameModSeed::Mode(GameMode::Taiko)
-            .deserialize(&mut d)
-            .unwrap();
+        let taiko_ac = GameModSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(
             taiko_ac,
             GameMod::AccuracyChallengeTaiko(AccuracyChallengeTaiko {
@@ -1483,17 +1642,47 @@ mod tests {
         let json = r#"{
             "acronym": "HD",
             "settings": {
-                "unknown_field": true,
-            }        
+                "unknown_field": true
+            }
         }"#;
 
         let mut d = Deserializer::from_str(json);
-        let err = GameModSeed::GuessMode.deserialize(&mut d);
+        let unknown_osu = GameModSeed::GuessMode {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        assert_eq!(
+            unknown_osu,
+            GameMod::UnknownOsu(UnknownMod {
+                acronym: Acronym::from_str("HD").unwrap()
+            })
+        );
+
+        let mut d = Deserializer::from_str(json);
+        let osu_hd = GameModSeed::GuessMode {
+            deny_unknown_fields: false,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        assert_eq!(osu_hd, GameMod::HiddenOsu(Default::default()));
+
+        let mut d = Deserializer::from_str(json);
+        let err = GameModSeed::Mode {
+            mode: GameMode::Catch,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d);
         assert!(err.is_err());
 
         let mut d = Deserializer::from_str(json);
-        let err = GameModSeed::Mode(GameMode::Catch).deserialize(&mut d);
-        assert!(err.is_err());
+        let hd_catch = GameModSeed::Mode {
+            mode: GameMode::Catch,
+            deny_unknown_fields: false,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        assert_eq!(hd_catch, GameMod::HiddenCatch(Default::default()));
     }
 
     #[test]
@@ -1506,11 +1695,18 @@ mod tests {
         }"#;
 
         let mut d = Deserializer::from_str(json);
-        let err = GameModSeed::GuessMode.deserialize(&mut d);
+        let err = GameModSeed::GuessMode {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d);
         assert!(err.is_err());
 
         let mut d = Deserializer::from_str(json);
-        let err = GameModSeed::Mode(GameMode::Catch).deserialize(&mut d);
+        let err = GameModSeed::Mode {
+            mode: GameMode::Catch,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d);
         assert!(err.is_err());
     }
 
@@ -1519,27 +1715,34 @@ mod tests {
         let json = "1048584";
 
         let mut d = Deserializer::from_str(json);
-        let mania_hdfi = GameModsSeed::SameModeForEachMod
-            .deserialize(&mut d)
-            .unwrap();
+        let mania_hdfi = GameModsSeed::SameModeForEachMod {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenMania(Default::default()));
         expected.insert(GameMod::FadeInMania(Default::default()));
         assert_eq!(mania_hdfi, expected);
 
         let mut d = Deserializer::from_str(json);
-        let osu_hd_mania_fi = GameModsSeed::AllowMultipleModes
-            .deserialize(&mut d)
-            .unwrap();
+        let osu_hd_mania_fi = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenOsu(Default::default()));
         expected.insert(GameMod::FadeInMania(Default::default()));
         assert_eq!(osu_hd_mania_fi, expected);
 
         let mut d = Deserializer::from_str(json);
-        let osu_hdfi = GameModsSeed::Mode(GameMode::Osu)
-            .deserialize(&mut d)
-            .unwrap();
+        let osu_hdfi = GameModsSeed::Mode {
+            mode: GameMode::Osu,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenOsu(Default::default()));
         expected.insert(GameMod::UnknownOsu(UnknownMod {
@@ -1553,21 +1756,28 @@ mod tests {
         let json = "2147483648";
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::SameModeForEachMod
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::SameModeForEachMod {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(mods.len(), 0);
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::AllowMultipleModes
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(mods.len(), 0);
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::Mode(GameMode::Mania)
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::Mode {
+            mode: GameMode::Mania,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         assert_eq!(mods.len(), 0);
     }
 
@@ -1576,27 +1786,34 @@ mod tests {
         let json = r#""HDFI""#;
 
         let mut d = Deserializer::from_str(json);
-        let mania_hdfi = GameModsSeed::SameModeForEachMod
-            .deserialize(&mut d)
-            .unwrap();
+        let mania_hdfi = GameModsSeed::SameModeForEachMod {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenMania(Default::default()));
         expected.insert(GameMod::FadeInMania(Default::default()));
         assert_eq!(mania_hdfi, expected);
 
         let mut d = Deserializer::from_str(json);
-        let osu_hd_mania_fi = GameModsSeed::AllowMultipleModes
-            .deserialize(&mut d)
-            .unwrap();
+        let osu_hd_mania_fi = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenOsu(Default::default()));
         expected.insert(GameMod::FadeInMania(Default::default()));
         assert_eq!(osu_hd_mania_fi, expected);
 
         let mut d = Deserializer::from_str(json);
-        let osu_hdfi = GameModsSeed::Mode(GameMode::Osu)
-            .deserialize(&mut d)
-            .unwrap();
+        let osu_hdfi = GameModsSeed::Mode {
+            mode: GameMode::Osu,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenOsu(Default::default()));
         expected.insert(GameMod::UnknownOsu(UnknownMod {
@@ -1624,9 +1841,11 @@ mod tests {
         ]"#;
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::SameModeForEachMod
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::SameModeForEachMod {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenOsu(Default::default()));
         expected.insert(GameMod::UnknownOsu(UnknownMod {
@@ -1641,9 +1860,11 @@ mod tests {
         assert_eq!(mods, expected);
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::AllowMultipleModes
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenOsu(Default::default()));
         expected.insert(GameMod::FloatingFruitsCatch(Default::default()));
@@ -1656,9 +1877,12 @@ mod tests {
         assert_eq!(mods, expected);
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::Mode(GameMode::Taiko)
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::HiddenTaiko(Default::default()));
         expected.insert(GameMod::UnknownTaiko(UnknownMod {
@@ -1682,20 +1906,104 @@ mod tests {
         }"#;
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::AllowMultipleModes
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::FadeInMania(Default::default()));
         assert_eq!(mods, expected);
 
         let mut d = Deserializer::from_str(json);
-        let mods = GameModsSeed::Mode(GameMode::Taiko)
-            .deserialize(&mut d)
-            .unwrap();
+        let mods = GameModsSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
         let mut expected = GameMods::new();
         expected.insert(GameMod::UnknownTaiko(UnknownMod {
             acronym: "FI".parse().unwrap(),
+        }));
+        assert_eq!(mods, expected);
+    }
+
+    #[test]
+    fn deser_mods_data_unknown_fields() {
+        let json = r#"[
+            {
+                "acronym": "DA",
+                "settings": {
+                    "scroll_speed": 10
+                }
+            },
+            {
+                "acronym": "FI",
+                "settings": {
+                    "unknown_field": true
+                }
+            }
+        ]"#;
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::DifficultyAdjustTaiko(DifficultyAdjustTaiko {
+            scroll_speed: Some(10.0),
+            ..Default::default()
+        }));
+        expected.insert(GameMod::UnknownOsu(UnknownMod {
+            acronym: Acronym::from_str("FI").unwrap(),
+        }));
+        assert_eq!(mods, expected);
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::DifficultyAdjustTaiko(DifficultyAdjustTaiko {
+            scroll_speed: Some(10.0),
+            ..Default::default()
+        }));
+        expected.insert(GameMod::UnknownTaiko(UnknownMod {
+            acronym: Acronym::from_str("FI").unwrap(),
+        }));
+        assert_eq!(mods, expected);
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::AllowMultipleModes {
+            deny_unknown_fields: false,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::DifficultyAdjustOsu(Default::default()));
+        expected.insert(GameMod::FadeInMania(Default::default()));
+        assert_eq!(mods, expected);
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::Mode {
+            mode: GameMode::Taiko,
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::DifficultyAdjustTaiko(DifficultyAdjustTaiko {
+            scroll_speed: Some(10.0),
+            ..Default::default()
+        }));
+        expected.insert(GameMod::UnknownTaiko(UnknownMod {
+            acronym: Acronym::from_str("FI").unwrap(),
         }));
         assert_eq!(mods, expected);
     }
