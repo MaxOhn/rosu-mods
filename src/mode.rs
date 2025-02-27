@@ -71,7 +71,7 @@ const _: () = {
             let mode = match v {
                 "0" | "osu" | "osu!" => GameMode::Osu,
                 "1" | "taiko" | "tko" => GameMode::Taiko,
-                "2" | "ctb" | "fruits" => GameMode::Catch,
+                "2" | "catch" | "ctb" | "fruits" => GameMode::Catch,
                 "3" | "mania" | "mna" => GameMode::Mania,
                 _ => return Err(Error::invalid_value(Unexpected::Str(v), &Self)),
             };
