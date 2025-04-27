@@ -1,4 +1,8 @@
-# v0.3.0 (2025-03-10)
+# v0.3.1 (2025-04-27)
+
+Fixed mods not being deserialized correctly when using the `SameModeForEachMod` seed variant ([#9])
+
+## v0.3.0 (2025-03-10)
 
 - __Breaking changes:__
   - Added the field `SuddenDeathOsu::fail_on_slider_tail`
@@ -38,3 +42,4 @@ First release
 [#5]: https://github.com/MaxOhn/rosu-mods/pull/5
 [#6]: https://github.com/MaxOhn/rosu-mods/pull/6
 [#7]: https://github.com/MaxOhn/rosu-mods/pull/7
+[#9]: https://github.com/MaxOhn/rosu-mods/pull/9
