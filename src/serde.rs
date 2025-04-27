@@ -368,6 +368,12 @@ pub(crate) struct GameModSettings<'a> {
     fields: Vec<GameModSettingField<'a>>,
 }
 
+impl Debug for GameModSettings<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        Debug::fmt(&self.fields, f)
+    }
+}
+
 impl<'de> Deserialize<'de> for GameModSettings<'de> {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
         struct FieldsVisitor;
@@ -709,10 +715,29 @@ struct GameModSettingField<'a> {
     value: Value<'a>,
 }
 
+impl Debug for GameModSettingField<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        f.debug_struct("GameModSettingField")
+            .field("name", &self.name.as_str())
+            .field("value", &self.value)
+            .finish()
+    }
+}
+
 enum Value<'de> {
     Bool(bool),
     Str(MaybeOwnedStr<'de>),
     Number(f64),
+}
+
+impl Debug for Value<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            Value::Bool(b) => Debug::fmt(b, f),
+            Value::Str(s) => Debug::fmt(s, f),
+            Value::Number(n) => Debug::fmt(n, f),
+        }
+    }
 }
 
 impl<'de> Deserialize<'de> for Value<'de> {
@@ -1291,6 +1316,22 @@ pub(crate) enum GameModRaw<'a> {
     },
 }
 
+impl Debug for GameModRaw<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            Self::Bits(bits) => write!(f, "{bits}"),
+            Self::Acronym(acronym) => Debug::fmt(acronym, f),
+            Self::Full {
+                acronym, settings, ..
+            } => f
+                .debug_struct("GameMod")
+                .field("acronym", &acronym.as_str())
+                .field("settings", settings)
+                .finish(),
+        }
+    }
+}
+
 impl GameModRaw<'_> {
     fn convert_slice<E: DeError>(mods_raw: &[Self]) -> Result<GameMods, E> {
         // Collect raw mods for each mode and see which one has the most known
@@ -1298,11 +1339,14 @@ impl GameModRaw<'_> {
         let mut inner = BTreeMap::new();
         let mut best_known_count = 0;
 
-        for mode in MODES {
+        'modes: for mode in MODES {
             let mut mods = BTreeMap::new();
 
             for mod_raw in mods_raw.iter() {
-                let gamemod = mod_raw.try_convert(mode)?;
+                let Ok(gamemod) = mod_raw.try_convert::<E>(mode) else {
+                    continue 'modes;
+                };
+
                 mods.insert(GameModOrder::from(&gamemod), gamemod);
             }
 
@@ -1327,7 +1371,13 @@ impl GameModRaw<'_> {
             }
         }
 
-        Ok(GameMods { inner })
+        if best_known_count > 0 || mods_raw.is_empty() {
+            Ok(GameMods { inner })
+        } else {
+            Err(E::custom(format!(
+                "all modes failed to deserialize mods {mods_raw:?}"
+            )))
+        }
     }
 
     fn try_convert<E: DeError>(&self, mode: GameMode) -> Result<GameMod, E> {
@@ -1468,6 +1518,15 @@ impl<'de> Deserialize<'de> for GameModField {
 pub(crate) enum MaybeOwnedStr<'a> {
     Borrowed(&'a str),
     Owned(String),
+}
+
+impl Debug for MaybeOwnedStr<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            Self::Borrowed(s) => Debug::fmt(s, f),
+            Self::Owned(s) => Debug::fmt(s, f),
+        }
+    }
 }
 
 impl MaybeOwnedStr<'_> {
@@ -2011,5 +2070,62 @@ mod tests {
             acronym: Acronym::from_str("FI").unwrap(),
         }));
         assert_eq!(mods, expected);
+    }
+
+    #[test]
+    fn deser_mods_same_success() {
+        let json = r#"[
+            {
+                "acronym":"DA",
+                "settings":{
+                    "scroll_speed":2
+                }
+            },
+            {
+                "acronym":"CS"
+            }
+        ]"#;
+
+        let mut d = Deserializer::from_str(json);
+        let mods = GameModsSeed::SameModeForEachMod {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap();
+        let mut expected = GameMods::new();
+        expected.insert(GameMod::DifficultyAdjustTaiko(DifficultyAdjustTaiko {
+            scroll_speed: Some(2.0),
+            ..Default::default()
+        }));
+        expected.insert(GameMod::ConstantSpeedTaiko(Default::default()));
+        assert_eq!(mods, expected);
+    }
+
+    #[test]
+    fn deser_mods_same_fail() {
+        let json = r#"[
+            {
+                "acronym":"DA",
+                "settings":{
+                    "scroll_speed":2
+                }
+            },
+            {
+                "acronym":"EZ",
+                "settings":{
+                    "retries":2
+                }
+            },
+            "FI",
+            256
+        ]"#;
+
+        let mut d = Deserializer::from_str(json);
+        let err = GameModsSeed::SameModeForEachMod {
+            deny_unknown_fields: true,
+        }
+        .deserialize(&mut d)
+        .unwrap_err();
+        assert_eq!(err.to_string(), "all modes failed to deserialize mods [GameMod { acronym: \"DA\", settings: [GameModSettingField { name: \"scroll_speed\", value: 2.0 }] }, GameMod { acronym: \"EZ\", settings: [GameModSettingField { name: \"retries\", value: 2.0 }] }, \"FI\", 256] at line 16 column 9");
     }
 }
