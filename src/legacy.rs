@@ -190,7 +190,7 @@ impl GameModsLegacy {
     }
 
     /// The bitwise or (`|`) of the bits in two flags values.
-    pub fn insert(&mut self, other: Self) {
+    pub const fn insert(&mut self, other: Self) {
         *self = Self::from_bits_retain(self.bits()).union(other);
     }
 
@@ -198,7 +198,7 @@ impl GameModsLegacy {
     ///
     /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
     /// `remove` won't truncate `other`, but the `!` operator will.
-    pub fn remove(&mut self, other: Self) {
+    pub const fn remove(&mut self, other: Self) {
         *self = Self::from_bits_retain(self.bits()).difference(other);
     }
 

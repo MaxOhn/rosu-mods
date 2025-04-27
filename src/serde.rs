@@ -1471,6 +1471,10 @@ pub(crate) enum MaybeOwnedStr<'a> {
 }
 
 impl MaybeOwnedStr<'_> {
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "false positive; fix when `String::as_str` is const"
+    )]
     pub(crate) fn as_str(&self) -> &str {
         match self {
             MaybeOwnedStr::Borrowed(a) => a,
