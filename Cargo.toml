@@ -16,7 +16,7 @@ macros = ["pastey"]
 
 [dependencies]
 pastey = { version = "0.2.1", optional = true }
-rkyv = { version = "0.8.8", optional = true, default-features = false, features = ["alloc", "bytecheck"] }
+rkyv = { version = "0.8.8", optional = true, default-features = false, features = ["alloc", "bytecheck", "std"] }
 serde = { version = "1.0.203", optional = true, features = ["derive"] }
 
 [dev-dependencies]

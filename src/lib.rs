@@ -171,6 +171,9 @@ pub use generated_mods::rkyv;
 #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 pub mod serde;
 
+/// Types for simple gamemod types.
+pub mod simple;
+
 pub use self::{mode::GameMode, mods::GameMods};
 
 #[doc(inline)]
@@ -180,4 +183,5 @@ pub use self::{
     intermode::GameModsIntermode,
     kind::GameModKind,
     legacy::GameModsLegacy,
+    simple::GameModSimple,
 };

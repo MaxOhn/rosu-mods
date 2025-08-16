@@ -724,7 +724,7 @@ impl Debug for GameModSettingField<'_> {
     }
 }
 
-enum Value<'de> {
+pub(crate) enum Value<'de> {
     Bool(bool),
     Str(MaybeOwnedStr<'de>),
     Number(f64),
@@ -1534,6 +1534,13 @@ impl MaybeOwnedStr<'_> {
         match self {
             MaybeOwnedStr::Borrowed(a) => a,
             MaybeOwnedStr::Owned(a) => a.as_str(),
+        }
+    }
+
+    pub(crate) fn into_owned(self) -> String {
+        match self {
+            MaybeOwnedStr::Borrowed(s) => s.to_owned(),
+            MaybeOwnedStr::Owned(s) => s,
         }
     }
 }
