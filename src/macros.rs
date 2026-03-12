@@ -41,7 +41,7 @@ macro_rules! mods {
     };
 }
 
-pub use paste::paste;
+pub use pastey::paste;
 
 #[cfg(test)]
 mod tests {

@@ -88,7 +88,7 @@ assert_eq!(iter.next(), None);
 | Flag      | Description                                                                                      | Dependencies
 | --------- | ------------------------------------------------------------------------------------------------ | ------------
 | `default` | No features enabled                                                                              |
-| `macros`  | Enables the `mods!` macro                                                                        | [`paste`]
+| `macros`  | Enables the `mods!` macro                                                                        | [`pastey`]
 | `serde`   | Implements `serde::{Deserialize, Serialize}` for all types and enables the `serde` module        | [`serde`]
 | `rkyv`    | Implements `rkyv::{Archive, Serialize, Deserialize}` for all types and enables the `rkyv` module | [`rkyv`]
 
@@ -96,7 +96,7 @@ assert_eq!(iter.next(), None);
 [mods.json]: https://github.com/ppy/osu-web/blob/master/database/mods.json
 [`generate-mods`]: https://github.com/MaxOhn/rosu-mods/tree/main/generate-mods
 [legacy mods]: https://github.com/ppy/osu-api/wiki#reference
-[`paste`]: https://docs.rs/paste
+[`pastey`]: https://docs.rs/pastey
 [`serde`]: https://docs.rs/serde
 [`rkyv`]: https://docs.rs/rkyv
 [`GameModsLegacy`]: https://docs.rs/rosu-mods/latest/rosu_mods/legacy/struct.GameModsLegacy.html
