@@ -14,7 +14,7 @@ use std::{
 use crate::{Acronym, GameMode};
 
 mod all_structs {
-    /// Larger circles, more forgiving HP drain, less accuracy required, and three lives!
+    /// Larger circles, more forgiving HP drain, less accuracy required, and extra lives!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
@@ -119,6 +119,10 @@ mod all_structs {
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub only_fade_approach_circles: Option<bool>,
     }
+    /// Put your faith in the approach circles...
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
+    pub struct TraceableOsu {}
     /// Restricted view area.
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
@@ -347,10 +351,6 @@ mod all_structs {
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub adjust_pitch: Option<bool>,
     }
-    /// Put your faith in the approach circles...
-    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
-    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
-    pub struct TraceableOsu {}
     /// The whole playfield is on a wheel!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
@@ -524,6 +524,23 @@ mod all_structs {
         /// The actual decrease to apply
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub speed_change: Option<f64>,
+    }
+    /// Simplify tricky rhythms!
+    #[derive(Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(
+        feature = "rkyv",
+        derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
+    )]
+    pub struct SimplifiedRhythmTaiko {
+        /// Converts 1/3 patterns to 1/2 rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
+        pub one_third_conversion: Option<bool>,
+        /// Converts 1/6 patterns to 1/4 rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
+        pub one_sixth_conversion: Option<bool>,
+        /// Converts 1/8 patterns to 1/4 rhythm.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
+        pub one_eighth_conversion: Option<bool>,
     }
     /// Everything just got a bit harder...
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
@@ -741,7 +758,7 @@ mod all_structs {
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
     #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ScoreV2Taiko {}
-    /// Larger fruits, more forgiving HP drain, less accuracy required, and three lives!
+    /// Larger fruits, more forgiving HP drain, less accuracy required, and extra lives!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
@@ -981,11 +998,15 @@ mod all_structs {
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub hidden_combo_count: Option<f64>,
     }
+    /// Dashing by default, slow down!
+    #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
+    #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
+    pub struct MovingFastCatch {}
     /// Score set on earlier osu! versions with the V2 scoring algorithm active.
     #[derive(Copy, Eq, Clone, Debug, Default, PartialEq)]
     #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,rkyv::Portable,rkyv::bytecheck::CheckBytes,),bytecheck(crate = rkyv::bytecheck),rkyv(as = Self), repr(transparent))]
     pub struct ScoreV2Catch {}
-    /// More forgiving HP drain, less accuracy required, and three lives!
+    /// More forgiving HP drain, less accuracy required, and extra lives!
     #[derive(Clone, Debug, Default, PartialEq)]
     #[cfg_attr(
         feature = "rkyv",
@@ -1051,6 +1072,9 @@ mod all_structs {
         derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct PerfectMania {
+        ///
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
+        pub require_perfect_hits: Option<bool>,
         /// Automatically restarts when failed.
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub restart: Option<bool>,
@@ -1157,12 +1181,12 @@ mod all_structs {
         derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
     )]
     pub struct DifficultyAdjustMania {
-        /// Override a beatmap's set HP.
-        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
-        pub drain_rate: Option<f64>,
         /// Override a beatmap's set OD.
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
         pub overall_difficulty: Option<f64>,
+        /// Override a beatmap's set HP.
+        #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::NaN>))]
+        pub drain_rate: Option<f64>,
         /// Adjust difficulty beyond sane limits.
         #[cfg_attr(feature = "rkyv", rkyv(with = rkyv::with::NicheInto<rkyv::niche::niching::Bool>))]
         pub extended_limits: Option<bool>,
@@ -1325,16 +1349,16 @@ pub use all_structs::{
     FreezeFrameOsu, GrowOsu, HalfTimeCatch, HalfTimeMania, HalfTimeOsu, HalfTimeTaiko,
     HardRockCatch, HardRockMania, HardRockOsu, HardRockTaiko, HiddenCatch, HiddenMania, HiddenOsu,
     HiddenTaiko, HoldOffMania, InvertMania, MagnetisedOsu, MirrorCatch, MirrorMania, MirrorOsu,
-    MutedCatch, MutedMania, MutedOsu, MutedTaiko, NightcoreCatch, NightcoreMania, NightcoreOsu,
-    NightcoreTaiko, NineKeysMania, NoFailCatch, NoFailMania, NoFailOsu, NoFailTaiko,
+    MovingFastCatch, MutedCatch, MutedMania, MutedOsu, MutedTaiko, NightcoreCatch, NightcoreMania,
+    NightcoreOsu, NightcoreTaiko, NineKeysMania, NoFailCatch, NoFailMania, NoFailOsu, NoFailTaiko,
     NoReleaseMania, NoScopeCatch, NoScopeOsu, OneKeyMania, PerfectCatch, PerfectMania, PerfectOsu,
     PerfectTaiko, RandomMania, RandomOsu, RandomTaiko, RelaxCatch, RelaxOsu, RelaxTaiko, RepelOsu,
-    ScoreV2Catch, ScoreV2Mania, ScoreV2Osu, ScoreV2Taiko, SevenKeysMania, SingleTapOsu,
-    SingleTapTaiko, SixKeysMania, SpinInOsu, SpunOutOsu, StrictTrackingOsu, SuddenDeathCatch,
-    SuddenDeathMania, SuddenDeathOsu, SuddenDeathTaiko, SwapTaiko, SynesthesiaOsu,
-    TargetPracticeOsu, TenKeysMania, ThreeKeysMania, TouchDeviceOsu, TraceableOsu, TransformOsu,
-    TwoKeysMania, UnknownMod, WiggleOsu, WindDownCatch, WindDownMania, WindDownOsu, WindDownTaiko,
-    WindUpCatch, WindUpMania, WindUpOsu, WindUpTaiko,
+    ScoreV2Catch, ScoreV2Mania, ScoreV2Osu, ScoreV2Taiko, SevenKeysMania, SimplifiedRhythmTaiko,
+    SingleTapOsu, SingleTapTaiko, SixKeysMania, SpinInOsu, SpunOutOsu, StrictTrackingOsu,
+    SuddenDeathCatch, SuddenDeathMania, SuddenDeathOsu, SuddenDeathTaiko, SwapTaiko,
+    SynesthesiaOsu, TargetPracticeOsu, TenKeysMania, ThreeKeysMania, TouchDeviceOsu, TraceableOsu,
+    TransformOsu, TwoKeysMania, UnknownMod, WiggleOsu, WindDownCatch, WindDownMania, WindDownOsu,
+    WindDownTaiko, WindUpCatch, WindUpMania, WindUpOsu, WindUpTaiko,
 };
 pub use gamemod::GameMod;
 pub use intermode::GameModIntermode;
@@ -1364,45 +1388,46 @@ pub mod rkyv {
         ArchivedNightcoreOsu, ArchivedNightcoreTaiko, ArchivedNoScopeCatch, ArchivedNoScopeOsu,
         ArchivedPerfectCatch, ArchivedPerfectMania, ArchivedPerfectOsu, ArchivedPerfectTaiko,
         ArchivedRandomMania, ArchivedRandomOsu, ArchivedRandomTaiko, ArchivedRepelOsu,
-        ArchivedSuddenDeathCatch, ArchivedSuddenDeathMania, ArchivedSuddenDeathOsu,
-        ArchivedSuddenDeathTaiko, ArchivedTargetPracticeOsu, ArchivedWiggleOsu,
-        ArchivedWindDownCatch, ArchivedWindDownMania, ArchivedWindDownOsu, ArchivedWindDownTaiko,
-        ArchivedWindUpCatch, ArchivedWindUpMania, ArchivedWindUpOsu, ArchivedWindUpTaiko,
-        AutopilotOsuResolver, AutoplayCatchResolver, AutoplayManiaResolver, AutoplayOsuResolver,
-        AutoplayTaikoResolver, BarrelRollOsuResolver, BlindsOsuResolver, BloomOsuResolver,
-        BubblesOsuResolver, CinemaCatchResolver, CinemaManiaResolver, CinemaOsuResolver,
-        CinemaTaikoResolver, ClassicCatchResolver, ClassicManiaResolver, ClassicOsuResolver,
-        ClassicTaikoResolver, ConstantSpeedManiaResolver, ConstantSpeedTaikoResolver,
-        CoverManiaResolver, DaycoreCatchResolver, DaycoreManiaResolver, DaycoreOsuResolver,
-        DaycoreTaikoResolver, DeflateOsuResolver, DepthOsuResolver, DifficultyAdjustCatchResolver,
-        DifficultyAdjustManiaResolver, DifficultyAdjustOsuResolver, DifficultyAdjustTaikoResolver,
-        DoubleTimeCatchResolver, DoubleTimeManiaResolver, DoubleTimeOsuResolver,
-        DoubleTimeTaikoResolver, DualStagesManiaResolver, EasyCatchResolver, EasyManiaResolver,
-        EasyOsuResolver, EasyTaikoResolver, EightKeysManiaResolver, FadeInManiaResolver,
-        FiveKeysManiaResolver, FlashlightCatchResolver, FlashlightManiaResolver,
-        FlashlightOsuResolver, FlashlightTaikoResolver, FloatingFruitsCatchResolver,
-        FourKeysManiaResolver, FreezeFrameOsuResolver, GrowOsuResolver, HalfTimeCatchResolver,
-        HalfTimeManiaResolver, HalfTimeOsuResolver, HalfTimeTaikoResolver, HardRockCatchResolver,
-        HardRockManiaResolver, HardRockOsuResolver, HardRockTaikoResolver, HiddenCatchResolver,
-        HiddenManiaResolver, HiddenOsuResolver, HiddenTaikoResolver, HoldOffManiaResolver,
-        InvertManiaResolver, MagnetisedOsuResolver, MirrorCatchResolver, MirrorManiaResolver,
-        MirrorOsuResolver, MutedCatchResolver, MutedManiaResolver, MutedOsuResolver,
-        MutedTaikoResolver, NightcoreCatchResolver, NightcoreManiaResolver, NightcoreOsuResolver,
+        ArchivedSimplifiedRhythmTaiko, ArchivedSuddenDeathCatch, ArchivedSuddenDeathMania,
+        ArchivedSuddenDeathOsu, ArchivedSuddenDeathTaiko, ArchivedTargetPracticeOsu,
+        ArchivedWiggleOsu, ArchivedWindDownCatch, ArchivedWindDownMania, ArchivedWindDownOsu,
+        ArchivedWindDownTaiko, ArchivedWindUpCatch, ArchivedWindUpMania, ArchivedWindUpOsu,
+        ArchivedWindUpTaiko, AutopilotOsuResolver, AutoplayCatchResolver, AutoplayManiaResolver,
+        AutoplayOsuResolver, AutoplayTaikoResolver, BarrelRollOsuResolver, BlindsOsuResolver,
+        BloomOsuResolver, BubblesOsuResolver, CinemaCatchResolver, CinemaManiaResolver,
+        CinemaOsuResolver, CinemaTaikoResolver, ClassicCatchResolver, ClassicManiaResolver,
+        ClassicOsuResolver, ClassicTaikoResolver, ConstantSpeedManiaResolver,
+        ConstantSpeedTaikoResolver, CoverManiaResolver, DaycoreCatchResolver, DaycoreManiaResolver,
+        DaycoreOsuResolver, DaycoreTaikoResolver, DeflateOsuResolver, DepthOsuResolver,
+        DifficultyAdjustCatchResolver, DifficultyAdjustManiaResolver, DifficultyAdjustOsuResolver,
+        DifficultyAdjustTaikoResolver, DoubleTimeCatchResolver, DoubleTimeManiaResolver,
+        DoubleTimeOsuResolver, DoubleTimeTaikoResolver, DualStagesManiaResolver, EasyCatchResolver,
+        EasyManiaResolver, EasyOsuResolver, EasyTaikoResolver, EightKeysManiaResolver,
+        FadeInManiaResolver, FiveKeysManiaResolver, FlashlightCatchResolver,
+        FlashlightManiaResolver, FlashlightOsuResolver, FlashlightTaikoResolver,
+        FloatingFruitsCatchResolver, FourKeysManiaResolver, FreezeFrameOsuResolver,
+        GrowOsuResolver, HalfTimeCatchResolver, HalfTimeManiaResolver, HalfTimeOsuResolver,
+        HalfTimeTaikoResolver, HardRockCatchResolver, HardRockManiaResolver, HardRockOsuResolver,
+        HardRockTaikoResolver, HiddenCatchResolver, HiddenManiaResolver, HiddenOsuResolver,
+        HiddenTaikoResolver, HoldOffManiaResolver, InvertManiaResolver, MagnetisedOsuResolver,
+        MirrorCatchResolver, MirrorManiaResolver, MirrorOsuResolver, MovingFastCatchResolver,
+        MutedCatchResolver, MutedManiaResolver, MutedOsuResolver, MutedTaikoResolver,
+        NightcoreCatchResolver, NightcoreManiaResolver, NightcoreOsuResolver,
         NightcoreTaikoResolver, NineKeysManiaResolver, NoFailCatchResolver, NoFailManiaResolver,
         NoFailOsuResolver, NoFailTaikoResolver, NoReleaseManiaResolver, NoScopeCatchResolver,
         NoScopeOsuResolver, OneKeyManiaResolver, PerfectCatchResolver, PerfectManiaResolver,
         PerfectOsuResolver, PerfectTaikoResolver, RandomManiaResolver, RandomOsuResolver,
         RandomTaikoResolver, RelaxCatchResolver, RelaxOsuResolver, RelaxTaikoResolver,
         RepelOsuResolver, ScoreV2CatchResolver, ScoreV2ManiaResolver, ScoreV2OsuResolver,
-        ScoreV2TaikoResolver, SevenKeysManiaResolver, SingleTapOsuResolver, SingleTapTaikoResolver,
-        SixKeysManiaResolver, SpinInOsuResolver, SpunOutOsuResolver, StrictTrackingOsuResolver,
-        SuddenDeathCatchResolver, SuddenDeathManiaResolver, SuddenDeathOsuResolver,
-        SuddenDeathTaikoResolver, SwapTaikoResolver, SynesthesiaOsuResolver,
-        TargetPracticeOsuResolver, TenKeysManiaResolver, ThreeKeysManiaResolver,
-        TouchDeviceOsuResolver, TraceableOsuResolver, TransformOsuResolver, TwoKeysManiaResolver,
-        UnknownModResolver, WiggleOsuResolver, WindDownCatchResolver, WindDownManiaResolver,
-        WindDownOsuResolver, WindDownTaikoResolver, WindUpCatchResolver, WindUpManiaResolver,
-        WindUpOsuResolver, WindUpTaikoResolver,
+        ScoreV2TaikoResolver, SevenKeysManiaResolver, SimplifiedRhythmTaikoResolver,
+        SingleTapOsuResolver, SingleTapTaikoResolver, SixKeysManiaResolver, SpinInOsuResolver,
+        SpunOutOsuResolver, StrictTrackingOsuResolver, SuddenDeathCatchResolver,
+        SuddenDeathManiaResolver, SuddenDeathOsuResolver, SuddenDeathTaikoResolver,
+        SwapTaikoResolver, SynesthesiaOsuResolver, TargetPracticeOsuResolver, TenKeysManiaResolver,
+        ThreeKeysManiaResolver, TouchDeviceOsuResolver, TraceableOsuResolver, TransformOsuResolver,
+        TwoKeysManiaResolver, UnknownModResolver, WiggleOsuResolver, WindDownCatchResolver,
+        WindDownManiaResolver, WindDownOsuResolver, WindDownTaikoResolver, WindUpCatchResolver,
+        WindUpManiaResolver, WindUpOsuResolver, WindUpTaikoResolver,
     };
     pub use super::gamemod::{ArchivedGameMod, GameModResolver};
     pub use super::intermode::GameModIntermodeResolver;
@@ -1426,7 +1451,7 @@ impl EasyOsu {
     }
     /// The description of [`EasyOsu`]
     pub const fn description() -> &'static str {
-        "Larger circles, more forgiving HP drain, less accuracy required, and three lives!"
+        "Larger circles, more forgiving HP drain, less accuracy required, and extra lives!"
     }
     /// The [`GameModKind`] of [`EasyOsu`]
     pub const fn kind() -> GameModKind {
@@ -1705,9 +1730,10 @@ impl HiddenOsu {
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
         unsafe {
             [
-                Acronym::from_str_unchecked("SI"),
                 Acronym::from_str_unchecked("TC"),
+                Acronym::from_str_unchecked("SI"),
                 Acronym::from_str_unchecked("AD"),
+                Acronym::from_str_unchecked("FR"),
                 Acronym::from_str_unchecked("DP"),
             ]
         }
@@ -1726,6 +1752,34 @@ impl HiddenOsu {
     /// See <https://github.com/ppy/osu-api/wiki#mods>
     pub const fn bits() -> u32 {
         8
+    }
+}
+impl TraceableOsu {
+    /// The acronym of [`TraceableOsu`]
+    pub const fn acronym() -> Acronym {
+        unsafe { Acronym::from_str_unchecked("TC") }
+    }
+    /// Iterator of [`Acronym`] for mods that are incompatible with [`TraceableOsu`]
+    pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
+        unsafe {
+            [
+                Acronym::from_str_unchecked("HD"),
+                Acronym::from_str_unchecked("TP"),
+                Acronym::from_str_unchecked("SI"),
+                Acronym::from_str_unchecked("GR"),
+                Acronym::from_str_unchecked("DF"),
+                Acronym::from_str_unchecked("DP"),
+            ]
+        }
+        .into_iter()
+    }
+    /// The description of [`TraceableOsu`]
+    pub const fn description() -> &'static str {
+        "Put your faith in the approach circles..."
+    }
+    /// The [`GameModKind`] of [`TraceableOsu`]
+    pub const fn kind() -> GameModKind {
+        GameModKind::DifficultyIncrease
     }
 }
 impl FlashlightOsu {
@@ -1836,10 +1890,11 @@ impl TargetPracticeOsu {
         unsafe {
             [
                 Acronym::from_str_unchecked("SD"),
+                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("ST"),
+                Acronym::from_str_unchecked("DA"),
                 Acronym::from_str_unchecked("RD"),
                 Acronym::from_str_unchecked("SO"),
-                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("AD"),
                 Acronym::from_str_unchecked("DP"),
             ]
@@ -1872,6 +1927,7 @@ impl DifficultyAdjustOsu {
             [
                 Acronym::from_str_unchecked("EZ"),
                 Acronym::from_str_unchecked("HR"),
+                Acronym::from_str_unchecked("TP"),
             ]
         }
         .into_iter()
@@ -2247,9 +2303,9 @@ impl SpinInOsu {
         unsafe {
             [
                 Acronym::from_str_unchecked("HD"),
+                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("GR"),
                 Acronym::from_str_unchecked("DF"),
-                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("AD"),
                 Acronym::from_str_unchecked("DP"),
             ]
@@ -2274,9 +2330,9 @@ impl GrowOsu {
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
         unsafe {
             [
+                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("SI"),
                 Acronym::from_str_unchecked("DF"),
-                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("AD"),
                 Acronym::from_str_unchecked("DP"),
             ]
@@ -2301,9 +2357,9 @@ impl DeflateOsu {
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
         unsafe {
             [
+                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("SI"),
                 Acronym::from_str_unchecked("GR"),
-                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("AD"),
                 Acronym::from_str_unchecked("DP"),
             ]
@@ -2371,34 +2427,6 @@ impl WindDownOsu {
         "Sloooow doooown..."
     }
     /// The [`GameModKind`] of [`WindDownOsu`]
-    pub const fn kind() -> GameModKind {
-        GameModKind::Fun
-    }
-}
-impl TraceableOsu {
-    /// The acronym of [`TraceableOsu`]
-    pub const fn acronym() -> Acronym {
-        unsafe { Acronym::from_str_unchecked("TC") }
-    }
-    /// Iterator of [`Acronym`] for mods that are incompatible with [`TraceableOsu`]
-    pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
-        unsafe {
-            [
-                Acronym::from_str_unchecked("HD"),
-                Acronym::from_str_unchecked("TP"),
-                Acronym::from_str_unchecked("SI"),
-                Acronym::from_str_unchecked("GR"),
-                Acronym::from_str_unchecked("DF"),
-                Acronym::from_str_unchecked("DP"),
-            ]
-        }
-        .into_iter()
-    }
-    /// The description of [`TraceableOsu`]
-    pub const fn description() -> &'static str {
-        "Put your faith in the approach circles..."
-    }
-    /// The [`GameModKind`] of [`TraceableOsu`]
     pub const fn kind() -> GameModKind {
         GameModKind::Fun
     }
@@ -2585,6 +2613,7 @@ impl FreezeFrameOsu {
     pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
         unsafe {
             [
+                Acronym::from_str_unchecked("HD"),
                 Acronym::from_str_unchecked("TR"),
                 Acronym::from_str_unchecked("AD"),
                 Acronym::from_str_unchecked("DP"),
@@ -2654,13 +2683,13 @@ impl DepthOsu {
         unsafe {
             [
                 Acronym::from_str_unchecked("HD"),
+                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("TP"),
                 Acronym::from_str_unchecked("TR"),
                 Acronym::from_str_unchecked("WG"),
                 Acronym::from_str_unchecked("SI"),
                 Acronym::from_str_unchecked("GR"),
                 Acronym::from_str_unchecked("DF"),
-                Acronym::from_str_unchecked("TC"),
                 Acronym::from_str_unchecked("MG"),
                 Acronym::from_str_unchecked("RP"),
                 Acronym::from_str_unchecked("FR"),
@@ -2878,6 +2907,24 @@ impl DaycoreTaiko {
         "Whoaaaaa..."
     }
     /// The [`GameModKind`] of [`DaycoreTaiko`]
+    pub const fn kind() -> GameModKind {
+        GameModKind::DifficultyReduction
+    }
+}
+impl SimplifiedRhythmTaiko {
+    /// The acronym of [`SimplifiedRhythmTaiko`]
+    pub const fn acronym() -> Acronym {
+        unsafe { Acronym::from_str_unchecked("SR") }
+    }
+    /// Iterator of [`Acronym`] for mods that are incompatible with [`SimplifiedRhythmTaiko`]
+    pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
+        [].into_iter()
+    }
+    /// The description of [`SimplifiedRhythmTaiko`]
+    pub const fn description() -> &'static str {
+        "Simplify tricky rhythms!"
+    }
+    /// The [`GameModKind`] of [`SimplifiedRhythmTaiko`]
     pub const fn kind() -> GameModKind {
         GameModKind::DifficultyReduction
     }
@@ -3488,7 +3535,7 @@ impl EasyCatch {
     }
     /// The description of [`EasyCatch`]
     pub const fn description() -> &'static str {
-        "Larger fruits, more forgiving HP drain, less accuracy required, and three lives!"
+        "Larger fruits, more forgiving HP drain, less accuracy required, and extra lives!"
     }
     /// The [`GameModKind`] of [`EasyCatch`]
     pub const fn kind() -> GameModKind {
@@ -3903,6 +3950,7 @@ impl AutoplayCatch {
             [
                 Acronym::from_str_unchecked("CN"),
                 Acronym::from_str_unchecked("RX"),
+                Acronym::from_str_unchecked("MF"),
             ]
         }
         .into_iter()
@@ -3937,6 +3985,7 @@ impl CinemaCatch {
                 Acronym::from_str_unchecked("AC"),
                 Acronym::from_str_unchecked("AT"),
                 Acronym::from_str_unchecked("RX"),
+                Acronym::from_str_unchecked("MF"),
             ]
         }
         .into_iter()
@@ -3967,6 +4016,7 @@ impl RelaxCatch {
             [
                 Acronym::from_str_unchecked("AT"),
                 Acronym::from_str_unchecked("CN"),
+                Acronym::from_str_unchecked("MF"),
             ]
         }
         .into_iter()
@@ -4094,6 +4144,31 @@ impl NoScopeCatch {
         GameModKind::Fun
     }
 }
+impl MovingFastCatch {
+    /// The acronym of [`MovingFastCatch`]
+    pub const fn acronym() -> Acronym {
+        unsafe { Acronym::from_str_unchecked("MF") }
+    }
+    /// Iterator of [`Acronym`] for mods that are incompatible with [`MovingFastCatch`]
+    pub fn incompatible_mods() -> impl Iterator<Item = Acronym> {
+        unsafe {
+            [
+                Acronym::from_str_unchecked("AT"),
+                Acronym::from_str_unchecked("CN"),
+                Acronym::from_str_unchecked("RX"),
+            ]
+        }
+        .into_iter()
+    }
+    /// The description of [`MovingFastCatch`]
+    pub const fn description() -> &'static str {
+        "Dashing by default, slow down!"
+    }
+    /// The [`GameModKind`] of [`MovingFastCatch`]
+    pub const fn kind() -> GameModKind {
+        GameModKind::Fun
+    }
+}
 impl ScoreV2Catch {
     /// The acronym of [`ScoreV2Catch`]
     pub const fn acronym() -> Acronym {
@@ -4136,7 +4211,7 @@ impl EasyMania {
     }
     /// The description of [`EasyMania`]
     pub const fn description() -> &'static str {
-        "More forgiving HP drain, less accuracy required, and three lives!"
+        "More forgiving HP drain, less accuracy required, and extra lives!"
     }
     /// The [`GameModKind`] of [`EasyMania`]
     pub const fn kind() -> GameModKind {
@@ -5366,6 +5441,7 @@ pub(crate) mod intermode {
         Invert,
         Magnetised,
         Mirror,
+        MovingFast,
         Muted,
         Nightcore,
         NineKeys,
@@ -5379,6 +5455,7 @@ pub(crate) mod intermode {
         Repel,
         ScoreV2,
         SevenKeys,
+        SimplifiedRhythm,
         SingleTap,
         SixKeys,
         SpinIn,
@@ -5441,6 +5518,7 @@ impl GameModIntermode {
                 Self::Invert => Acronym::from_str_unchecked("IN"),
                 Self::Magnetised => Acronym::from_str_unchecked("MG"),
                 Self::Mirror => Acronym::from_str_unchecked("MR"),
+                Self::MovingFast => Acronym::from_str_unchecked("MF"),
                 Self::Muted => Acronym::from_str_unchecked("MU"),
                 Self::Nightcore => Acronym::from_str_unchecked("NC"),
                 Self::NineKeys => Acronym::from_str_unchecked("9K"),
@@ -5454,6 +5532,7 @@ impl GameModIntermode {
                 Self::Repel => Acronym::from_str_unchecked("RP"),
                 Self::ScoreV2 => Acronym::from_str_unchecked("SV2"),
                 Self::SevenKeys => Acronym::from_str_unchecked("7K"),
+                Self::SimplifiedRhythm => Acronym::from_str_unchecked("SR"),
                 Self::SingleTap => Acronym::from_str_unchecked("SG"),
                 Self::SixKeys => Acronym::from_str_unchecked("6K"),
                 Self::SpinIn => Acronym::from_str_unchecked("SI"),
@@ -5517,6 +5596,7 @@ impl GameModIntermode {
             Self::Invert => None,
             Self::Magnetised => None,
             Self::Mirror => Some(1073741824),
+            Self::MovingFast => None,
             Self::Muted => None,
             Self::Nightcore => Some(576),
             Self::NineKeys => Some(16777216),
@@ -5530,6 +5610,7 @@ impl GameModIntermode {
             Self::Repel => None,
             Self::ScoreV2 => Some(536870912),
             Self::SevenKeys => Some(262144),
+            Self::SimplifiedRhythm => None,
             Self::SingleTap => None,
             Self::SixKeys => Some(131072),
             Self::SpinIn => None,
@@ -5590,6 +5671,7 @@ impl GameModIntermode {
             Self::Invert => GameModKind::Conversion,
             Self::Magnetised => GameModKind::Fun,
             Self::Mirror => GameModKind::Conversion,
+            Self::MovingFast => GameModKind::Fun,
             Self::Muted => GameModKind::Fun,
             Self::Nightcore => GameModKind::DifficultyIncrease,
             Self::NineKeys => GameModKind::Conversion,
@@ -5603,6 +5685,7 @@ impl GameModIntermode {
             Self::Repel => GameModKind::Fun,
             Self::ScoreV2 => GameModKind::System,
             Self::SevenKeys => GameModKind::Conversion,
+            Self::SimplifiedRhythm => GameModKind::DifficultyReduction,
             Self::SingleTap => GameModKind::Conversion,
             Self::SixKeys => GameModKind::Conversion,
             Self::SpinIn => GameModKind::Fun,
@@ -5615,7 +5698,7 @@ impl GameModIntermode {
             Self::TenKeys => GameModKind::Conversion,
             Self::ThreeKeys => GameModKind::Conversion,
             Self::TouchDevice => GameModKind::System,
-            Self::Traceable => GameModKind::Fun,
+            Self::Traceable => GameModKind::DifficultyIncrease,
             Self::Transform => GameModKind::Fun,
             Self::TwoKeys => GameModKind::Conversion,
             Self::Wiggle => GameModKind::Fun,
@@ -5663,6 +5746,7 @@ impl GameModIntermode {
             "IN" => Self::Invert,
             "MG" => Self::Magnetised,
             "MR" => Self::Mirror,
+            "MF" => Self::MovingFast,
             "MU" => Self::Muted,
             "NC" => Self::Nightcore,
             "9K" => Self::NineKeys,
@@ -5676,6 +5760,7 @@ impl GameModIntermode {
             "RP" => Self::Repel,
             "SV2" => Self::ScoreV2,
             "7K" => Self::SevenKeys,
+            "SR" => Self::SimplifiedRhythm,
             "SG" => Self::SingleTap,
             "6K" => Self::SixKeys,
             "SI" => Self::SpinIn,
@@ -5783,6 +5868,7 @@ pub(crate) mod gamemod {
         DoubleTimeOsu(DoubleTimeOsu),
         NightcoreOsu(NightcoreOsu),
         HiddenOsu(HiddenOsu),
+        TraceableOsu(TraceableOsu),
         FlashlightOsu(FlashlightOsu),
         BlindsOsu(BlindsOsu),
         StrictTrackingOsu(StrictTrackingOsu),
@@ -5806,7 +5892,6 @@ pub(crate) mod gamemod {
         DeflateOsu(DeflateOsu),
         WindUpOsu(WindUpOsu),
         WindDownOsu(WindDownOsu),
-        TraceableOsu(TraceableOsu),
         BarrelRollOsu(BarrelRollOsu),
         ApproachDifferentOsu(ApproachDifferentOsu),
         MutedOsu(MutedOsu),
@@ -5826,6 +5911,7 @@ pub(crate) mod gamemod {
         NoFailTaiko(NoFailTaiko),
         HalfTimeTaiko(HalfTimeTaiko),
         DaycoreTaiko(DaycoreTaiko),
+        SimplifiedRhythmTaiko(SimplifiedRhythmTaiko),
         HardRockTaiko(HardRockTaiko),
         SuddenDeathTaiko(SuddenDeathTaiko),
         PerfectTaiko(PerfectTaiko),
@@ -5872,6 +5958,7 @@ pub(crate) mod gamemod {
         FloatingFruitsCatch(FloatingFruitsCatch),
         MutedCatch(MutedCatch),
         NoScopeCatch(NoScopeCatch),
+        MovingFastCatch(MovingFastCatch),
         ScoreV2Catch(ScoreV2Catch),
         UnknownCatch(UnknownMod),
         EasyMania(EasyMania),
@@ -5931,6 +6018,7 @@ impl GameMod {
             ("DT", GameMode::Osu) => Self::DoubleTimeOsu(Default::default()),
             ("NC", GameMode::Osu) => Self::NightcoreOsu(Default::default()),
             ("HD", GameMode::Osu) => Self::HiddenOsu(Default::default()),
+            ("TC", GameMode::Osu) => Self::TraceableOsu(Default::default()),
             ("FL", GameMode::Osu) => Self::FlashlightOsu(Default::default()),
             ("BL", GameMode::Osu) => Self::BlindsOsu(Default::default()),
             ("ST", GameMode::Osu) => Self::StrictTrackingOsu(Default::default()),
@@ -5954,7 +6042,6 @@ impl GameMod {
             ("DF", GameMode::Osu) => Self::DeflateOsu(Default::default()),
             ("WU", GameMode::Osu) => Self::WindUpOsu(Default::default()),
             ("WD", GameMode::Osu) => Self::WindDownOsu(Default::default()),
-            ("TC", GameMode::Osu) => Self::TraceableOsu(Default::default()),
             ("BR", GameMode::Osu) => Self::BarrelRollOsu(Default::default()),
             ("AD", GameMode::Osu) => Self::ApproachDifferentOsu(Default::default()),
             ("MU", GameMode::Osu) => Self::MutedOsu(Default::default()),
@@ -5973,6 +6060,7 @@ impl GameMod {
             ("NF", GameMode::Taiko) => Self::NoFailTaiko(Default::default()),
             ("HT", GameMode::Taiko) => Self::HalfTimeTaiko(Default::default()),
             ("DC", GameMode::Taiko) => Self::DaycoreTaiko(Default::default()),
+            ("SR", GameMode::Taiko) => Self::SimplifiedRhythmTaiko(Default::default()),
             ("HR", GameMode::Taiko) => Self::HardRockTaiko(Default::default()),
             ("SD", GameMode::Taiko) => Self::SuddenDeathTaiko(Default::default()),
             ("PF", GameMode::Taiko) => Self::PerfectTaiko(Default::default()),
@@ -6018,6 +6106,7 @@ impl GameMod {
             ("FF", GameMode::Catch) => Self::FloatingFruitsCatch(Default::default()),
             ("MU", GameMode::Catch) => Self::MutedCatch(Default::default()),
             ("NS", GameMode::Catch) => Self::NoScopeCatch(Default::default()),
+            ("MF", GameMode::Catch) => Self::MovingFastCatch(Default::default()),
             ("SV2", GameMode::Catch) => Self::ScoreV2Catch(Default::default()),
             ("EZ", GameMode::Mania) => Self::EasyMania(Default::default()),
             ("NF", GameMode::Mania) => Self::NoFailMania(Default::default()),
@@ -6085,6 +6174,7 @@ impl GameMod {
             Self::DoubleTimeOsu(_) => DoubleTimeOsu::acronym(),
             Self::NightcoreOsu(_) => NightcoreOsu::acronym(),
             Self::HiddenOsu(_) => HiddenOsu::acronym(),
+            Self::TraceableOsu(_) => TraceableOsu::acronym(),
             Self::FlashlightOsu(_) => FlashlightOsu::acronym(),
             Self::BlindsOsu(_) => BlindsOsu::acronym(),
             Self::StrictTrackingOsu(_) => StrictTrackingOsu::acronym(),
@@ -6108,7 +6198,6 @@ impl GameMod {
             Self::DeflateOsu(_) => DeflateOsu::acronym(),
             Self::WindUpOsu(_) => WindUpOsu::acronym(),
             Self::WindDownOsu(_) => WindDownOsu::acronym(),
-            Self::TraceableOsu(_) => TraceableOsu::acronym(),
             Self::BarrelRollOsu(_) => BarrelRollOsu::acronym(),
             Self::ApproachDifferentOsu(_) => ApproachDifferentOsu::acronym(),
             Self::MutedOsu(_) => MutedOsu::acronym(),
@@ -6127,6 +6216,7 @@ impl GameMod {
             Self::NoFailTaiko(_) => NoFailTaiko::acronym(),
             Self::HalfTimeTaiko(_) => HalfTimeTaiko::acronym(),
             Self::DaycoreTaiko(_) => DaycoreTaiko::acronym(),
+            Self::SimplifiedRhythmTaiko(_) => SimplifiedRhythmTaiko::acronym(),
             Self::HardRockTaiko(_) => HardRockTaiko::acronym(),
             Self::SuddenDeathTaiko(_) => SuddenDeathTaiko::acronym(),
             Self::PerfectTaiko(_) => PerfectTaiko::acronym(),
@@ -6172,6 +6262,7 @@ impl GameMod {
             Self::FloatingFruitsCatch(_) => FloatingFruitsCatch::acronym(),
             Self::MutedCatch(_) => MutedCatch::acronym(),
             Self::NoScopeCatch(_) => NoScopeCatch::acronym(),
+            Self::MovingFastCatch(_) => MovingFastCatch::acronym(),
             Self::ScoreV2Catch(_) => ScoreV2Catch::acronym(),
             Self::EasyMania(_) => EasyMania::acronym(),
             Self::NoFailMania(_) => NoFailMania::acronym(),
@@ -6232,6 +6323,7 @@ impl GameMod {
             Self::DoubleTimeOsu(_) => DoubleTimeOsu::incompatible_mods().collect(),
             Self::NightcoreOsu(_) => NightcoreOsu::incompatible_mods().collect(),
             Self::HiddenOsu(_) => HiddenOsu::incompatible_mods().collect(),
+            Self::TraceableOsu(_) => TraceableOsu::incompatible_mods().collect(),
             Self::FlashlightOsu(_) => FlashlightOsu::incompatible_mods().collect(),
             Self::BlindsOsu(_) => BlindsOsu::incompatible_mods().collect(),
             Self::StrictTrackingOsu(_) => StrictTrackingOsu::incompatible_mods().collect(),
@@ -6255,7 +6347,6 @@ impl GameMod {
             Self::DeflateOsu(_) => DeflateOsu::incompatible_mods().collect(),
             Self::WindUpOsu(_) => WindUpOsu::incompatible_mods().collect(),
             Self::WindDownOsu(_) => WindDownOsu::incompatible_mods().collect(),
-            Self::TraceableOsu(_) => TraceableOsu::incompatible_mods().collect(),
             Self::BarrelRollOsu(_) => BarrelRollOsu::incompatible_mods().collect(),
             Self::ApproachDifferentOsu(_) => ApproachDifferentOsu::incompatible_mods().collect(),
             Self::MutedOsu(_) => MutedOsu::incompatible_mods().collect(),
@@ -6274,6 +6365,7 @@ impl GameMod {
             Self::NoFailTaiko(_) => NoFailTaiko::incompatible_mods().collect(),
             Self::HalfTimeTaiko(_) => HalfTimeTaiko::incompatible_mods().collect(),
             Self::DaycoreTaiko(_) => DaycoreTaiko::incompatible_mods().collect(),
+            Self::SimplifiedRhythmTaiko(_) => SimplifiedRhythmTaiko::incompatible_mods().collect(),
             Self::HardRockTaiko(_) => HardRockTaiko::incompatible_mods().collect(),
             Self::SuddenDeathTaiko(_) => SuddenDeathTaiko::incompatible_mods().collect(),
             Self::PerfectTaiko(_) => PerfectTaiko::incompatible_mods().collect(),
@@ -6323,6 +6415,7 @@ impl GameMod {
             Self::FloatingFruitsCatch(_) => FloatingFruitsCatch::incompatible_mods().collect(),
             Self::MutedCatch(_) => MutedCatch::incompatible_mods().collect(),
             Self::NoScopeCatch(_) => NoScopeCatch::incompatible_mods().collect(),
+            Self::MovingFastCatch(_) => MovingFastCatch::incompatible_mods().collect(),
             Self::ScoreV2Catch(_) => ScoreV2Catch::incompatible_mods().collect(),
             Self::EasyMania(_) => EasyMania::incompatible_mods().collect(),
             Self::NoFailMania(_) => NoFailMania::incompatible_mods().collect(),
@@ -6382,6 +6475,7 @@ impl GameMod {
             Self::DoubleTimeOsu(_) => DoubleTimeOsu::description(),
             Self::NightcoreOsu(_) => NightcoreOsu::description(),
             Self::HiddenOsu(_) => HiddenOsu::description(),
+            Self::TraceableOsu(_) => TraceableOsu::description(),
             Self::FlashlightOsu(_) => FlashlightOsu::description(),
             Self::BlindsOsu(_) => BlindsOsu::description(),
             Self::StrictTrackingOsu(_) => StrictTrackingOsu::description(),
@@ -6405,7 +6499,6 @@ impl GameMod {
             Self::DeflateOsu(_) => DeflateOsu::description(),
             Self::WindUpOsu(_) => WindUpOsu::description(),
             Self::WindDownOsu(_) => WindDownOsu::description(),
-            Self::TraceableOsu(_) => TraceableOsu::description(),
             Self::BarrelRollOsu(_) => BarrelRollOsu::description(),
             Self::ApproachDifferentOsu(_) => ApproachDifferentOsu::description(),
             Self::MutedOsu(_) => MutedOsu::description(),
@@ -6424,6 +6517,7 @@ impl GameMod {
             Self::NoFailTaiko(_) => NoFailTaiko::description(),
             Self::HalfTimeTaiko(_) => HalfTimeTaiko::description(),
             Self::DaycoreTaiko(_) => DaycoreTaiko::description(),
+            Self::SimplifiedRhythmTaiko(_) => SimplifiedRhythmTaiko::description(),
             Self::HardRockTaiko(_) => HardRockTaiko::description(),
             Self::SuddenDeathTaiko(_) => SuddenDeathTaiko::description(),
             Self::PerfectTaiko(_) => PerfectTaiko::description(),
@@ -6469,6 +6563,7 @@ impl GameMod {
             Self::FloatingFruitsCatch(_) => FloatingFruitsCatch::description(),
             Self::MutedCatch(_) => MutedCatch::description(),
             Self::NoScopeCatch(_) => NoScopeCatch::description(),
+            Self::MovingFastCatch(_) => MovingFastCatch::description(),
             Self::ScoreV2Catch(_) => ScoreV2Catch::description(),
             Self::EasyMania(_) => EasyMania::description(),
             Self::NoFailMania(_) => NoFailMania::description(),
@@ -6526,6 +6621,7 @@ impl GameMod {
             Self::DoubleTimeOsu(_) => DoubleTimeOsu::kind(),
             Self::NightcoreOsu(_) => NightcoreOsu::kind(),
             Self::HiddenOsu(_) => HiddenOsu::kind(),
+            Self::TraceableOsu(_) => TraceableOsu::kind(),
             Self::FlashlightOsu(_) => FlashlightOsu::kind(),
             Self::BlindsOsu(_) => BlindsOsu::kind(),
             Self::StrictTrackingOsu(_) => StrictTrackingOsu::kind(),
@@ -6549,7 +6645,6 @@ impl GameMod {
             Self::DeflateOsu(_) => DeflateOsu::kind(),
             Self::WindUpOsu(_) => WindUpOsu::kind(),
             Self::WindDownOsu(_) => WindDownOsu::kind(),
-            Self::TraceableOsu(_) => TraceableOsu::kind(),
             Self::BarrelRollOsu(_) => BarrelRollOsu::kind(),
             Self::ApproachDifferentOsu(_) => ApproachDifferentOsu::kind(),
             Self::MutedOsu(_) => MutedOsu::kind(),
@@ -6568,6 +6663,7 @@ impl GameMod {
             Self::NoFailTaiko(_) => NoFailTaiko::kind(),
             Self::HalfTimeTaiko(_) => HalfTimeTaiko::kind(),
             Self::DaycoreTaiko(_) => DaycoreTaiko::kind(),
+            Self::SimplifiedRhythmTaiko(_) => SimplifiedRhythmTaiko::kind(),
             Self::HardRockTaiko(_) => HardRockTaiko::kind(),
             Self::SuddenDeathTaiko(_) => SuddenDeathTaiko::kind(),
             Self::PerfectTaiko(_) => PerfectTaiko::kind(),
@@ -6613,6 +6709,7 @@ impl GameMod {
             Self::FloatingFruitsCatch(_) => FloatingFruitsCatch::kind(),
             Self::MutedCatch(_) => MutedCatch::kind(),
             Self::NoScopeCatch(_) => NoScopeCatch::kind(),
+            Self::MovingFastCatch(_) => MovingFastCatch::kind(),
             Self::ScoreV2Catch(_) => ScoreV2Catch::kind(),
             Self::EasyMania(_) => EasyMania::kind(),
             Self::NoFailMania(_) => NoFailMania::kind(),
@@ -6754,6 +6851,7 @@ impl GameMod {
             | Self::DoubleTimeOsu(_)
             | Self::NightcoreOsu(_)
             | Self::HiddenOsu(_)
+            | Self::TraceableOsu(_)
             | Self::FlashlightOsu(_)
             | Self::BlindsOsu(_)
             | Self::StrictTrackingOsu(_)
@@ -6777,7 +6875,6 @@ impl GameMod {
             | Self::DeflateOsu(_)
             | Self::WindUpOsu(_)
             | Self::WindDownOsu(_)
-            | Self::TraceableOsu(_)
             | Self::BarrelRollOsu(_)
             | Self::ApproachDifferentOsu(_)
             | Self::MutedOsu(_)
@@ -6797,6 +6894,7 @@ impl GameMod {
             | Self::NoFailTaiko(_)
             | Self::HalfTimeTaiko(_)
             | Self::DaycoreTaiko(_)
+            | Self::SimplifiedRhythmTaiko(_)
             | Self::HardRockTaiko(_)
             | Self::SuddenDeathTaiko(_)
             | Self::PerfectTaiko(_)
@@ -6843,6 +6941,7 @@ impl GameMod {
             | Self::FloatingFruitsCatch(_)
             | Self::MutedCatch(_)
             | Self::NoScopeCatch(_)
+            | Self::MovingFastCatch(_)
             | Self::ScoreV2Catch(_)
             | Self::UnknownCatch(_) => GameMode::Catch,
             Self::EasyMania(_)
@@ -6901,6 +7000,7 @@ impl GameMod {
             Self::DoubleTimeOsu(_) => GameModIntermode::DoubleTime,
             Self::NightcoreOsu(_) => GameModIntermode::Nightcore,
             Self::HiddenOsu(_) => GameModIntermode::Hidden,
+            Self::TraceableOsu(_) => GameModIntermode::Traceable,
             Self::FlashlightOsu(_) => GameModIntermode::Flashlight,
             Self::BlindsOsu(_) => GameModIntermode::Blinds,
             Self::StrictTrackingOsu(_) => GameModIntermode::StrictTracking,
@@ -6924,7 +7024,6 @@ impl GameMod {
             Self::DeflateOsu(_) => GameModIntermode::Deflate,
             Self::WindUpOsu(_) => GameModIntermode::WindUp,
             Self::WindDownOsu(_) => GameModIntermode::WindDown,
-            Self::TraceableOsu(_) => GameModIntermode::Traceable,
             Self::BarrelRollOsu(_) => GameModIntermode::BarrelRoll,
             Self::ApproachDifferentOsu(_) => GameModIntermode::ApproachDifferent,
             Self::MutedOsu(_) => GameModIntermode::Muted,
@@ -6943,6 +7042,7 @@ impl GameMod {
             Self::NoFailTaiko(_) => GameModIntermode::NoFail,
             Self::HalfTimeTaiko(_) => GameModIntermode::HalfTime,
             Self::DaycoreTaiko(_) => GameModIntermode::Daycore,
+            Self::SimplifiedRhythmTaiko(_) => GameModIntermode::SimplifiedRhythm,
             Self::HardRockTaiko(_) => GameModIntermode::HardRock,
             Self::SuddenDeathTaiko(_) => GameModIntermode::SuddenDeath,
             Self::PerfectTaiko(_) => GameModIntermode::Perfect,
@@ -6988,6 +7088,7 @@ impl GameMod {
             Self::FloatingFruitsCatch(_) => GameModIntermode::FloatingFruits,
             Self::MutedCatch(_) => GameModIntermode::Muted,
             Self::NoScopeCatch(_) => GameModIntermode::NoScope,
+            Self::MovingFastCatch(_) => GameModIntermode::MovingFast,
             Self::ScoreV2Catch(_) => GameModIntermode::ScoreV2,
             Self::EasyMania(_) => GameModIntermode::Easy,
             Self::NoFailMania(_) => GameModIntermode::NoFail,
@@ -7406,6 +7507,33 @@ const _: () = {
             if let Some(ref x) = self.only_fade_approach_circles {
                 map.serialize_entry("only_fade_approach_circles", x)?;
             }
+            map.end()
+        }
+    }
+    impl<'de> Visitor<'de> for GameModVisitor<TraceableOsu> {
+        type Value = DeserializedGameMod<'de, TraceableOsu>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("TraceableOsu")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
+                    }
+                }
+            }
+            let gamemod = TraceableOsu {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
+        }
+    }
+    impl Serialize for TraceableOsu {
+        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+            let field_count = 0;
+            let map = s.serialize_map(Some(field_count))?;
             map.end()
         }
     }
@@ -8253,33 +8381,6 @@ const _: () = {
             map.end()
         }
     }
-    impl<'de> Visitor<'de> for GameModVisitor<TraceableOsu> {
-        type Value = DeserializedGameMod<'de, TraceableOsu>;
-        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
-            f.write_str("TraceableOsu")
-        }
-        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-            const FIELDS: &'static [&'static str] = &[];
-            let mut unknown_key__ = None;
-            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
-                match key.as_str() {
-                    _ => {
-                        unknown_key__ = Some(key);
-                        let _: IgnoredAny = map.next_value()?;
-                    }
-                }
-            }
-            let gamemod = TraceableOsu {};
-            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
-        }
-    }
-    impl Serialize for TraceableOsu {
-        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-            let field_count = 0;
-            let map = s.serialize_map(Some(field_count))?;
-            map.end()
-        }
-    }
     impl<'de> Visitor<'de> for GameModVisitor<BarrelRollOsu> {
         type Value = DeserializedGameMod<'de, BarrelRollOsu>;
         fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
@@ -8906,6 +9007,58 @@ const _: () = {
             let mut map = s.serialize_map(Some(field_count))?;
             if let Some(ref x) = self.speed_change {
                 map.serialize_entry("speed_change", x)?;
+            }
+            map.end()
+        }
+    }
+    impl<'de> Visitor<'de> for GameModVisitor<SimplifiedRhythmTaiko> {
+        type Value = DeserializedGameMod<'de, SimplifiedRhythmTaiko>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("SimplifiedRhythmTaiko")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[
+                "one_third_conversion",
+                "one_sixth_conversion",
+                "one_eighth_conversion",
+            ];
+            let mut unknown_key__ = None;
+            let mut one_third_conversion = None;
+            let mut one_sixth_conversion = None;
+            let mut one_eighth_conversion = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    "one_third_conversion" => one_third_conversion = Some(map.next_value()?),
+                    "one_sixth_conversion" => one_sixth_conversion = Some(map.next_value()?),
+                    "one_eighth_conversion" => one_eighth_conversion = Some(map.next_value()?),
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
+                    }
+                }
+            }
+            let gamemod = SimplifiedRhythmTaiko {
+                one_third_conversion: one_third_conversion.unwrap_or_default(),
+                one_sixth_conversion: one_sixth_conversion.unwrap_or_default(),
+                one_eighth_conversion: one_eighth_conversion.unwrap_or_default(),
+            };
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
+        }
+    }
+    impl Serialize for SimplifiedRhythmTaiko {
+        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+            let field_count = self.one_third_conversion.is_some() as usize
+                + self.one_sixth_conversion.is_some() as usize
+                + self.one_eighth_conversion.is_some() as usize;
+            let mut map = s.serialize_map(Some(field_count))?;
+            if let Some(ref x) = self.one_third_conversion {
+                map.serialize_entry("one_third_conversion", x)?;
+            }
+            if let Some(ref x) = self.one_sixth_conversion {
+                map.serialize_entry("one_sixth_conversion", x)?;
+            }
+            if let Some(ref x) = self.one_eighth_conversion {
+                map.serialize_entry("one_eighth_conversion", x)?;
             }
             map.end()
         }
@@ -10555,6 +10708,33 @@ const _: () = {
             map.end()
         }
     }
+    impl<'de> Visitor<'de> for GameModVisitor<MovingFastCatch> {
+        type Value = DeserializedGameMod<'de, MovingFastCatch>;
+        fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
+            f.write_str("MovingFastCatch")
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+            const FIELDS: &'static [&'static str] = &[];
+            let mut unknown_key__ = None;
+            while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
+                match key.as_str() {
+                    _ => {
+                        unknown_key__ = Some(key);
+                        let _: IgnoredAny = map.next_value()?;
+                    }
+                }
+            }
+            let gamemod = MovingFastCatch {};
+            Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
+        }
+    }
+    impl Serialize for MovingFastCatch {
+        fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+            let field_count = 0;
+            let map = s.serialize_map(Some(field_count))?;
+            map.end()
+        }
+    }
     impl<'de> Visitor<'de> for GameModVisitor<ScoreV2Catch> {
         type Value = DeserializedGameMod<'de, ScoreV2Catch>;
         fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
@@ -10812,11 +10992,13 @@ const _: () = {
             f.write_str("PerfectMania")
         }
         fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
-            const FIELDS: &'static [&'static str] = &["restart"];
+            const FIELDS: &'static [&'static str] = &["require_perfect_hits", "restart"];
             let mut unknown_key__ = None;
+            let mut require_perfect_hits = None;
             let mut restart = None;
             while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
                 match key.as_str() {
+                    "require_perfect_hits" => require_perfect_hits = Some(map.next_value()?),
                     "restart" => restart = Some(map.next_value()?),
                     _ => {
                         unknown_key__ = Some(key);
@@ -10825,6 +11007,7 @@ const _: () = {
                 }
             }
             let gamemod = PerfectMania {
+                require_perfect_hits: require_perfect_hits.unwrap_or_default(),
                 restart: restart.unwrap_or_default(),
             };
             Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
@@ -10832,8 +11015,12 @@ const _: () = {
     }
     impl Serialize for PerfectMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-            let field_count = self.restart.is_some() as usize;
+            let field_count =
+                self.require_perfect_hits.is_some() as usize + self.restart.is_some() as usize;
             let mut map = s.serialize_map(Some(field_count))?;
+            if let Some(ref x) = self.require_perfect_hits {
+                map.serialize_entry("require_perfect_hits", x)?;
+            }
             if let Some(ref x) = self.restart {
                 map.serialize_entry("restart", x)?;
             }
@@ -11194,15 +11381,15 @@ const _: () = {
         }
         fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
             const FIELDS: &'static [&'static str] =
-                &["drain_rate", "overall_difficulty", "extended_limits"];
+                &["overall_difficulty", "drain_rate", "extended_limits"];
             let mut unknown_key__ = None;
-            let mut drain_rate = None;
             let mut overall_difficulty = None;
+            let mut drain_rate = None;
             let mut extended_limits = None;
             while let Some(key) = map.next_key::<MaybeOwnedStr<'de>>()? {
                 match key.as_str() {
-                    "drain_rate" => drain_rate = Some(map.next_value()?),
                     "overall_difficulty" => overall_difficulty = Some(map.next_value()?),
+                    "drain_rate" => drain_rate = Some(map.next_value()?),
                     "extended_limits" => extended_limits = Some(map.next_value()?),
                     _ => {
                         unknown_key__ = Some(key);
@@ -11211,8 +11398,8 @@ const _: () = {
                 }
             }
             let gamemod = DifficultyAdjustMania {
-                drain_rate: drain_rate.unwrap_or_default(),
                 overall_difficulty: overall_difficulty.unwrap_or_default(),
+                drain_rate: drain_rate.unwrap_or_default(),
                 extended_limits: extended_limits.unwrap_or_default(),
             };
             Ok(DeserializedGameMod::new(gamemod, unknown_key__, FIELDS))
@@ -11220,15 +11407,15 @@ const _: () = {
     }
     impl Serialize for DifficultyAdjustMania {
         fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-            let field_count = self.drain_rate.is_some() as usize
-                + self.overall_difficulty.is_some() as usize
+            let field_count = self.overall_difficulty.is_some() as usize
+                + self.drain_rate.is_some() as usize
                 + self.extended_limits.is_some() as usize;
             let mut map = s.serialize_map(Some(field_count))?;
-            if let Some(ref x) = self.drain_rate {
-                map.serialize_entry("drain_rate", x)?;
-            }
             if let Some(ref x) = self.overall_difficulty {
                 map.serialize_entry("overall_difficulty", x)?;
+            }
+            if let Some(ref x) = self.drain_rate {
+                map.serialize_entry("drain_rate", x)?;
             }
             if let Some(ref x) = self.extended_limits {
                 map.serialize_entry("extended_limits", x)?;
@@ -11953,6 +12140,9 @@ const _: () = {
                 ("HD", GameMode::Osu) => GameMod::HiddenOsu(
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
+                ("TC", GameMode::Osu) => GameMod::TraceableOsu(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
                 ("FL", GameMode::Osu) => GameMod::FlashlightOsu(
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
@@ -12022,9 +12212,6 @@ const _: () = {
                 ("WD", GameMode::Osu) => GameMod::WindDownOsu(
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
-                ("TC", GameMode::Osu) => GameMod::TraceableOsu(
-                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
-                ),
                 ("BR", GameMode::Osu) => GameMod::BarrelRollOsu(
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
@@ -12077,6 +12264,9 @@ const _: () = {
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
                 ("DC", GameMode::Taiko) => GameMod::DaycoreTaiko(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("SR", GameMode::Taiko) => GameMod::SimplifiedRhythmTaiko(
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
                 ("HR", GameMode::Taiko) => GameMod::HardRockTaiko(
@@ -12212,6 +12402,9 @@ const _: () = {
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
                 ("NS", GameMode::Catch) => GameMod::NoScopeCatch(
+                    DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
+                ),
+                ("MF", GameMode::Catch) => GameMod::MovingFastCatch(
                     DeserializedGameMod::try_deserialize_mod(d, self.deny_unknown_fields)?,
                 ),
                 ("SV2", GameMode::Catch) => GameMod::ScoreV2Catch(
@@ -12568,6 +12761,14 @@ const _: () = {
                         s.serialize_entry("settings", m)?;
                     }
                 }
+                Self::SimplifiedRhythmTaiko(m) => {
+                    let has_some = m.one_third_conversion.is_some()
+                        || m.one_sixth_conversion.is_some()
+                        || m.one_eighth_conversion.is_some();
+                    if has_some {
+                        s.serialize_entry("settings", m)?;
+                    }
+                }
                 Self::SuddenDeathTaiko(m) => {
                     let has_some = m.restart.is_some();
                     if has_some {
@@ -12775,7 +12976,7 @@ const _: () = {
                     }
                 }
                 Self::PerfectMania(m) => {
-                    let has_some = m.restart.is_some();
+                    let has_some = m.require_perfect_hits.is_some() || m.restart.is_some();
                     if has_some {
                         s.serialize_entry("settings", m)?;
                     }
@@ -12819,8 +13020,8 @@ const _: () = {
                     }
                 }
                 Self::DifficultyAdjustMania(m) => {
-                    let has_some = m.drain_rate.is_some()
-                        || m.overall_difficulty.is_some()
+                    let has_some = m.overall_difficulty.is_some()
+                        || m.drain_rate.is_some()
                         || m.extended_limits.is_some();
                     if has_some {
                         s.serialize_entry("settings", m)?;
@@ -12976,6 +13177,7 @@ const _: () = {
                 "HR" => try_deser!(HardRockOsu, HardRockTaiko, HardRockCatch, HardRockMania,),
                 "HT" => try_deser!(HalfTimeOsu, HalfTimeTaiko, HalfTimeCatch, HalfTimeMania,),
                 "IN" => try_deser!(Skip_, Skip_, Skip_, InvertMania,),
+                "MF" => try_deser!(Skip_, Skip_, MovingFastCatch, Skip_,),
                 "MG" => try_deser!(MagnetisedOsu, Skip_, Skip_, Skip_,),
                 "MR" => try_deser!(MirrorOsu, Skip_, MirrorCatch, MirrorMania,),
                 "MU" => try_deser!(MutedOsu, MutedTaiko, MutedCatch, MutedMania,),
@@ -12996,6 +13198,7 @@ const _: () = {
                 "SG" => try_deser!(SingleTapOsu, SingleTapTaiko, Skip_, Skip_,),
                 "SI" => try_deser!(SpinInOsu, Skip_, Skip_, Skip_,),
                 "SO" => try_deser!(SpunOutOsu, Skip_, Skip_, Skip_,),
+                "SR" => try_deser!(Skip_, SimplifiedRhythmTaiko, Skip_, Skip_,),
                 "ST" => try_deser!(StrictTrackingOsu, Skip_, Skip_, Skip_,),
                 "SV2" => try_deser!(ScoreV2Osu, ScoreV2Taiko, ScoreV2Catch, ScoreV2Mania,),
                 "SW" => try_deser!(Skip_, SwapTaiko, Skip_, Skip_,),
@@ -13075,6 +13278,7 @@ macro_rules! mods_inner {
     ( < $( ! $mode:ident )? HR ) => { mods_inner!(> $( $mode )? HardRock ) };
     ( < $( ! $mode:ident )? HT ) => { mods_inner!(> $( $mode )? HalfTime ) };
     ( < $( ! $mode:ident )? IN ) => { mods_inner!(> $( $mode )? Invert ) };
+    ( < $( ! $mode:ident )? MF ) => { mods_inner!(> $( $mode )? MovingFast ) };
     ( < $( ! $mode:ident )? MG ) => { mods_inner!(> $( $mode )? Magnetised ) };
     ( < $( ! $mode:ident )? MR ) => { mods_inner!(> $( $mode )? Mirror ) };
     ( < $( ! $mode:ident )? MU ) => { mods_inner!(> $( $mode )? Muted ) };
@@ -13090,6 +13294,7 @@ macro_rules! mods_inner {
     ( < $( ! $mode:ident )? SG ) => { mods_inner!(> $( $mode )? SingleTap ) };
     ( < $( ! $mode:ident )? SI ) => { mods_inner!(> $( $mode )? SpinIn ) };
     ( < $( ! $mode:ident )? SO ) => { mods_inner!(> $( $mode )? SpunOut ) };
+    ( < $( ! $mode:ident )? SR ) => { mods_inner!(> $( $mode )? SimplifiedRhythm ) };
     ( < $( ! $mode:ident )? ST ) => { mods_inner!(> $( $mode )? StrictTracking ) };
     ( < $( ! $mode:ident )? SV2 ) => { mods_inner!(> $( $mode )? ScoreV2 ) };
     ( < $( ! $mode:ident )? SW ) => { mods_inner!(> $( $mode )? Swap ) };
