@@ -1530,14 +1530,10 @@ impl Debug for MaybeOwnedStr<'_> {
 }
 
 impl MaybeOwnedStr<'_> {
-    #[expect(
-        clippy::missing_const_for_fn,
-        reason = "false positive; fix when `String::as_str` is const"
-    )]
-    pub(crate) fn as_str(&self) -> &str {
+    pub(crate) const fn as_str(&self) -> &str {
         match self {
             MaybeOwnedStr::Borrowed(a) => a,
-            MaybeOwnedStr::Owned(a) => a,
+            MaybeOwnedStr::Owned(a) => a.as_str(),
         }
     }
 }
@@ -1666,7 +1662,7 @@ mod tests {
                 "minimum_accuracy": 12.34,
                 "accuracy_judge_mode": "my string",
                 "restart": false
-            }        
+            }
         }"#;
 
         let mut d = Deserializer::from_str(json);
@@ -1755,7 +1751,7 @@ mod tests {
             "acronym": "DT",
             "settings": {
                 "speed_change": "should be number; not string",
-            }        
+            }
         }"#;
 
         let mut d = Deserializer::from_str(json);
@@ -1900,7 +1896,7 @@ mod tests {
                     "minimum_accuracy": 12.34,
                     "accuracy_judge_mode": "my string",
                     "restart": false
-                }        
+                }
             }
         ]"#;
 
