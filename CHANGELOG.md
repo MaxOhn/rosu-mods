@@ -1,4 +1,9 @@
-# v0.3.1 (2025-04-27)
+# v0.4.0 (2026-03-12)
+
+- Updated `mods.json` which introduced a few breaking changes
+- Replaced the unmaintained `paste` dependency with `pastey`
+
+## v0.3.1 (2025-04-27)
 
 Fixed mods not being deserialized correctly when using the `SameModeForEachMod` seed variant ([#9])
 
