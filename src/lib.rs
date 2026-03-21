@@ -133,6 +133,7 @@
 //! [`GameMod`]: crate::generated_mods::gamemod::GameMod
 //! [`GameModsIntermode`]: crate::intermode::GameModsIntermode
 //! [`GameModIntermode`]: crate::generated_mods::intermode::GameModIntermode
+//! [`GameModSimple`]: crate::simple::GameModSimple
 
 #![cfg_attr(all(docsrs, not(doctest)), feature(doc_cfg))]
 #![deny(rustdoc::broken_intra_doc_links, rustdoc::missing_crate_level_docs)]

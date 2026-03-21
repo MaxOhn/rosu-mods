@@ -121,5 +121,6 @@ assert_eq!(simple.settings.get("restart"), Some(&SettingSimple::Bool(true)));
 [`GameMod`]: https://docs.rs/rosu-mods/latest/rosu_mods/generated_mods/gamemod/enum.GameMod.html
 [`GameModsIntermode`]: https://docs.rs/rosu-mods/latest/rosu_mods/intermode/struct.GameModsIntermode.html
 [`GameModIntermode`]: https://docs.rs/rosu-mods/latest/rosu_mods/generated_mods/intermode/enum.GameModIntermode.html
+[`GameModSimple`]: https://docs.rs/rosu-mods/latest/rosu_mods/simple/struct.GameModSimple.html
 
 <!-- cargo-rdme end -->
