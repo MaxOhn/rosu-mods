@@ -59,13 +59,13 @@ const _: () = {
     }
 };
 
-#[cfg(all(test, feature = "serde"))]
+#[cfg(test)]
 mod tests {
+    #[allow(unused, reason = "depends on enabled features")]
     use super::*;
 
-    #[test]
-    fn roundtrip() {
-        let json = r#"[
+    #[allow(unused, reason = "depends on enabled features")]
+    const JSON: &str = r#"[
             {
                 "acronym":"DA",
                 "settings":{
@@ -77,7 +77,10 @@ mod tests {
             }
         ]"#;
 
-        let mods: Vec<GameModSimple> = serde_json::from_str(json).unwrap();
+    #[test]
+    #[cfg(feature = "serde")]
+    fn roundtrip_serde() {
+        let mods: Vec<GameModSimple> = serde_json::from_str(JSON).unwrap();
 
         let expected = vec![
             GameModSimple {
@@ -96,6 +99,25 @@ mod tests {
 
         let serialized = serde_json::to_string(&mods).unwrap();
         let deserialized: Vec<GameModSimple> = serde_json::from_str(&serialized).unwrap();
+
+        assert_eq!(mods, deserialized);
+    }
+
+    #[test]
+    #[cfg(feature = "rkyv")]
+    fn roundtrip_rkyv() {
+        use rkyv::{
+            rancor::{BoxedError as Err, Strategy},
+            Archived, Deserialize,
+        };
+
+        let mods: Vec<GameModSimple> = serde_json::from_str(JSON).unwrap();
+
+        let bytes = rkyv::to_bytes::<Err>(&mods).unwrap();
+        let archived = rkyv::access::<Archived<Vec<GameModSimple>>, Err>(&bytes).unwrap();
+        let deserialized: Vec<GameModSimple> = archived
+            .deserialize(Strategy::<_, Err>::wrap(&mut ()))
+            .unwrap();
 
         assert_eq!(mods, deserialized);
     }
