@@ -4,7 +4,7 @@
 //!
 //! ## Types
 //!
-//! In total there are three different collections for mods.
+//! In total there are four different collections for mods.
 //!
 //! ### `GameModsLegacy`
 //!
@@ -93,6 +93,23 @@
 //! assert_eq!(iter.next(), Some(GameModIntermode::HardRock));
 //! assert_eq!(iter.next(), Some(GameModIntermode::Wiggle));
 //! assert_eq!(iter.next(), None);
+//! ```
+//!
+//! ### `GameModSimple`
+//!
+//! Unlike the other three, [`GameModSimple`] is not a collection but just a
+//! single mod. Instead of providing types for each mod, it keeps things simple
+//! and stores all settings into a plain `HashMap`.
+//!
+//! ```
+//! use rosu_mods::{GameMod, GameModSimple, SettingSimple, generated_mods::AccuracyChallengeMania};
+//!
+//! let gamemod = GameMod::AccuracyChallengeMania(AccuracyChallengeMania {
+//!     restart: Some(true),
+//!     ..Default::default()
+//! });
+//! let simple = gamemod.into_simple();
+//! assert_eq!(simple.settings.get("restart"), Some(&SettingSimple::Bool(true)));
 //! ```
 //!
 //! ## Features
