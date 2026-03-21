@@ -4,7 +4,7 @@
 //!
 //! ## Types
 //!
-//! In total there are four different collections for mods.
+//! In total, there are four different ways of handling mods.
 //!
 //! ### `GameModsLegacy`
 //!
