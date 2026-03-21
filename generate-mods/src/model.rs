@@ -511,7 +511,7 @@ pub struct Setting {
     #[serde(rename = "Name")]
     pub name: Box<str>,
     #[serde(rename = "Type")]
-    kind: SettingType,
+    pub kind: SettingType,
     #[serde(rename = "Description")]
     description: Box<str>,
 }
@@ -532,7 +532,7 @@ impl Setting {
 }
 
 #[derive(Copy, Clone, Debug, Deserialize)]
-enum SettingType {
+pub enum SettingType {
     #[serde(rename = "boolean")]
     Bool,
     #[serde(rename = "number")]
