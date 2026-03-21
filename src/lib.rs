@@ -183,3 +183,7 @@ pub use self::{
     legacy::GameModsLegacy,
     simple::{GameModSimple, SettingSimple},
 };
+
+#[cfg(feature = "serde")]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
+pub use self::simple::GameModSimpleConversionError;

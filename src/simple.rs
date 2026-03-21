@@ -42,6 +42,11 @@ impl GameModSimple {
     /// Returns `Err` only when the settings themselves are malformed: a value
     /// has the wrong type for its field, or — when `deny_unknown_fields` is
     /// `true` in the seed — a key is not recognised by the target mod.
+    ///
+    /// [`GameMode`]: crate::GameMode
+    /// [`GameMod`]: crate::GameMod
+    /// [`GameModSeed::Mode`]: crate::serde::GameModSeed::Mode
+    /// [`GameModSeed::GuessMode`]: crate::serde::GameModSeed::GuessMode
     #[cfg(feature = "serde")]
     #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
     pub fn try_as_mod(
@@ -74,6 +79,8 @@ impl GameModSimple {
 ///
 /// An *unknown acronym* is **not** an error; [`GameModSimple::try_as_mod`]
 /// returns `Ok(GameMod::Unknown*(..))` in that case.
+///
+/// [`GameMod`]: crate::GameMod
 #[cfg(feature = "serde")]
 #[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
 #[derive(Debug)]
