@@ -1,4 +1,9 @@
-# v0.4.0 (2026-03-12)
+# v0.4.1 (2026-03-22)
+
+- Added the `GameModSimple` type as a non-typechecked alternative to `GameMod`
+  which carries its settings in a plain `HashMap`
+
+## v0.4.0 (2026-03-12)
 
 - Updated `mods.json` which introduced a few breaking changes
 - Replaced the unmaintained `paste` dependency with `pastey`
