@@ -2,6 +2,8 @@ use std::collections::{BTreeMap, HashMap};
 
 use itoa::Buffer;
 
+use crate::model::SettingType;
+
 pub use self::{
     error::GenResult,
     model::{Acronym, RulesetMods},
@@ -26,11 +28,13 @@ pub fn specify_preamble(writer: &mut Writer, url: &str) -> GenResult {
         //! This file was generated automatically.\n\n\
         #![allow(clippy::all, clippy::pedantic)]\n\n\
         use std::{\
-            cmp::Ordering, fmt::{Display, Formatter, Result as FmtResult},\
+            cmp::Ordering,\
+            collections::HashMap,\
+            fmt::{Display, Formatter, Result as FmtResult},\
         };",
     )?;
 
-    writer.write("\n\nuse crate::{Acronym, GameMode};\n\n")?;
+    writer.write("\n\nuse crate::{Acronym, GameMode, GameModSimple, SettingSimple};\n\n")?;
 
     Ok(())
 }
@@ -285,11 +289,23 @@ pub fn define_gamemod_intermode(
                     _ => None,\
                 }\
             }\
+            /// Convert a [`GameModIntermode`] into [`GameModSimple`]\n\
+            pub fn as_simple(&self) -> GameModSimple {\
+                GameModSimple {\
+                    acronym: self.acronym(),\
+                    settings: HashMap::new(),\
+                }\
+            }\
         }",
     )?;
 
     writer.write(
-        "impl PartialOrd for GameModIntermode {\
+        "impl From<GameModIntermode> for GameModSimple {\
+            fn from(gamemod: GameModIntermode) -> Self {\
+                gamemod.as_simple()\
+            }\
+        }\
+        impl PartialOrd for GameModIntermode {\
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {\
                 Some(self.cmp(other))\
             }\
@@ -360,6 +376,7 @@ pub fn define_gamemod_fns(rulesets: &[RulesetMods], writer: &mut Writer) -> GenR
     define_gamemod_fn_bits(rulesets, writer)?;
     define_gamemod_fn_mode(rulesets, writer)?;
     define_gamemod_fn_intermode(rulesets, writer)?;
+    define_gamemod_fn_into_simple(rulesets, writer)?;
 
     writer.write(b'}')
 }
@@ -606,6 +623,80 @@ fn define_gamemod_fn_bits(rulesets: &[RulesetMods], writer: &mut Writer) -> GenR
     )
 }
 
+fn define_gamemod_fn_into_simple(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
+    writer.write(
+        "/// Convert a [`GameMod`] into a [`GameModSimple`]\n\
+        pub fn into_simple(self) -> GameModSimple {\
+            let mut settings = HashMap::new();\
+            let acronym = match self {",
+    )?;
+
+    for ruleset in rulesets {
+        for gamemod in ruleset.mods.iter() {
+            writer.write("Self::")?;
+            writer.write(&gamemod.name)?;
+            writer.write("(")?;
+
+            let v = if gamemod.settings.is_empty() {
+                "_"
+            } else {
+                "m"
+            };
+
+            writer.write(v)?;
+            writer.write(") => {")?;
+
+            for setting in gamemod.settings.iter() {
+                writer.write("if let Some(value) = m.")?;
+                writer.write(&setting.name)?;
+                writer.write(" {")?;
+                writer.write("settings.insert(Box::from(\"")?;
+                writer.write(&setting.name)?;
+                writer.write(
+                    "\
+                        \"), SettingSimple::",
+                )?;
+
+                let variant = match setting.kind {
+                    SettingType::Bool => "Bool",
+                    SettingType::Number => "Number",
+                    SettingType::String => "String",
+                };
+
+                writer.write(variant)?;
+                writer.write(
+                    "\
+                        (value));\
+                    }",
+                )?;
+            }
+
+            writer.write(&gamemod.name)?;
+            writer.write(
+                "\
+                    ::acronym()\
+                },",
+            )?;
+        }
+    }
+
+    for ruleset in rulesets {
+        writer.write("Self::Unknown")?;
+        writer.write(ruleset.name.as_capitalized_str())?;
+        writer.write(
+            "\
+                (m) => m.acronym(),",
+        )?;
+    }
+
+    writer.write(
+        "\
+            };\
+            GameModSimple { acronym, settings }\
+        }",
+    )
+}
+
 fn define_gamemod_fn_intermode(rulesets: &[RulesetMods], writer: &mut Writer) -> GenResult {
     writer.write(
         "/// The kind of a [`GameMod`] when ignoring the mode\n\
@@ -677,7 +768,12 @@ fn define_gamemod_fn_mode(rulesets: &[RulesetMods], writer: &mut Writer) -> GenR
 
 pub fn impl_gamemod_traits(writer: &mut Writer) -> GenResult {
     writer.write(
-        "impl PartialOrd for GameMod {\
+        "impl From<GameMod> for GameModSimple {\
+            fn from(gamemod: GameMod) -> Self {\
+                gamemod.into_simple()\
+            }\
+        }\
+        impl PartialOrd for GameMod {\
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {\
                 self\
                     .bits()\

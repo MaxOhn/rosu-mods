@@ -8,10 +8,11 @@
 
 use std::{
     cmp::Ordering,
+    collections::HashMap,
     fmt::{Display, Formatter, Result as FmtResult},
 };
 
-use crate::{Acronym, GameMode};
+use crate::{Acronym, GameModSimple, GameMode, SettingSimple};
 
 mod all_structs {
     /// Larger circles, more forgiving HP drain, less accuracy required, and extra lives!
@@ -5819,6 +5820,18 @@ impl GameModIntermode {
             _ => None,
         }
     }
+    /// Convert a [`GameModIntermode`] into [`GameModSimple`]
+    pub fn as_simple(&self) -> GameModSimple {
+        GameModSimple {
+            acronym: self.acronym(),
+            settings: HashMap::new(),
+        }
+    }
+}
+impl From<GameModIntermode> for GameModSimple {
+    fn from(gamemod: GameModIntermode) -> Self {
+        gamemod.as_simple()
+    }
 }
 impl PartialOrd for GameModIntermode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -7135,6 +7148,841 @@ impl GameMod {
             | Self::UnknownCatch(m)
             | Self::UnknownMania(m) => GameModIntermode::Unknown(*m),
         }
+    }
+    /// Convert a [`GameMod`] into a [`GameModSimple`]
+    pub fn into_simple(self) -> GameModSimple {
+        let mut settings = HashMap::new();
+        let acronym = match self {
+            Self::EasyOsu(m) => {
+                if let Some(value) = m.retries {
+                    settings.insert(Box::from("retries"), SettingSimple::Number(value));
+                }
+                EasyOsu::acronym()
+            }
+            Self::NoFailOsu(_) => NoFailOsu::acronym(),
+            Self::HalfTimeOsu(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                HalfTimeOsu::acronym()
+            }
+            Self::DaycoreOsu(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                DaycoreOsu::acronym()
+            }
+            Self::HardRockOsu(_) => HardRockOsu::acronym(),
+            Self::SuddenDeathOsu(m) => {
+                if let Some(value) = m.fail_on_slider_tail {
+                    settings.insert(Box::from("fail_on_slider_tail"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                SuddenDeathOsu::acronym()
+            }
+            Self::PerfectOsu(m) => {
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                PerfectOsu::acronym()
+            }
+            Self::DoubleTimeOsu(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                DoubleTimeOsu::acronym()
+            }
+            Self::NightcoreOsu(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                NightcoreOsu::acronym()
+            }
+            Self::HiddenOsu(m) => {
+                if let Some(value) = m.only_fade_approach_circles {
+                    settings.insert(
+                        Box::from("only_fade_approach_circles"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                HiddenOsu::acronym()
+            }
+            Self::TraceableOsu(_) => TraceableOsu::acronym(),
+            Self::FlashlightOsu(m) => {
+                if let Some(value) = m.follow_delay {
+                    settings.insert(Box::from("follow_delay"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.size_multiplier {
+                    settings.insert(Box::from("size_multiplier"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.combo_based_size {
+                    settings.insert(Box::from("combo_based_size"), SettingSimple::Bool(value));
+                }
+                FlashlightOsu::acronym()
+            }
+            Self::BlindsOsu(_) => BlindsOsu::acronym(),
+            Self::StrictTrackingOsu(_) => StrictTrackingOsu::acronym(),
+            Self::AccuracyChallengeOsu(m) => {
+                if let Some(value) = m.minimum_accuracy {
+                    settings.insert(Box::from("minimum_accuracy"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.accuracy_judge_mode {
+                    settings.insert(
+                        Box::from("accuracy_judge_mode"),
+                        SettingSimple::String(value),
+                    );
+                }
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                AccuracyChallengeOsu::acronym()
+            }
+            Self::TargetPracticeOsu(m) => {
+                if let Some(value) = m.seed {
+                    settings.insert(Box::from("seed"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.metronome {
+                    settings.insert(Box::from("metronome"), SettingSimple::Bool(value));
+                }
+                TargetPracticeOsu::acronym()
+            }
+            Self::DifficultyAdjustOsu(m) => {
+                if let Some(value) = m.circle_size {
+                    settings.insert(Box::from("circle_size"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.approach_rate {
+                    settings.insert(Box::from("approach_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.drain_rate {
+                    settings.insert(Box::from("drain_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.overall_difficulty {
+                    settings.insert(
+                        Box::from("overall_difficulty"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                if let Some(value) = m.extended_limits {
+                    settings.insert(Box::from("extended_limits"), SettingSimple::Bool(value));
+                }
+                DifficultyAdjustOsu::acronym()
+            }
+            Self::ClassicOsu(m) => {
+                if let Some(value) = m.no_slider_head_accuracy {
+                    settings.insert(
+                        Box::from("no_slider_head_accuracy"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                if let Some(value) = m.classic_note_lock {
+                    settings.insert(Box::from("classic_note_lock"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.always_play_tail_sample {
+                    settings.insert(
+                        Box::from("always_play_tail_sample"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                if let Some(value) = m.fade_hit_circle_early {
+                    settings.insert(
+                        Box::from("fade_hit_circle_early"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                if let Some(value) = m.classic_health {
+                    settings.insert(Box::from("classic_health"), SettingSimple::Bool(value));
+                }
+                ClassicOsu::acronym()
+            }
+            Self::RandomOsu(m) => {
+                if let Some(value) = m.angle_sharpness {
+                    settings.insert(Box::from("angle_sharpness"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.seed {
+                    settings.insert(Box::from("seed"), SettingSimple::Number(value));
+                }
+                RandomOsu::acronym()
+            }
+            Self::MirrorOsu(m) => {
+                if let Some(value) = m.reflection {
+                    settings.insert(Box::from("reflection"), SettingSimple::String(value));
+                }
+                MirrorOsu::acronym()
+            }
+            Self::AlternateOsu(_) => AlternateOsu::acronym(),
+            Self::SingleTapOsu(_) => SingleTapOsu::acronym(),
+            Self::AutoplayOsu(_) => AutoplayOsu::acronym(),
+            Self::CinemaOsu(_) => CinemaOsu::acronym(),
+            Self::RelaxOsu(_) => RelaxOsu::acronym(),
+            Self::AutopilotOsu(_) => AutopilotOsu::acronym(),
+            Self::SpunOutOsu(_) => SpunOutOsu::acronym(),
+            Self::TransformOsu(_) => TransformOsu::acronym(),
+            Self::WiggleOsu(m) => {
+                if let Some(value) = m.strength {
+                    settings.insert(Box::from("strength"), SettingSimple::Number(value));
+                }
+                WiggleOsu::acronym()
+            }
+            Self::SpinInOsu(_) => SpinInOsu::acronym(),
+            Self::GrowOsu(m) => {
+                if let Some(value) = m.start_scale {
+                    settings.insert(Box::from("start_scale"), SettingSimple::Number(value));
+                }
+                GrowOsu::acronym()
+            }
+            Self::DeflateOsu(m) => {
+                if let Some(value) = m.start_scale {
+                    settings.insert(Box::from("start_scale"), SettingSimple::Number(value));
+                }
+                DeflateOsu::acronym()
+            }
+            Self::WindUpOsu(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindUpOsu::acronym()
+            }
+            Self::WindDownOsu(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindDownOsu::acronym()
+            }
+            Self::BarrelRollOsu(m) => {
+                if let Some(value) = m.spin_speed {
+                    settings.insert(Box::from("spin_speed"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.direction {
+                    settings.insert(Box::from("direction"), SettingSimple::String(value));
+                }
+                BarrelRollOsu::acronym()
+            }
+            Self::ApproachDifferentOsu(m) => {
+                if let Some(value) = m.scale {
+                    settings.insert(Box::from("scale"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.style {
+                    settings.insert(Box::from("style"), SettingSimple::String(value));
+                }
+                ApproachDifferentOsu::acronym()
+            }
+            Self::MutedOsu(m) => {
+                if let Some(value) = m.inverse_muting {
+                    settings.insert(Box::from("inverse_muting"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.enable_metronome {
+                    settings.insert(Box::from("enable_metronome"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.mute_combo_count {
+                    settings.insert(Box::from("mute_combo_count"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.affects_hit_sounds {
+                    settings.insert(Box::from("affects_hit_sounds"), SettingSimple::Bool(value));
+                }
+                MutedOsu::acronym()
+            }
+            Self::NoScopeOsu(m) => {
+                if let Some(value) = m.hidden_combo_count {
+                    settings.insert(
+                        Box::from("hidden_combo_count"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                NoScopeOsu::acronym()
+            }
+            Self::MagnetisedOsu(m) => {
+                if let Some(value) = m.attraction_strength {
+                    settings.insert(
+                        Box::from("attraction_strength"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                MagnetisedOsu::acronym()
+            }
+            Self::RepelOsu(m) => {
+                if let Some(value) = m.repulsion_strength {
+                    settings.insert(
+                        Box::from("repulsion_strength"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                RepelOsu::acronym()
+            }
+            Self::AdaptiveSpeedOsu(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                AdaptiveSpeedOsu::acronym()
+            }
+            Self::FreezeFrameOsu(_) => FreezeFrameOsu::acronym(),
+            Self::BubblesOsu(_) => BubblesOsu::acronym(),
+            Self::SynesthesiaOsu(_) => SynesthesiaOsu::acronym(),
+            Self::DepthOsu(m) => {
+                if let Some(value) = m.max_depth {
+                    settings.insert(Box::from("max_depth"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.show_approach_circles {
+                    settings.insert(
+                        Box::from("show_approach_circles"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                DepthOsu::acronym()
+            }
+            Self::BloomOsu(m) => {
+                if let Some(value) = m.max_size_combo_count {
+                    settings.insert(
+                        Box::from("max_size_combo_count"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                if let Some(value) = m.max_cursor_size {
+                    settings.insert(Box::from("max_cursor_size"), SettingSimple::Number(value));
+                }
+                BloomOsu::acronym()
+            }
+            Self::TouchDeviceOsu(_) => TouchDeviceOsu::acronym(),
+            Self::ScoreV2Osu(_) => ScoreV2Osu::acronym(),
+            Self::EasyTaiko(_) => EasyTaiko::acronym(),
+            Self::NoFailTaiko(_) => NoFailTaiko::acronym(),
+            Self::HalfTimeTaiko(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                HalfTimeTaiko::acronym()
+            }
+            Self::DaycoreTaiko(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                DaycoreTaiko::acronym()
+            }
+            Self::SimplifiedRhythmTaiko(m) => {
+                if let Some(value) = m.one_third_conversion {
+                    settings.insert(
+                        Box::from("one_third_conversion"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                if let Some(value) = m.one_sixth_conversion {
+                    settings.insert(
+                        Box::from("one_sixth_conversion"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                if let Some(value) = m.one_eighth_conversion {
+                    settings.insert(
+                        Box::from("one_eighth_conversion"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                SimplifiedRhythmTaiko::acronym()
+            }
+            Self::HardRockTaiko(_) => HardRockTaiko::acronym(),
+            Self::SuddenDeathTaiko(m) => {
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                SuddenDeathTaiko::acronym()
+            }
+            Self::PerfectTaiko(m) => {
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                PerfectTaiko::acronym()
+            }
+            Self::DoubleTimeTaiko(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                DoubleTimeTaiko::acronym()
+            }
+            Self::NightcoreTaiko(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                NightcoreTaiko::acronym()
+            }
+            Self::HiddenTaiko(_) => HiddenTaiko::acronym(),
+            Self::FlashlightTaiko(m) => {
+                if let Some(value) = m.size_multiplier {
+                    settings.insert(Box::from("size_multiplier"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.combo_based_size {
+                    settings.insert(Box::from("combo_based_size"), SettingSimple::Bool(value));
+                }
+                FlashlightTaiko::acronym()
+            }
+            Self::AccuracyChallengeTaiko(m) => {
+                if let Some(value) = m.minimum_accuracy {
+                    settings.insert(Box::from("minimum_accuracy"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.accuracy_judge_mode {
+                    settings.insert(
+                        Box::from("accuracy_judge_mode"),
+                        SettingSimple::String(value),
+                    );
+                }
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                AccuracyChallengeTaiko::acronym()
+            }
+            Self::RandomTaiko(m) => {
+                if let Some(value) = m.seed {
+                    settings.insert(Box::from("seed"), SettingSimple::Number(value));
+                }
+                RandomTaiko::acronym()
+            }
+            Self::DifficultyAdjustTaiko(m) => {
+                if let Some(value) = m.scroll_speed {
+                    settings.insert(Box::from("scroll_speed"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.drain_rate {
+                    settings.insert(Box::from("drain_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.overall_difficulty {
+                    settings.insert(
+                        Box::from("overall_difficulty"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                if let Some(value) = m.extended_limits {
+                    settings.insert(Box::from("extended_limits"), SettingSimple::Bool(value));
+                }
+                DifficultyAdjustTaiko::acronym()
+            }
+            Self::ClassicTaiko(_) => ClassicTaiko::acronym(),
+            Self::SwapTaiko(_) => SwapTaiko::acronym(),
+            Self::SingleTapTaiko(_) => SingleTapTaiko::acronym(),
+            Self::ConstantSpeedTaiko(_) => ConstantSpeedTaiko::acronym(),
+            Self::AutoplayTaiko(_) => AutoplayTaiko::acronym(),
+            Self::CinemaTaiko(_) => CinemaTaiko::acronym(),
+            Self::RelaxTaiko(_) => RelaxTaiko::acronym(),
+            Self::WindUpTaiko(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindUpTaiko::acronym()
+            }
+            Self::WindDownTaiko(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindDownTaiko::acronym()
+            }
+            Self::MutedTaiko(m) => {
+                if let Some(value) = m.inverse_muting {
+                    settings.insert(Box::from("inverse_muting"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.enable_metronome {
+                    settings.insert(Box::from("enable_metronome"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.mute_combo_count {
+                    settings.insert(Box::from("mute_combo_count"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.affects_hit_sounds {
+                    settings.insert(Box::from("affects_hit_sounds"), SettingSimple::Bool(value));
+                }
+                MutedTaiko::acronym()
+            }
+            Self::AdaptiveSpeedTaiko(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                AdaptiveSpeedTaiko::acronym()
+            }
+            Self::ScoreV2Taiko(_) => ScoreV2Taiko::acronym(),
+            Self::EasyCatch(m) => {
+                if let Some(value) = m.retries {
+                    settings.insert(Box::from("retries"), SettingSimple::Number(value));
+                }
+                EasyCatch::acronym()
+            }
+            Self::NoFailCatch(_) => NoFailCatch::acronym(),
+            Self::HalfTimeCatch(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                HalfTimeCatch::acronym()
+            }
+            Self::DaycoreCatch(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                DaycoreCatch::acronym()
+            }
+            Self::HardRockCatch(_) => HardRockCatch::acronym(),
+            Self::SuddenDeathCatch(m) => {
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                SuddenDeathCatch::acronym()
+            }
+            Self::PerfectCatch(m) => {
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                PerfectCatch::acronym()
+            }
+            Self::DoubleTimeCatch(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                DoubleTimeCatch::acronym()
+            }
+            Self::NightcoreCatch(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                NightcoreCatch::acronym()
+            }
+            Self::HiddenCatch(_) => HiddenCatch::acronym(),
+            Self::FlashlightCatch(m) => {
+                if let Some(value) = m.size_multiplier {
+                    settings.insert(Box::from("size_multiplier"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.combo_based_size {
+                    settings.insert(Box::from("combo_based_size"), SettingSimple::Bool(value));
+                }
+                FlashlightCatch::acronym()
+            }
+            Self::AccuracyChallengeCatch(m) => {
+                if let Some(value) = m.minimum_accuracy {
+                    settings.insert(Box::from("minimum_accuracy"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.accuracy_judge_mode {
+                    settings.insert(
+                        Box::from("accuracy_judge_mode"),
+                        SettingSimple::String(value),
+                    );
+                }
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                AccuracyChallengeCatch::acronym()
+            }
+            Self::DifficultyAdjustCatch(m) => {
+                if let Some(value) = m.circle_size {
+                    settings.insert(Box::from("circle_size"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.approach_rate {
+                    settings.insert(Box::from("approach_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.hard_rock_offsets {
+                    settings.insert(Box::from("hard_rock_offsets"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.drain_rate {
+                    settings.insert(Box::from("drain_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.overall_difficulty {
+                    settings.insert(
+                        Box::from("overall_difficulty"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                if let Some(value) = m.extended_limits {
+                    settings.insert(Box::from("extended_limits"), SettingSimple::Bool(value));
+                }
+                DifficultyAdjustCatch::acronym()
+            }
+            Self::ClassicCatch(_) => ClassicCatch::acronym(),
+            Self::MirrorCatch(_) => MirrorCatch::acronym(),
+            Self::AutoplayCatch(_) => AutoplayCatch::acronym(),
+            Self::CinemaCatch(_) => CinemaCatch::acronym(),
+            Self::RelaxCatch(_) => RelaxCatch::acronym(),
+            Self::WindUpCatch(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindUpCatch::acronym()
+            }
+            Self::WindDownCatch(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindDownCatch::acronym()
+            }
+            Self::FloatingFruitsCatch(_) => FloatingFruitsCatch::acronym(),
+            Self::MutedCatch(m) => {
+                if let Some(value) = m.inverse_muting {
+                    settings.insert(Box::from("inverse_muting"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.enable_metronome {
+                    settings.insert(Box::from("enable_metronome"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.mute_combo_count {
+                    settings.insert(Box::from("mute_combo_count"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.affects_hit_sounds {
+                    settings.insert(Box::from("affects_hit_sounds"), SettingSimple::Bool(value));
+                }
+                MutedCatch::acronym()
+            }
+            Self::NoScopeCatch(m) => {
+                if let Some(value) = m.hidden_combo_count {
+                    settings.insert(
+                        Box::from("hidden_combo_count"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                NoScopeCatch::acronym()
+            }
+            Self::MovingFastCatch(_) => MovingFastCatch::acronym(),
+            Self::ScoreV2Catch(_) => ScoreV2Catch::acronym(),
+            Self::EasyMania(m) => {
+                if let Some(value) = m.retries {
+                    settings.insert(Box::from("retries"), SettingSimple::Number(value));
+                }
+                EasyMania::acronym()
+            }
+            Self::NoFailMania(_) => NoFailMania::acronym(),
+            Self::HalfTimeMania(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                HalfTimeMania::acronym()
+            }
+            Self::DaycoreMania(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                DaycoreMania::acronym()
+            }
+            Self::NoReleaseMania(_) => NoReleaseMania::acronym(),
+            Self::HardRockMania(_) => HardRockMania::acronym(),
+            Self::SuddenDeathMania(m) => {
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                SuddenDeathMania::acronym()
+            }
+            Self::PerfectMania(m) => {
+                if let Some(value) = m.require_perfect_hits {
+                    settings.insert(
+                        Box::from("require_perfect_hits"),
+                        SettingSimple::Bool(value),
+                    );
+                }
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                PerfectMania::acronym()
+            }
+            Self::DoubleTimeMania(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                DoubleTimeMania::acronym()
+            }
+            Self::NightcoreMania(m) => {
+                if let Some(value) = m.speed_change {
+                    settings.insert(Box::from("speed_change"), SettingSimple::Number(value));
+                }
+                NightcoreMania::acronym()
+            }
+            Self::FadeInMania(_) => FadeInMania::acronym(),
+            Self::HiddenMania(_) => HiddenMania::acronym(),
+            Self::CoverMania(m) => {
+                if let Some(value) = m.coverage {
+                    settings.insert(Box::from("coverage"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.direction {
+                    settings.insert(Box::from("direction"), SettingSimple::String(value));
+                }
+                CoverMania::acronym()
+            }
+            Self::FlashlightMania(m) => {
+                if let Some(value) = m.size_multiplier {
+                    settings.insert(Box::from("size_multiplier"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.combo_based_size {
+                    settings.insert(Box::from("combo_based_size"), SettingSimple::Bool(value));
+                }
+                FlashlightMania::acronym()
+            }
+            Self::AccuracyChallengeMania(m) => {
+                if let Some(value) = m.minimum_accuracy {
+                    settings.insert(Box::from("minimum_accuracy"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.accuracy_judge_mode {
+                    settings.insert(
+                        Box::from("accuracy_judge_mode"),
+                        SettingSimple::String(value),
+                    );
+                }
+                if let Some(value) = m.restart {
+                    settings.insert(Box::from("restart"), SettingSimple::Bool(value));
+                }
+                AccuracyChallengeMania::acronym()
+            }
+            Self::RandomMania(m) => {
+                if let Some(value) = m.seed {
+                    settings.insert(Box::from("seed"), SettingSimple::Number(value));
+                }
+                RandomMania::acronym()
+            }
+            Self::DualStagesMania(_) => DualStagesMania::acronym(),
+            Self::MirrorMania(_) => MirrorMania::acronym(),
+            Self::DifficultyAdjustMania(m) => {
+                if let Some(value) = m.overall_difficulty {
+                    settings.insert(
+                        Box::from("overall_difficulty"),
+                        SettingSimple::Number(value),
+                    );
+                }
+                if let Some(value) = m.drain_rate {
+                    settings.insert(Box::from("drain_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.extended_limits {
+                    settings.insert(Box::from("extended_limits"), SettingSimple::Bool(value));
+                }
+                DifficultyAdjustMania::acronym()
+            }
+            Self::ClassicMania(_) => ClassicMania::acronym(),
+            Self::InvertMania(_) => InvertMania::acronym(),
+            Self::ConstantSpeedMania(_) => ConstantSpeedMania::acronym(),
+            Self::HoldOffMania(_) => HoldOffMania::acronym(),
+            Self::OneKeyMania(_) => OneKeyMania::acronym(),
+            Self::TwoKeysMania(_) => TwoKeysMania::acronym(),
+            Self::ThreeKeysMania(_) => ThreeKeysMania::acronym(),
+            Self::FourKeysMania(_) => FourKeysMania::acronym(),
+            Self::FiveKeysMania(_) => FiveKeysMania::acronym(),
+            Self::SixKeysMania(_) => SixKeysMania::acronym(),
+            Self::SevenKeysMania(_) => SevenKeysMania::acronym(),
+            Self::EightKeysMania(_) => EightKeysMania::acronym(),
+            Self::NineKeysMania(_) => NineKeysMania::acronym(),
+            Self::TenKeysMania(_) => TenKeysMania::acronym(),
+            Self::AutoplayMania(_) => AutoplayMania::acronym(),
+            Self::CinemaMania(_) => CinemaMania::acronym(),
+            Self::WindUpMania(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindUpMania::acronym()
+            }
+            Self::WindDownMania(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.final_rate {
+                    settings.insert(Box::from("final_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                WindDownMania::acronym()
+            }
+            Self::MutedMania(m) => {
+                if let Some(value) = m.inverse_muting {
+                    settings.insert(Box::from("inverse_muting"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.enable_metronome {
+                    settings.insert(Box::from("enable_metronome"), SettingSimple::Bool(value));
+                }
+                if let Some(value) = m.mute_combo_count {
+                    settings.insert(Box::from("mute_combo_count"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.affects_hit_sounds {
+                    settings.insert(Box::from("affects_hit_sounds"), SettingSimple::Bool(value));
+                }
+                MutedMania::acronym()
+            }
+            Self::AdaptiveSpeedMania(m) => {
+                if let Some(value) = m.initial_rate {
+                    settings.insert(Box::from("initial_rate"), SettingSimple::Number(value));
+                }
+                if let Some(value) = m.adjust_pitch {
+                    settings.insert(Box::from("adjust_pitch"), SettingSimple::Bool(value));
+                }
+                AdaptiveSpeedMania::acronym()
+            }
+            Self::ScoreV2Mania(_) => ScoreV2Mania::acronym(),
+            Self::UnknownOsu(m) => m.acronym(),
+            Self::UnknownTaiko(m) => m.acronym(),
+            Self::UnknownCatch(m) => m.acronym(),
+            Self::UnknownMania(m) => m.acronym(),
+        };
+        GameModSimple { acronym, settings }
+    }
+}
+impl From<GameMod> for GameModSimple {
+    fn from(gamemod: GameMod) -> Self {
+        gamemod.into_simple()
     }
 }
 impl PartialOrd for GameMod {

@@ -4,7 +4,7 @@
 //!
 //! ## Types
 //!
-//! In total there are three different collections for mods.
+//! In total, there are four different ways of handling mods.
 //!
 //! ### `GameModsLegacy`
 //!
@@ -95,6 +95,23 @@
 //! assert_eq!(iter.next(), None);
 //! ```
 //!
+//! ### `GameModSimple`
+//!
+//! Unlike the other three, [`GameModSimple`] is not a collection but just a
+//! single mod. Instead of providing types for each mod, it keeps things simple
+//! and stores all settings into a plain `HashMap`.
+//!
+//! ```
+//! use rosu_mods::{GameMod, GameModSimple, SettingSimple, generated_mods::AccuracyChallengeMania};
+//!
+//! let gamemod = GameMod::AccuracyChallengeMania(AccuracyChallengeMania {
+//!     restart: Some(true),
+//!     ..Default::default()
+//! });
+//! let simple = gamemod.into_simple();
+//! assert_eq!(simple.settings.get("restart"), Some(&SettingSimple::Bool(true)));
+//! ```
+//!
 //! ## Features
 //!
 //! | Flag      | Description                                                                                      | Dependencies
@@ -116,6 +133,7 @@
 //! [`GameMod`]: crate::generated_mods::gamemod::GameMod
 //! [`GameModsIntermode`]: crate::intermode::GameModsIntermode
 //! [`GameModIntermode`]: crate::generated_mods::intermode::GameModIntermode
+//! [`GameModSimple`]: crate::simple::GameModSimple
 
 #![cfg_attr(all(docsrs, not(doctest)), feature(doc_cfg))]
 #![deny(rustdoc::broken_intra_doc_links, rustdoc::missing_crate_level_docs)]
@@ -150,6 +168,7 @@ mod mod_manual;
 mod mode;
 mod mods;
 mod order;
+mod simple;
 mod util;
 
 /// Error types
@@ -180,4 +199,9 @@ pub use self::{
     intermode::GameModsIntermode,
     kind::GameModKind,
     legacy::GameModsLegacy,
+    simple::{GameModSimple, SettingSimple},
 };
+
+#[cfg(feature = "serde")]
+#[cfg_attr(all(docsrs, not(doctest)), doc(cfg(feature = "serde")))]
+pub use self::simple::GameModSimpleConversionError;

@@ -1,7 +1,7 @@
 #![cfg(feature = "serde")]
 
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     error::Error as StdError,
     fmt::{Debug, Display, Formatter, Result as FmtResult},
     marker::PhantomData,
@@ -17,6 +17,7 @@ use serde::de::{
 use crate::{
     generated_mods::{GameMod, UnknownMod},
     order::GameModOrder,
+    simple::SettingSimple,
     Acronym, GameModIntermode, GameMode, GameMods, GameModsIntermode,
 };
 
@@ -366,6 +367,32 @@ impl<'de> Visitor<'de> for GameModSeed {
 
 pub(crate) struct GameModSettings<'a> {
     fields: Vec<GameModSettingField<'a>>,
+}
+
+impl<'a> GameModSettings<'a> {
+    /// Build a [`GameModSettings`] from the owned map stored in a
+    /// [`GameModSimple`].
+    ///
+    /// [`GameModSimple`]: crate::GameModSimple
+    pub(crate) fn from_simple_settings(map: &'a HashMap<Box<str>, SettingSimple>) -> Self {
+        let fields = map
+            .iter()
+            .map(|(key, setting)| {
+                let value = match setting {
+                    SettingSimple::Bool(b) => Value::Bool(*b),
+                    SettingSimple::Number(n) => Value::Number(*n),
+                    SettingSimple::String(s) => Value::Str(MaybeOwnedStr::Borrowed(s)),
+                };
+
+                GameModSettingField {
+                    name: MaybeOwnedStr::Borrowed(key),
+                    value,
+                }
+            })
+            .collect();
+
+        Self { fields }
+    }
 }
 
 impl Debug for GameModSettings<'_> {
@@ -724,7 +751,7 @@ impl Debug for GameModSettingField<'_> {
     }
 }
 
-enum Value<'de> {
+pub(crate) enum Value<'de> {
     Bool(bool),
     Str(MaybeOwnedStr<'de>),
     Number(f64),
@@ -1534,6 +1561,13 @@ impl MaybeOwnedStr<'_> {
         match self {
             MaybeOwnedStr::Borrowed(a) => a,
             MaybeOwnedStr::Owned(a) => a.as_str(),
+        }
+    }
+
+    pub(crate) fn into_owned(self) -> String {
+        match self {
+            MaybeOwnedStr::Borrowed(s) => s.to_owned(),
+            MaybeOwnedStr::Owned(s) => s,
         }
     }
 }

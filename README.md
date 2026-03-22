@@ -10,7 +10,7 @@ Individual gamemod types are generated automatically through the [`generate-mods
 
 ### Types
 
-In total there are three different collections for mods.
+In total, there are four different ways of handling mods.
 
 #### `GameModsLegacy`
 
@@ -83,6 +83,23 @@ assert_eq!(iter.next(), Some(GameModIntermode::Wiggle));
 assert_eq!(iter.next(), None);
 ```
 
+#### `GameModSimple`
+
+Unlike the other three, [`GameModSimple`] is not a collection but just a
+single mod. Instead of providing types for each mod, it keeps things simple
+and stores all settings into a plain `HashMap`.
+
+```rust
+use rosu_mods::{GameMod, GameModSimple, SettingSimple, generated_mods::AccuracyChallengeMania};
+
+let gamemod = GameMod::AccuracyChallengeMania(AccuracyChallengeMania {
+    restart: Some(true),
+    ..Default::default()
+});
+let simple = gamemod.into_simple();
+assert_eq!(simple.settings.get("restart"), Some(&SettingSimple::Bool(true)));
+```
+
 ### Features
 
 | Flag      | Description                                                                                      | Dependencies
@@ -104,5 +121,6 @@ assert_eq!(iter.next(), None);
 [`GameMod`]: https://docs.rs/rosu-mods/latest/rosu_mods/generated_mods/gamemod/enum.GameMod.html
 [`GameModsIntermode`]: https://docs.rs/rosu-mods/latest/rosu_mods/intermode/struct.GameModsIntermode.html
 [`GameModIntermode`]: https://docs.rs/rosu-mods/latest/rosu_mods/generated_mods/intermode/enum.GameModIntermode.html
+[`GameModSimple`]: https://docs.rs/rosu-mods/latest/rosu_mods/simple/struct.GameModSimple.html
 
 <!-- cargo-rdme end -->
